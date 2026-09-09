@@ -42,7 +42,7 @@ const copy = (from, to = from) => {
 };
 
 copy('robots.txt');
-copy('vendor/jszip.min.js');
+copy('src/vendor/jszip.min.js', 'vendor/jszip.min.js');
 copy('templates/Course_Report_Placeholder.docx');
 
 console.log('Built resilient deployment: dist/index.html has inline Acadeloop CSS/app code; vendor + DOCX stay separate.');
