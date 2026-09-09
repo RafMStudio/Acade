@@ -11,3 +11,5 @@ jobs:
         with:
           node-version: 22
       - run: npm test
+        env:
+          CHROMIUM_BIN: google-chrome
