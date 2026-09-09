@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<!--
+  Acadeloop deployment bundle.
+  Editable source: index.source.html + src/*.js + src/styles.css
+  The DOCX template remains a normal binary file under templates/.
+  No Base64 Word template is embedded here.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="Acadeloop academic program quality management" name="description"/>
+<meta content="noindex,nofollow" name="robots"/>
+<title>Acadeloop — Academic Program Quality</title>
+<link href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2216%22 fill=%22%2318171b%22/%3E%3Cpath d=%22M17 48 29 16h7l12 32h-8l-2.4-7H27.2L25 48h-8Zm12.4-14h6L32.3 25l-2.9 9Z%22 fill=%22white%22/%3E%3C/svg%3E" rel="icon"/>
+<style id="acadeloop-styles">
+
+:root{
+  --bg:#f6f7f8; --surface:#ffffff; --surface-2:#fafafa; --text:#18181b; --muted:#71717a;
+  --line:#e7e7ea; --line-strong:#d6d6db; --accent:#3157d5; --accent-soft:#eef2ff;
+  --green:#19734b; --green-soft:#edf8f2; --amber:#9b6108; --amber-soft:#fff6df; --red:#a83b32; --red-soft:#fff0ef;
+  --purple:#7357bf; --purple-soft:#f4f0ff; --shadow:0 14px 44px rgba(24,24,27,.10);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--text);background:var(--bg);font-size:14px;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit}
+button{color:inherit}
+.app-shell{min-height:100vh;display:grid;grid-template-columns:244px minmax(0,1fr)}
+.sidebar{position:sticky;top:0;height:100vh;background:#fff;border-right:1px solid var(--line);padding:22px 14px 16px;display:flex;flex-direction:column;z-index:20}
+.brand{display:flex;align-items:center;gap:11px;padding:0 9px 22px}
+.brand-mark{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#111827;color:#fff;font-weight:800;font-size:17px}
+.brand strong{display:block;font-size:15px;letter-spacing:-.02em}.brand span{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+nav{display:grid;gap:4px}.nav-item{border:0;background:transparent;border-radius:9px;min-height:40px;padding:0 10px;display:flex;align-items:center;gap:10px;text-align:left;cursor:pointer;font-weight:590;color:#4b4b53}
+.nav-item:hover{background:#f6f6f7;color:#252529}.nav-item.active{background:#f0f2f6;color:#16161a;font-weight:690}.nav-icon{width:18px;text-align:center;color:#777784}.nav-item.active .nav-icon{color:#1f2937}.nav-badge{margin-left:auto;background:#ececf0;border-radius:999px;padding:2px 7px;font-size:10px;color:#5e5e68}.nav-separator{height:1px;background:var(--line);margin:10px 8px}
+.sidebar-foot{margin-top:auto;padding:12px 4px}.mini-card{border:1px solid var(--line);border-radius:11px;padding:12px;background:#fafafa}.mini-card strong,.mini-card span{display:block}.mini-card strong{font-size:13px;margin:3px 0 2px}.mini-card span:last-child{font-size:11px;color:var(--muted);line-height:1.35}
+.main{min-width:0}.topbar{height:74px;background:rgba(255,255,255,.90);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:15;display:flex;align-items:center;justify-content:space-between;padding:0 28px;gap:20px}.breadcrumb span,.breadcrumb strong{display:block}.breadcrumb span{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:2px}.breadcrumb strong{font-size:17px;letter-spacing:-.02em}.top-actions{display:flex;align-items:center;gap:10px}.role-switch{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:9px;padding:4px 7px 4px 10px;background:#fff;color:var(--muted);font-size:11px}.role-switch select{border:0;background:#fff;font-size:12px;color:#26262c;font-weight:650;outline:none;max-width:180px}.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#111827;color:#fff;font-size:11px;font-weight:760}
+.content{padding:28px;max-width:1550px;margin:0 auto}.eyebrow{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:760}.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:22px}.page-head h1{font-size:26px;letter-spacing:-.035em;margin:4px 0 5px}.page-head p{margin:0;color:var(--muted);max-width:720px;line-height:1.55;font-size:13px}.page-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{border:1px solid transparent;border-radius:8px;min-height:38px;padding:8px 12px;background:#fff;cursor:pointer;font-weight:660;font-size:12px;display:inline-flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap}.btn:hover{filter:brightness(.985)}.btn-primary{background:#1f2937;color:#fff}.btn-accent{background:var(--accent);color:#fff}.btn-ghost{border-color:var(--line);background:#fff}.btn-soft{background:#f1f1f3}.btn-danger{background:var(--red-soft);color:var(--red);border-color:#f6d5d1}.btn:disabled{opacity:.45;cursor:not-allowed}
+.icon-btn{width:34px;height:34px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer;display:grid;place-items:center;font-size:16px}
+.grid{display:grid;gap:14px}.grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:17px}.metric{min-height:128px}.metric-top{display:flex;align-items:center;justify-content:space-between}.metric .label{font-size:12px;color:var(--muted);font-weight:620}.metric .value{font-size:30px;font-weight:760;letter-spacing:-.045em;margin:15px 0 5px}.metric .sub{font-size:11px;color:var(--muted);line-height:1.45}.metric .delta{font-size:10px;padding:4px 7px;border-radius:999px;background:#f1f2f4;color:#62626c;font-weight:700}.delta.good{background:var(--green-soft);color:var(--green)}.delta.warn{background:var(--amber-soft);color:var(--amber)}
+.section{margin-top:18px}.section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}.section-title h2{font-size:15px;margin:0;letter-spacing:-.015em}.section-title p{font-size:11px;color:var(--muted);margin:3px 0 0}
+.table-card{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}.board-tools{padding:12px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}.board-tools .left,.board-tools .right{display:flex;gap:8px;align-items:center}.search{border:1px solid var(--line);border-radius:8px;min-height:36px;padding:0 10px;min-width:220px;background:#fafafa}.search:focus{outline:none;border-color:#b8bdc8;background:#fff}.filter-select{border:1px solid var(--line);border-radius:8px;min-height:36px;padding:0 9px;background:#fff;color:#44444c;font-size:12px}
+.data-table{width:100%;border-collapse:collapse}.data-table th{font-size:10px;text-transform:uppercase;letter-spacing:.055em;color:#81818b;text-align:left;font-weight:760;background:#fafafa;padding:11px 12px;border-bottom:1px solid var(--line)}.data-table td{padding:12px;border-bottom:1px solid #eeeeef;vertical-align:middle;font-size:12px}.data-table tr:last-child td{border-bottom:0}.data-table tbody tr:hover{background:#fbfbfc}.course-cell{display:flex;align-items:center;gap:10px}.course-code{width:38px;height:38px;border-radius:9px;background:#f0f2f5;display:grid;place-items:center;font-size:10px;font-weight:800;color:#43434c;flex:none}.course-meta strong{display:block;font-size:12px}.course-meta span{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+.status-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 8px;border-radius:999px;font-size:10px;font-weight:730}.status-pill:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}.status-Draft{background:#f1f1f3;color:#66666f}.status-InReview{background:var(--amber-soft);color:var(--amber)}.status-Approved{background:var(--green-soft);color:var(--green)}.status-NeedsRevision{background:var(--red-soft);color:var(--red)}
+.progress-wrap{display:flex;align-items:center;gap:8px;min-width:115px}.progress-track{height:6px;background:#ececef;border-radius:999px;overflow:hidden;flex:1}.progress-fill{height:100%;background:#6b7280;border-radius:999px}.progress-wrap span{font-size:10px;color:var(--muted);width:29px;text-align:right}
+.kpi-line{display:flex;align-items:center;gap:9px}.kpi-line .num{font-weight:740}.kpi-line .bar{height:7px;flex:1;background:#efeff1;border-radius:99px;overflow:hidden;max-width:140px}.kpi-line .bar span{display:block;height:100%;border-radius:99px;background:#5f6b7a}.text-good{color:var(--green)}.text-warn{color:var(--amber)}.text-bad{color:var(--red)}
+.insight{border:1px solid var(--line);background:#fff;border-radius:12px;padding:16px}.insight h3{font-size:13px;margin:0 0 5px}.insight p{font-size:11px;line-height:1.5;color:var(--muted);margin:0}.insight .big{font-size:22px;font-weight:760;margin:14px 0 5px;color:#27272b}.split{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,.75fr);gap:14px}
+.activity{display:grid;gap:2px}.activity-row{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:flex-start;padding:10px 2px;border-bottom:1px solid #f0f0f1}.activity-row:last-child{border-bottom:0}.activity-icon{width:26px;height:26px;border-radius:7px;background:#f1f2f4;display:grid;place-items:center;font-size:11px}.activity-row strong{font-size:11px;display:block}.activity-row p{font-size:10px;color:var(--muted);margin:2px 0 0}.activity-row time{font-size:9px;color:#9a9aa2}
+.plo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.plo-card{border:1px solid var(--line);background:#fff;border-radius:12px;padding:15px;cursor:pointer;transition:.15s}.plo-card:hover{border-color:#cfd1d6;transform:translateY(-1px)}.plo-card.active{border-color:#aeb8da;box-shadow:0 0 0 3px rgba(49,87,213,.06)}.plo-card-head{display:flex;align-items:flex-start;justify-content:space-between}.plo-code{font-size:11px;font-weight:800;color:#555563}.plo-score{font-size:24px;font-weight:770;letter-spacing:-.04em}.plo-name{font-size:11px;color:var(--muted);line-height:1.4;margin:8px 0 11px;min-height:31px}.mini-bar{height:6px;background:#eeeeef;border-radius:999px;overflow:hidden}.mini-bar span{display:block;height:100%;background:#667085;border-radius:999px}
+.rollup-table td:first-child{font-weight:700}.tiny{font-size:10px;color:var(--muted)}.tag{display:inline-flex;padding:4px 7px;border-radius:7px;background:#f1f2f4;color:#5b5b66;font-size:10px;font-weight:660}.tag.blue{background:var(--accent-soft);color:var(--accent)}
+.apr-hero{background:#fff;border:1px solid var(--line);border-radius:14px;padding:21px;display:grid;grid-template-columns:1.25fr .75fr;gap:28px;align-items:center}.apr-hero h2{font-size:20px;margin:4px 0 8px;letter-spacing:-.025em}.apr-hero p{font-size:12px;line-height:1.55;color:var(--muted);margin:0}.readiness{display:flex;align-items:center;gap:15px;justify-content:flex-end}.ring{--p:50;width:96px;height:96px;border-radius:50%;background:conic-gradient(#44546a calc(var(--p)*1%),#eceef1 0);display:grid;place-items:center;position:relative}.ring:after{content:"";width:72px;height:72px;border-radius:50%;background:#fff;position:absolute}.ring strong{position:relative;z-index:2;font-size:20px}.readiness-copy strong{display:block;font-size:12px}.readiness-copy span{display:block;font-size:10px;color:var(--muted);margin-top:3px;line-height:1.4}
+.apr-section{background:#fff;border:1px solid var(--line);border-radius:12px;margin-top:14px;overflow:hidden}.apr-section-head{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;border-bottom:1px solid var(--line);background:#fafafa}.apr-section-head strong{font-size:12px}.apr-section-body{padding:15px}.auto-label{display:inline-flex;gap:5px;align-items:center;font-size:9px;text-transform:uppercase;letter-spacing:.05em;font-weight:800;color:var(--purple);background:var(--purple-soft);padding:4px 6px;border-radius:6px}.narrative{background:#fbfbfc;border:1px solid #eeeeef;border-radius:9px;padding:12px;font-size:11px;line-height:1.58;color:#47474f}
+.plan-row td{vertical-align:top}.owner{display:flex;align-items:center;gap:7px}.owner-avatar{width:24px;height:24px;border-radius:50%;background:#eff0f2;display:grid;place-items:center;font-size:9px;font-weight:800}.evidence-dot{display:inline-flex;align-items:center;gap:5px;font-size:10px;color:var(--muted)}.evidence-dot:before{content:"";width:6px;height:6px;background:var(--green);border-radius:50%}
+.automation-list{display:grid;gap:10px}.automation-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px;display:grid;grid-template-columns:42px 1fr auto;gap:12px;align-items:center}.automation-icon{width:40px;height:40px;border-radius:10px;background:#f1f2f4;display:grid;place-items:center;font-size:17px}.automation-card h3{font-size:12px;margin:0 0 4px}.automation-card p{font-size:10px;color:var(--muted);line-height:1.45;margin:0}.toggle{width:38px;height:22px;background:#d8d8dd;border-radius:999px;padding:3px;cursor:pointer;transition:.15s}.toggle span{display:block;width:16px;height:16px;background:#fff;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.18);transition:.15s}.toggle.on{background:#344054}.toggle.on span{transform:translateX(16px)}
+.form-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:12px}.f12{grid-column:span 12}.f9{grid-column:span 9}.f8{grid-column:span 8}.f6{grid-column:span 6}.f4{grid-column:span 4}.f3{grid-column:span 3}.field{min-width:0}.field label{font-size:10px;font-weight:720;color:#56565f;display:block;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line-strong);border-radius:8px;padding:9px 10px;background:#fff;min-height:39px;font-size:12px;color:#2d2d33}.field textarea{min-height:76px;resize:vertical;line-height:1.5}.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:#9ba4b6;box-shadow:0 0 0 3px rgba(49,87,213,.06)}.form-section{padding:14px 0;border-bottom:1px solid var(--line)}.form-section:last-child{border-bottom:0}.form-section h3{font-size:12px;margin:0 0 11px}.form-note{font-size:10px;color:var(--muted);line-height:1.5;margin:-5px 0 12px}.grade-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.grade-box{border:1px solid var(--line);border-radius:8px;padding:8px}.grade-box label{font-size:10px;font-weight:780;margin-bottom:5px;display:block}.grade-box input{width:100%;border:0;border-top:1px solid #eeeeef;padding:7px 0 0;outline:none;font-size:12px}.clo-editor{display:grid;gap:8px}.clo-row{border:1px solid var(--line);border-radius:9px;padding:10px;background:#fafafa}.clo-row-top{display:grid;grid-template-columns:46px 1.4fr 66px 1fr 72px 72px;gap:8px;align-items:center}.clo-row .code{font-size:10px;font-weight:800}.clo-row .text{font-size:10px;line-height:1.4}.clo-row input,.clo-row select{width:100%;border:1px solid var(--line);border-radius:7px;padding:7px;background:#fff;font-size:10px}.clo-row textarea{width:100%;border:1px solid var(--line);border-radius:7px;padding:8px;background:#fff;font-size:10px;min-height:56px;margin-top:8px;resize:vertical}.source-pill{font-size:9px;background:var(--accent-soft);color:var(--accent);border-radius:6px;padding:4px 5px;font-weight:760;text-align:center}
+.drawer-backdrop,.modal-backdrop{position:fixed;inset:0;background:rgba(16,24,40,.20);z-index:50;backdrop-filter:blur(1px)}.drawer{position:fixed;right:0;top:0;bottom:0;width:min(720px,94vw);background:#fff;z-index:60;box-shadow:-18px 0 50px rgba(16,24,40,.12);display:flex;flex-direction:column}.drawer-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}.drawer-head h2,.modal-head h2{font-size:18px;margin:3px 0 0;letter-spacing:-.025em}.drawer-body{padding:6px 20px 26px;overflow:auto;flex:1}.drawer-foot{padding:12px 20px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff}.drawer-foot .left,.drawer-foot .right{display:flex;gap:8px;align-items:center}.modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(560px,92vw);background:#fff;border-radius:14px;z-index:70;box-shadow:var(--shadow);max-height:88vh;overflow:auto}.modal-head{display:flex;align-items:center;justify-content:space-between;padding:17px 19px;border-bottom:1px solid var(--line)}.modal-body{padding:18px}.hidden{display:none!important}.toast{position:fixed;right:22px;bottom:22px;background:#17181b;color:#fff;border-radius:9px;padding:10px 13px;font-size:11px;z-index:100;box-shadow:var(--shadow);opacity:0;transform:translateY(8px);pointer-events:none;transition:.2s}.toast.show{opacity:1;transform:none}
+.setup-block{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:13px}.setup-block h3{font-size:13px;margin:0 0 10px}.setup-block p{font-size:10px;color:var(--muted);line-height:1.45;margin:0 0 12px}.setup-actions{display:flex;gap:8px;flex-wrap:wrap}.muted{color:var(--muted)}.empty{padding:36px;text-align:center;color:var(--muted);font-size:12px}.mobile-only{display:none}
+
+/* Form layout safety: every span class used by the app is defined, and fields may shrink without crushing siblings. */
+.modal-card .form-grid,.drawer .form-grid{align-items:start}
+@media(max-width:1100px){.grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}.plo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.split{grid-template-columns:1fr}.comments-grid{grid-template-columns:1fr}.apr-hero{grid-template-columns:1fr}.readiness{justify-content:flex-start}}
+@media(max-width:820px){.app-shell{grid-template-columns:1fr}.sidebar{position:fixed;left:0;transform:translateX(-102%);transition:.2s;box-shadow:var(--shadow)}.sidebar.open{transform:none}.mobile-only{display:grid}.topbar{padding:0 14px;height:66px}.role-switch span{display:none}.role-switch select{max-width:120px}.content{padding:18px 14px}.grid-4,.grid-3,.grid-2,.plo-grid{grid-template-columns:1fr}.page-head{align-items:flex-start;flex-direction:column}.table-card{overflow:auto}.data-table{min-width:850px}.board-tools{align-items:flex-start;flex-direction:column}.search{min-width:180px}.form-grid{grid-template-columns:1fr}.f12,.f9,.f8,.f6,.f4,.f3{grid-column:auto}.grade-grid{grid-template-columns:repeat(2,1fr)}.clo-row-top{grid-template-columns:40px 1fr 60px}.clo-row-top>*:nth-child(n+4){grid-column:span 1}.top-actions .btn{display:none}}
+
+/* Course Portfolio */
+.grid-5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.portfolio-progress-button{border:0;background:transparent;padding:0;cursor:pointer;min-width:118px;text-align:left}
+.portfolio-progress-button .progress-wrap{pointer-events:none}
+.portfolio-hero{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:10px 0 2px;padding:18px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(135deg,#fbfbfc,#f6f7fa)}
+.portfolio-hero h3{font-size:17px;margin:9px 0 5px;letter-spacing:-.025em}.portfolio-hero p{margin:0;font-size:11px;color:var(--muted)}
+.portfolio-score{width:92px;height:92px;border-radius:50%;border:8px solid #e9ebef;background:#fff;display:grid;place-items:center;align-content:center;flex:none}.portfolio-score strong{font-size:20px;line-height:1}.portfolio-score span{font-size:9px;color:var(--muted);margin-top:4px}
+.portfolio-checklist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.portfolio-check{display:grid;grid-template-columns:26px 1fr auto;gap:8px;align-items:center;border:1px solid var(--line);border-radius:9px;padding:10px;background:#fafafa}.portfolio-check.done{background:#fbfefc;border-color:#dfece5}.portfolio-check .check-icon{width:24px;height:24px;border-radius:7px;display:grid;place-items:center;background:#eeeef1;color:#767680;font-weight:800}.portfolio-check.done .check-icon{background:var(--green-soft);color:var(--green)}.portfolio-check strong{display:block;font-size:10px}.portfolio-check span:not(.auto-label):not(.tag){display:block;font-size:9px;line-height:1.35;color:var(--muted);margin-top:2px}
+.portfolio-files{display:grid;gap:7px}.portfolio-file{display:grid;grid-template-columns:38px 1fr 34px;gap:10px;align-items:center;border:1px solid var(--line);border-radius:9px;padding:8px 9px;background:#fff}.file-icon{width:36px;height:36px;border-radius:8px;background:#f0f2f5;display:grid;place-items:center;font-size:8px;font-weight:800;color:#5d626d}.file-main strong{display:block;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.file-main span{display:block;font-size:9px;color:var(--muted);margin-top:3px}.empty.compact{padding:18px}
+.generated-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.generated-item{border:1px dashed var(--line-strong);border-radius:9px;padding:10px;background:#fafafa}.generated-item strong{display:block;font-size:10px}.generated-item span{display:block;font-size:9px;color:var(--muted);margin-top:3px;line-height:1.35}
+@media(max-width:1300px){.grid-5{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:1100px){.grid-5{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:820px){.grid-5,.portfolio-checklist,.generated-grid{grid-template-columns:1fr}.portfolio-hero{align-items:flex-start}.portfolio-score{width:78px;height:78px;border-width:6px}}
+
+/* Course Portfolio — full page workspace redesign */
+.portfolio-summary-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.portfolio-summary-strip>div{padding:15px 17px;border-right:1px solid var(--line)}
+.portfolio-summary-strip>div:last-child{border-right:0}
+.portfolio-summary-strip span,.portfolio-summary-strip small{display:block}
+.portfolio-summary-strip span{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.portfolio-summary-strip strong{display:block;font-size:21px;letter-spacing:-.035em;margin:7px 0 2px}
+.portfolio-summary-strip small{font-size:10px;color:var(--muted)}
+.portfolio-live-dot{font-size:14px!important;letter-spacing:0!important;color:var(--green);display:flex!important;align-items:center;gap:7px}
+.portfolio-live-dot:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 0 4px var(--green-soft)}
+.portfolio-board .data-table td{padding-top:13px;padding-bottom:13px}
+.portfolio-board-progress{display:flex;align-items:center;gap:9px;min-width:138px}.portfolio-board-progress strong{font-size:11px;width:32px;text-align:right}.portfolio-board-bar{height:6px;flex:1;background:#eceef1;border-radius:999px;overflow:hidden}.portfolio-board-bar span{display:block;height:100%;background:#64748b;border-radius:999px}
+.portfolio-attention,.portfolio-ready{display:inline-flex;align-items:center;padding:5px 8px;border-radius:7px;font-size:10px;font-weight:700}
+.portfolio-attention{background:var(--amber-soft);color:var(--amber)}.portfolio-ready{background:var(--green-soft);color:var(--green)}
+
+.portfolio-detail-header{margin:-4px 0 16px}
+.portfolio-back{border:0;background:transparent;padding:0;margin:0 0 14px;color:#62626c;font-size:11px;font-weight:700;cursor:pointer}.portfolio-back:hover{color:#18181b}
+.portfolio-title-line{display:flex;align-items:flex-end;justify-content:space-between;gap:24px}
+.portfolio-title-line h1{font-size:28px;letter-spacing:-.04em;margin:5px 0 4px}.portfolio-title-line p{margin:0;color:var(--muted);font-size:12px}
+.portfolio-course-kicker{font-size:10px;text-transform:uppercase;letter-spacing:.08em;font-weight:800;color:#6b7280}
+.portfolio-meta-row{margin-top:18px;border:1px solid var(--line);background:#fff;border-radius:11px;display:grid;grid-template-columns:1.2fr .8fr .7fr .8fr;overflow:hidden}
+.portfolio-meta-row>div{padding:12px 14px;border-right:1px solid var(--line);min-width:0}.portfolio-meta-row>div:last-child{border-right:0}.portfolio-meta-row span,.portfolio-meta-row strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.portfolio-meta-row span{font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700;margin-bottom:4px}.portfolio-meta-row strong{font-size:11px}
+
+.portfolio-readiness-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px 16px;margin-bottom:14px}
+.portfolio-readiness-copy{display:flex;align-items:flex-end;justify-content:space-between;gap:20px}.portfolio-readiness-copy>div{display:flex;align-items:baseline;gap:9px}.portfolio-readiness-copy strong{font-size:24px;letter-spacing:-.04em}.portfolio-readiness-copy>div span{font-size:10px;color:var(--muted)}
+.portfolio-readiness-track{height:7px;background:#eceef1;border-radius:999px;overflow:hidden;margin-top:12px}.portfolio-readiness-track span{display:block;height:100%;background:#475569;border-radius:999px;transition:width .2s ease}
+
+.portfolio-detail-layout{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(300px,.62fr);gap:14px;align-items:start}
+.portfolio-main-column,.portfolio-side-column{display:grid;gap:14px}.portfolio-side-column{position:sticky;top:90px}
+.portfolio-panel{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.portfolio-panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:15px 16px;border-bottom:1px solid var(--line)}
+.portfolio-panel-head h2{font-size:14px;letter-spacing:-.015em;margin:0 0 3px}.portfolio-panel-head p{font-size:10px;line-height:1.45;color:var(--muted);margin:0}
+.portfolio-live-badge{display:inline-flex;align-items:center;gap:5px;background:var(--green-soft);color:var(--green);padding:5px 8px;border-radius:999px;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}.portfolio-live-badge:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.portfolio-group{border-bottom:1px solid #f0f0f1}.portfolio-group:last-child{border-bottom:0}
+.portfolio-group-head{padding:13px 16px 8px}.portfolio-group-head h3{font-size:11px;margin:0 0 2px}.portfolio-group-head p{font-size:9px;color:var(--muted);margin:0;line-height:1.4}
+.portfolio-group-rows{padding:0 9px 9px}
+.portfolio-content-row{display:grid;grid-template-columns:28px minmax(0,1fr) 62px 64px;gap:9px;align-items:center;padding:10px 8px;border-radius:8px}.portfolio-content-row:hover{background:#fafafa}
+.portfolio-row-status{width:24px;height:24px;border-radius:7px;background:#f0f1f3;display:grid;place-items:center;color:#8a8a94;font-size:14px;font-weight:800}.portfolio-content-row.is-done .portfolio-row-status{background:var(--green-soft);color:var(--green)}
+.portfolio-row-copy strong,.portfolio-row-copy span{display:block}.portfolio-row-copy strong{font-size:10px;margin-bottom:2px}.portfolio-row-copy span{font-size:9px;color:var(--muted);line-height:1.35}
+.portfolio-source,.portfolio-state{justify-self:end;display:inline-flex;align-items:center;justify-content:center;min-width:54px;border-radius:6px;padding:4px 6px;font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.portfolio-source.system{background:var(--purple-soft);color:var(--purple)}.portfolio-source.upload{background:#f1f2f4;color:#666773}.portfolio-state.done{background:var(--green-soft);color:var(--green)}.portfolio-state.missing{background:var(--amber-soft);color:var(--amber)}
+
+.portfolio-upload-panel{padding-bottom:15px}.portfolio-upload-panel .field{padding:14px 15px 0}.portfolio-upload-panel .field select{width:100%;border:1px solid var(--line-strong);border-radius:8px;min-height:39px;padding:0 9px;background:#fff;color:#303038;font-size:11px}
+.portfolio-dropzone{margin:12px 15px 0;border:1px dashed #cfd3da;border-radius:10px;min-height:126px;padding:18px 15px;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;cursor:pointer;background:#fbfbfc;transition:.15s}.portfolio-dropzone:hover{border-color:#aeb5c0;background:#fff}
+.portfolio-drop-icon{width:31px;height:31px;border:1px solid var(--line);border-radius:9px;background:#fff;display:grid;place-items:center;margin-bottom:8px;font-size:15px}.portfolio-dropzone strong{font-size:11px}.portfolio-dropzone>span:last-child{font-size:9px;color:var(--muted);line-height:1.45;margin-top:4px;max-width:220px}
+.portfolio-selection{font-size:9px;color:var(--muted);padding:9px 15px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.portfolio-add-btn{margin:11px 15px 0;width:calc(100% - 30px)}
+.portfolio-generated-panel .portfolio-panel-head{border-bottom:0;padding-bottom:8px}.portfolio-generated-list{padding:0 10px 10px}.portfolio-generated-list>div{display:grid;grid-template-columns:36px 1fr auto;gap:9px;align-items:center;padding:9px 6px;border-top:1px solid #f0f0f1}.portfolio-generated-list>div:first-child{border-top:0}.portfolio-generated-list>div>span{width:34px;height:27px;border-radius:6px;background:#f1f2f4;display:grid;place-items:center;font-size:7px;font-weight:800;color:#60616b}.portfolio-generated-list p{margin:0}.portfolio-generated-list p strong,.portfolio-generated-list p small{display:block}.portfolio-generated-list p strong{font-size:9px;margin-bottom:2px}.portfolio-generated-list p small{font-size:8px;color:var(--muted);line-height:1.3}.portfolio-generated-list b{font-size:8px;color:var(--purple);background:var(--purple-soft);border-radius:5px;padding:4px 5px;text-transform:uppercase;letter-spacing:.04em}
+
+.portfolio-file-list{padding:8px}.portfolio-file-row{display:grid;grid-template-columns:38px minmax(0,1fr) 34px;gap:10px;align-items:center;padding:9px 8px;border-radius:8px}.portfolio-file-row:hover{background:#fafafa}.file-type-badge{width:35px;height:35px;border-radius:8px;background:#f0f2f5;display:grid;place-items:center;font-size:7px;font-weight:800;color:#5d626d}.portfolio-file-copy strong,.portfolio-file-copy span{display:block}.portfolio-file-copy strong{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.portfolio-file-copy span{font-size:8px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.portfolio-empty{padding:30px 16px;text-align:center}.portfolio-empty strong,.portfolio-empty span{display:block}.portfolio-empty strong{font-size:11px}.portfolio-empty span{font-size:9px;color:var(--muted);margin-top:4px}
+
+@media(max-width:1100px){.portfolio-summary-strip{grid-template-columns:repeat(2,minmax(0,1fr))}.portfolio-summary-strip>div:nth-child(2){border-right:0}.portfolio-summary-strip>div:nth-child(-n+2){border-bottom:1px solid var(--line)}.portfolio-detail-layout{grid-template-columns:1fr}.portfolio-side-column{position:static;grid-template-columns:repeat(2,minmax(0,1fr))}.portfolio-title-line{align-items:flex-start;flex-direction:column}.portfolio-meta-row{grid-template-columns:repeat(2,minmax(0,1fr))}.portfolio-meta-row>div:nth-child(2){border-right:0}.portfolio-meta-row>div:nth-child(-n+2){border-bottom:1px solid var(--line)}}
+@media(max-width:820px){.portfolio-summary-strip{grid-template-columns:1fr}.portfolio-summary-strip>div{border-right:0!important;border-bottom:1px solid var(--line)!important}.portfolio-summary-strip>div:last-child{border-bottom:0!important}.portfolio-side-column{grid-template-columns:1fr}.portfolio-meta-row{grid-template-columns:1fr}.portfolio-meta-row>div{border-right:0!important;border-bottom:1px solid var(--line)!important}.portfolio-meta-row>div:last-child{border-bottom:0!important}.portfolio-content-row{grid-template-columns:28px minmax(0,1fr) 58px}.portfolio-state{display:none}.portfolio-title-line h1{font-size:24px}.portfolio-title-line .page-actions{width:100%}.portfolio-title-line .page-actions .btn{flex:1}.portfolio-readiness-copy{align-items:flex-start;flex-direction:column;gap:6px}}
+
+
+
+/* v2 — role-aware workspaces + multi-section reporting */
+.role-context{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fafafa;border-radius:8px;padding:6px 9px;font-size:9px;font-weight:760;color:#666873;white-space:nowrap}.role-context b{color:#25262b;font-size:10px}.nav-item.role-hidden{display:none!important}
+.role-hero{border:1px solid var(--line);background:linear-gradient(135deg,#fff 0%,#fafbff 100%);border-radius:13px;padding:16px 18px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;gap:16px}.role-hero .copy span,.role-hero .copy strong,.role-hero .copy p{display:block}.role-hero .copy span{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800}.role-hero .copy strong{font-size:17px;margin-top:3px}.role-hero .copy p{font-size:10px;color:var(--muted);margin:4px 0 0;line-height:1.5}.role-hero .role-chip{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;background:var(--purple-soft);color:var(--purple);padding:7px 9px;border-radius:8px;white-space:nowrap}
+.section-scope-pill{display:inline-flex;align-items:center;gap:5px;border-radius:6px;padding:4px 6px;font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;background:#f1f2f4;color:#60616b}.section-scope-pill.all{background:var(--purple-soft);color:var(--purple)}.section-scope-pill.male{background:#edf4ff;color:#3157d5}.section-scope-pill.female{background:#fff0f6;color:#a33868}.section-scope-pill.combined{background:var(--green-soft);color:var(--green)}
+.scope-selector{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.scope-option{position:relative}.scope-option input{position:absolute;opacity:0;pointer-events:none}.scope-option label{display:block;border:1px solid var(--line);border-radius:9px;padding:9px 10px;background:#fff;cursor:pointer;min-height:57px;transition:.15s}.scope-option label strong,.scope-option label span{display:block}.scope-option label strong{font-size:10px}.scope-option label span{font-size:8px;color:var(--muted);margin-top:3px;line-height:1.35}.scope-option input:checked+label{border-color:#8e99b1;background:#f7f8ff;box-shadow:0 0 0 2px rgba(49,87,213,.06)}
+.report-section-stack{display:grid;gap:12px;margin-top:12px}.report-section-card{border:1px solid var(--line);border-radius:11px;background:#fff;overflow:hidden}.report-section-card.combined{border-color:#dce7df}.report-section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border-bottom:1px solid var(--line);background:#fafafa}.report-section-head h4{margin:0;font-size:11px}.report-section-head p{font-size:8px;color:var(--muted);margin:2px 0 0}.report-section-body{padding:12px}.section-summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.auto-combine-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#f6fbf8;border:1px solid #dceadf;border-radius:9px;padding:9px 10px;margin:10px 0}.auto-combine-banner strong{font-size:9px}.auto-combine-banner span{font-size:8px;color:var(--muted)}.auto-combine-banner label{display:flex;align-items:center;gap:6px;font-size:9px;font-weight:760;white-space:nowrap}.auto-combine-banner input{width:14px;height:14px}.combined-math-note{margin:9px 0 2px;padding:8px 10px;border-radius:8px;background:#f8faf9;border:1px solid #e2e8e4;color:#45604d;font-size:8px;font-weight:700;line-height:1.45}
+.clo-master{display:grid;gap:8px;margin-top:10px}.clo-master-row{display:grid;grid-template-columns:48px minmax(180px,1.6fr) 74px minmax(115px,1fr) 74px;gap:8px;align-items:center;border:1px solid var(--line);border-radius:9px;background:#fafafa;padding:8px}.clo-master-row .cm-code{font-size:9px;font-weight:820}.clo-master-row .cm-text{font-size:9px;line-height:1.4}.clo-master-row input,.clo-master-row select{width:100%;border:1px solid var(--line);border-radius:7px;padding:7px;background:#fff;font-size:9px}.clo-result-table{width:100%;border-collapse:collapse}.clo-result-table th,.clo-result-table td{padding:7px 6px;border-bottom:1px solid #efeff1;text-align:left;font-size:9px;vertical-align:middle}.clo-result-table th{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}.clo-result-table tr:last-child td{border-bottom:0}.clo-result-table input{width:100%;border:1px solid var(--line);border-radius:7px;padding:7px;background:#fff;font-size:9px}.clo-result-table .actual-cell{width:92px}.clo-result-table .code-cell{width:70px;font-weight:800}.combined-readonly{background:#f5f7f5!important;color:#59615b!important}.section-comment-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}.section-comment-grid .full{grid-column:1/-1}.section-comment-grid textarea{min-height:64px}
+.review-banner{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:#fafafa;border-radius:9px;padding:9px 10px;margin-bottom:12px;font-size:9px;color:#64656d}.review-banner strong{color:#2c2d32}.readonly-note{background:#fff7e9;border:1px solid #f0dfbd;color:#73511d;border-radius:8px;padding:8px 10px;font-size:9px;margin-bottom:10px}.role-empty{padding:34px 18px;text-align:center}.role-empty strong,.role-empty span{display:block}.role-empty strong{font-size:13px}.role-empty span{font-size:10px;color:var(--muted);margin-top:5px}
+@media(max-width:1000px){.scope-selector{grid-template-columns:repeat(2,1fr)}.clo-master-row{grid-template-columns:44px 1fr 70px}.clo-master-row>*:nth-child(4),.clo-master-row>*:nth-child(5){grid-column:auto}.section-summary-grid{grid-template-columns:1fr 1fr}.role-context{display:none}}
+@media(max-width:650px){.scope-selector{grid-template-columns:1fr 1fr}.section-comment-grid,.section-summary-grid{grid-template-columns:1fr}.role-hero{align-items:flex-start;flex-direction:column}.clo-master-row{grid-template-columns:1fr}.clo-result-table .actual-cell{width:74px}}
+
+/* v3 — semester separation, mandatory quality approval, generated-only portfolios */
+.status-AwaitingQualityApproval{background:var(--amber-soft);color:var(--amber)}
+.status-ReturnedforRevision{background:var(--red-soft);color:var(--red)}
+.status-OnTrack{background:var(--green-soft);color:var(--green)}
+.status-NeedsAttention{background:var(--amber-soft);color:var(--amber)}
+.period-pill{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 7px;white-space:nowrap}
+.period-pill b{font-size:9px;color:#1f2937;background:#eef2f7;border-radius:5px;padding:3px 5px;letter-spacing:.03em}
+.period-pill span{font-size:9px;color:var(--muted);font-weight:650}
+.period-filter{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}
+.period-filter label,.inline-select-label{display:grid;gap:4px;font-size:9px;color:var(--muted);font-weight:720}
+.period-filter select,.inline-select-label select{border:1px solid var(--line);border-radius:8px;background:#fff;min-height:38px;padding:0 10px;font-size:11px;color:#2b2c31;font-weight:680}
+.period-value{font-size:22px!important;letter-spacing:-.02em!important}
+.big-inline{font-size:27px;font-weight:760;letter-spacing:-.04em;margin:11px 0 6px}
+.drawer-section{padding:16px 0;border-bottom:1px solid var(--line)}
+.drawer-section:last-child{border-bottom:0}
+.drawer-section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.drawer-section-head h3{font-size:12px;margin:0;letter-spacing:-.01em}
+.grade-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin-top:10px}
+.grade-grid label{display:grid;gap:5px;border:1px solid var(--line);border-radius:8px;padding:7px;background:#fafafa}
+.grade-grid label span{font-size:8px;font-weight:800;color:#676872}
+.grade-grid label input{width:100%;border:1px solid var(--line);border-radius:6px;background:#fff;padding:7px;font-size:10px;min-width:0}
+.improvement-row{display:grid;grid-template-columns:1.15fr 1.35fr 1fr;gap:7px;margin-bottom:7px}
+.improvement-row input{border:1px solid var(--line);border-radius:7px;padding:8px;font-size:10px;background:#fff;min-width:0}
+.approval-gate-note,.revision-note,.create-report-intro{border-radius:10px;padding:11px 12px;margin:8px 0 12px;display:grid;gap:4px}
+.approval-gate-note{background:#eef5ff;border:1px solid #d9e7ff;color:#254d92}
+.revision-note{background:var(--red-soft);border:1px solid #f4d4cf;color:#83332c}
+.create-report-intro{background:#f7f8fb;border:1px solid var(--line);color:#3b3d45}
+.approval-gate-note strong,.revision-note strong,.create-report-intro strong{font-size:10px}
+.approval-gate-note span,.revision-note span,.create-report-intro span{font-size:9px;line-height:1.5;color:inherit;opacity:.84}
+.approval-return-box p{font-size:11px;line-height:1.55;color:var(--muted)}
+.approval-return-box p strong{color:var(--text)}
+.approval-return-box textarea{width:100%;min-height:118px;border:1px solid var(--line-strong);border-radius:9px;padding:10px;resize:vertical;margin:6px 0 12px;line-height:1.5}
+.setup-plo-row{display:grid;grid-template-columns:44px minmax(0,1fr) 78px;gap:9px;align-items:center;border-top:1px solid #f0f0f1;padding:10px 0}
+.setup-plo-row:first-of-type{border-top:0}.setup-plo-row strong{font-size:10px}.setup-plo-row span{font-size:9px;color:var(--muted);line-height:1.4}.setup-plo-row input{width:100%;border:1px solid var(--line);border-radius:7px;padding:7px;font-size:10px}
+.portfolio-system-chip{display:inline-flex;align-items:center;padding:5px 7px;border-radius:6px;background:#f1f2f4;color:#5f6068;font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.portfolio-state.missing{background:var(--amber-soft);color:var(--amber)}
+.section-title.mini{margin-top:12px;margin-bottom:5px}.section-title.mini h2{font-size:10px}.section-title.mini p{font-size:8px}
+.drawer-body input:disabled,.drawer-body select:disabled,.drawer-body textarea:disabled{background:#f7f7f8;color:#65666e;opacity:1}
+@media(max-width:900px){.grade-grid{grid-template-columns:repeat(3,1fr)}.improvement-row{grid-template-columns:1fr}.period-filter{width:100%}.period-filter label{flex:1;min-width:135px}}
+@media(max-width:560px){.grade-grid{grid-template-columns:repeat(2,1fr)}}
+
+/* v3.3 authentication + user administration */
+.auth-screen{min-height:100vh;background:#f7f8fa;display:grid;place-items:center;padding:28px}
+.auth-shell{width:min(440px,100%)}
+.auth-brand{display:flex;align-items:center;gap:11px;margin:0 0 18px 2px}.auth-brand>div:last-child{display:flex;flex-direction:column}.auth-brand strong{font-size:18px;letter-spacing:-.03em}.auth-brand span{font-size:11px;color:var(--muted);margin-top:1px}
+.auth-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:28px;box-shadow:0 18px 55px rgba(16,24,40,.08)}
+.auth-card h1{font-size:27px;letter-spacing:-.045em;margin:8px 0 8px}.auth-card>p{font-size:13px;color:var(--muted);line-height:1.55;margin:0 0 22px}
+.auth-field{display:grid;gap:7px;margin-bottom:12px}.auth-field span{font-size:11px;font-weight:700;color:#494b54}.auth-field input{width:100%;height:45px;border:1px solid #d9dce3;border-radius:10px;padding:0 12px;font:inherit;background:#fff;outline:none}.auth-field input:focus{border-color:#9399a8;box-shadow:0 0 0 3px rgba(84,93,120,.08)}
+.auth-submit{width:100%;justify-content:center;height:43px;margin-top:4px}.auth-email-chip{font-size:11px;font-weight:700;background:#f5f6f8;border:1px solid var(--line);padding:9px 10px;border-radius:9px;margin:0 0 12px;word-break:break-all}.auth-status{min-height:18px;margin-top:12px;font-size:11px;color:#6b6e77}.auth-status.error{color:#b42318}.auth-status.ok{color:#176b4d}.auth-note{margin-top:20px;padding-top:16px;border-top:1px solid var(--line);font-size:10px;color:#858792;line-height:1.5}.dev-code{margin-top:10px;border:1px dashed #b8bcc7;background:#fafbfc;border-radius:9px;padding:9px 10px;font-size:11px;color:#50535d}.dev-code strong{font-size:15px;letter-spacing:.08em;color:#17181b}
+.user-chip{display:flex;align-items:center;gap:8px;padding:3px 7px 3px 3px;border:1px solid var(--line);border-radius:10px;background:#fff}.user-chip>div:last-child{display:flex;flex-direction:column;line-height:1.15}.user-chip strong{font-size:10px;max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.user-chip span{font-size:9px;color:var(--muted);margin-top:2px}
+.user-admin-grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px;align-items:start}.user-table-role{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;padding:3px 7px;font-size:9px;font-weight:750;background:#fafafa}.user-status-active{color:#176b4d;background:#edf8f2;border-color:#ccebdc}.user-add-card{position:sticky;top:92px}.user-add-card h3{margin:0 0 4px;font-size:15px}.user-add-card>p{font-size:11px;color:var(--muted);line-height:1.45;margin:0 0 15px}.user-directory-note{display:flex;gap:10px;align-items:flex-start;border:1px solid #dfe4ee;background:#f8fafc;border-radius:11px;padding:11px 12px;margin-bottom:14px}.user-directory-note strong{font-size:11px;display:block}.user-directory-note span{font-size:10px;color:var(--muted);line-height:1.45;display:block;margin-top:2px}.auth-rule-card{display:flex;align-items:center;gap:10px}.auth-rule-card .automation-icon{flex:0 0 auto}.auth-rule-card p{margin:2px 0 0;font-size:10px;color:var(--muted)}
+@media(max-width:900px){.user-admin-grid{grid-template-columns:1fr}.user-add-card{position:static}.user-chip>div:last-child{display:none}}
+
+/* v3.8 Course Portfolio builder: upload sections, no visible folder tree */
+.portfolio-session-notice{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:0 0 14px;padding:13px 15px;border:1px solid #dbe3ee;background:#f8fbff;border-radius:12px}.portfolio-session-notice>div strong,.portfolio-session-notice>div span{display:block}.portfolio-session-notice>div strong{font-size:11px;margin-bottom:3px}.portfolio-session-notice>div span{font-size:9px;color:#697180;line-height:1.45}.portfolio-session-pill,.portfolio-session-chip{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;border-radius:999px;padding:5px 8px;background:#eef2f6;color:#586271;font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+.portfolio-upload-section{padding:4px 12px 12px}.portfolio-upload-row{display:grid;grid-template-columns:minmax(190px,.9fr) minmax(300px,1.3fr);gap:18px;align-items:center;padding:12px 4px;border-bottom:1px solid #f0f1f3}.portfolio-upload-row:last-child{border-bottom:0}.portfolio-upload-label strong,.portfolio-upload-label span{display:block}.portfolio-upload-label strong{font-size:10px;color:#24262b;margin-bottom:3px}.portfolio-upload-label span{font-size:9px;color:var(--muted);line-height:1.4}.portfolio-upload-control{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:7px;align-items:center;justify-content:end}.portfolio-file-button,.portfolio-matrix-button{position:relative;display:inline-flex;align-items:center;justify-content:center;min-height:31px;border:1px solid #d5d9df;background:#fff;border-radius:7px;padding:0 10px;font-size:9px;font-weight:750;color:#30343b;cursor:pointer;transition:.15s;white-space:nowrap}.portfolio-file-button:hover,.portfolio-matrix-button:hover{border-color:#aab1bc;background:#fafbfc}.portfolio-file-button input,.portfolio-matrix-button input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}.portfolio-clear-button,.portfolio-mini-clear{border:0;background:transparent;color:#8b9098;cursor:pointer;font-size:8px;font-weight:700;padding:5px}.portfolio-clear-button:hover,.portfolio-mini-clear:hover{color:#b42318}.portfolio-file-summary{min-width:0;overflow:hidden}.portfolio-upload-empty,.portfolio-upload-selected{display:block;font-size:8px;color:#858b94;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.portfolio-upload-selected b{color:#343840}.portfolio-instructor-group{margin-top:10px;border:1px solid #eceef1;border-radius:10px;padding:0 10px 4px;background:#fcfcfd}.portfolio-instructor-title{display:flex;align-items:baseline;gap:8px;padding:10px 4px 4px}.portfolio-instructor-title span{font-size:8px;text-transform:uppercase;letter-spacing:.05em;color:#8b9199;font-weight:800}.portfolio-instructor-title strong{font-size:10px}.portfolio-empty-inline{padding:14px 6px;font-size:9px;color:var(--muted)}
+.portfolio-term-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0}.portfolio-term-tab{border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 12px;text-align:left;cursor:pointer;transition:.15s}.portfolio-term-tab:hover{border-color:#c7cbd2}.portfolio-term-tab.active{border-color:#18181b;box-shadow:inset 0 0 0 1px #18181b}.portfolio-term-tab strong,.portfolio-term-tab span{display:block}.portfolio-term-tab strong{font-size:10px;margin-bottom:3px}.portfolio-term-tab span{font-size:8px;color:var(--muted)}.portfolio-file-count{font-size:8px;font-weight:800;color:#5f6670;background:#f2f3f5;border-radius:999px;padding:5px 8px;white-space:nowrap}
+.portfolio-assessment-wrap,.portfolio-survey-wrap{padding:12px 14px}.portfolio-survey-wrap{border-top:1px solid var(--line)}.portfolio-subhead{display:flex;align-items:baseline;gap:8px;margin-bottom:9px}.portfolio-subhead strong{font-size:10px}.portfolio-subhead span{font-size:8px;color:var(--muted)}.portfolio-matrix{border:1px solid #eceef1;border-radius:10px;overflow:hidden}.portfolio-matrix-header,.portfolio-matrix-row{display:grid;grid-template-columns:minmax(135px,1.15fr) repeat(4,minmax(92px,.85fr));align-items:stretch}.portfolio-matrix-header{background:#f7f8f9;border-bottom:1px solid #e7e9ed}.portfolio-matrix-header span{padding:8px 9px;font-size:7px;font-weight:800;text-transform:uppercase;letter-spacing:.035em;color:#747b85;border-right:1px solid #eceef1}.portfolio-matrix-header span:last-child{border-right:0}.portfolio-matrix-row{border-bottom:1px solid #f0f1f3}.portfolio-matrix-row:last-child{border-bottom:0}.portfolio-matrix-name,.portfolio-matrix-cell{min-height:48px;padding:8px 9px;display:flex;align-items:center;border-right:1px solid #f0f1f3}.portfolio-matrix-cell:last-child{border-right:0}.portfolio-matrix-name strong{font-size:9px;line-height:1.3}.portfolio-matrix-cell{gap:3px;justify-content:flex-start}.portfolio-matrix-button{min-height:28px;padding:0 8px;font-size:8px}.portfolio-mini-clear{font-size:13px;line-height:1;padding:3px 4px}.portfolio-assessment-wrap>.portfolio-upload-row{margin-top:8px;border:1px solid #eceef1;border-radius:9px;padding:10px}.portfolio-two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px}.portfolio-two-col .portfolio-upload-row{grid-template-columns:1fr;gap:8px;border:1px solid #eceef1;border-radius:9px;padding:10px}.portfolio-two-col .portfolio-upload-control{justify-content:start;grid-template-columns:auto auto minmax(0,1fr)}
+.portfolio-generated-strip{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line);background:#fafbfc}.portfolio-generated-strip>div{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:9px;align-items:center;padding:12px 14px}.portfolio-generated-strip>div:first-child{border-right:1px solid var(--line)}.portfolio-generated-icon{width:34px;height:28px;border-radius:7px;background:#eef0f3;display:grid;place-items:center;font-size:7px;font-weight:800;color:#5d6570}.portfolio-generated-strip p{margin:0}.portfolio-generated-strip p strong,.portfolio-generated-strip p small{display:block}.portfolio-generated-strip p strong{font-size:9px;margin-bottom:2px}.portfolio-generated-strip p small{font-size:8px;line-height:1.35;color:var(--muted)}.portfolio-generated-strip b{font-size:7px;text-transform:uppercase;letter-spacing:.04em;padding:4px 6px;border-radius:5px}.portfolio-generated-strip b.ready{background:var(--green-soft);color:var(--green)}.portfolio-generated-strip b.waiting{background:var(--amber-soft);color:var(--amber)}
+.portfolio-download-footer{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:14px;padding:14px 15px;background:#18181b;color:#fff;border-radius:12px}.portfolio-download-footer>div strong,.portfolio-download-footer>div span{display:block}.portfolio-download-footer>div strong{font-size:11px;margin-bottom:3px}.portfolio-download-footer>div span{font-size:8px;line-height:1.4;color:#c7c7cd}.portfolio-download-footer .btn-primary{background:#fff;color:#18181b;border-color:#fff}.portfolio-download-footer .btn-primary:hover{background:#f4f4f5}
+@media(max-width:980px){.portfolio-upload-row{grid-template-columns:1fr;gap:8px}.portfolio-upload-control{justify-content:start}.portfolio-matrix{overflow-x:auto}.portfolio-matrix-header,.portfolio-matrix-row{min-width:660px}.portfolio-two-col{grid-template-columns:1fr}.portfolio-generated-strip{grid-template-columns:1fr}.portfolio-generated-strip>div:first-child{border-right:0;border-bottom:1px solid var(--line)}}
+@media(max-width:650px){.portfolio-term-tabs{grid-template-columns:1fr}.portfolio-session-notice,.portfolio-download-footer{align-items:flex-start;flex-direction:column}.portfolio-download-footer .btn{width:100%}.portfolio-upload-control{grid-template-columns:auto auto;justify-content:start}.portfolio-file-summary{grid-column:1/-1}.portfolio-meta-row{grid-template-columns:1fr}.portfolio-title-line h1 span{display:block;margin-top:4px}.portfolio-assessment-wrap,.portfolio-survey-wrap{padding:10px}.portfolio-session-pill{align-self:flex-start}}
+
+  
+
+/* Grade inflation detection + dashboard quality signals */
+.grade-inflation-banner{margin:9px 0 2px;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:#fafafa;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;font-size:9px;line-height:1.45;color:var(--muted)}
+.grade-inflation-banner strong{display:block;color:#45464f;font-size:9px;margin-bottom:2px}.grade-inflation-banner.is-alert{background:var(--amber-soft);border-color:#f0d69a;color:#7b520f}.grade-inflation-banner.is-alert strong{color:#7b520f}
+.inflation-required-note{font-size:8px;font-weight:800;color:var(--amber);margin-left:5px}.inflation-required-field{border-color:#e1b65a!important;box-shadow:0 0 0 2px rgba(155,97,8,.06)!important}
+.quality-signal-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:12px}.quality-signal-card{border:1px solid var(--line);border-radius:11px;padding:13px;background:#fff}.quality-signal-card .label{font-size:9px;color:var(--muted);font-weight:760;text-transform:uppercase;letter-spacing:.045em}.quality-signal-card strong{display:block;font-size:24px;letter-spacing:-.04em;margin:5px 0 2px}.quality-signal-card small{font-size:9px;color:var(--muted)}
+.grade-average-card{border:1px solid var(--line);border-radius:12px;background:#fff;padding:15px;margin-bottom:12px}.grade-average-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:13px}.grade-average-head h3{font-size:12px;margin:0 0 3px}.grade-average-head p{font-size:9px;color:var(--muted);margin:0;line-height:1.45}.grade-average-grid{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:8px}.grade-average-item{border:1px solid var(--line);border-radius:9px;padding:9px;background:#fafafa;min-width:0}.grade-average-item b{display:block;font-size:10px}.grade-average-item strong{display:block;font-size:15px;margin:5px 0 6px}.mini-grade-track{height:5px;border-radius:999px;background:#e9e9ed;overflow:hidden}.mini-grade-fill{height:100%;background:#555b66;border-radius:999px}.quality-monitor-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 10px}.quality-monitor-tools label{display:flex;align-items:center;gap:7px;font-size:10px;font-weight:720;color:#4c4d55;cursor:pointer}.quality-monitor-tools input{width:15px;height:15px}.signal-stack{display:flex;gap:5px;flex-wrap:wrap}.signal-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 6px;border-radius:6px;background:#f1f2f4;color:#62636c;font-size:8px;font-weight:760}.signal-chip.alert{background:var(--amber-soft);color:#8a5b0a}.signal-chip.bad{background:var(--red-soft);color:var(--red)}.signal-chip.ok{background:var(--green-soft);color:var(--green)}
+@media(max-width:1100px){.grade-average-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media(max-width:820px){.quality-signal-grid{grid-template-columns:1fr}.grade-average-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.quality-monitor-tools{align-items:flex-start;flex-direction:column}}
+
+
+</style></head>
+<body>
+<section class="auth-screen" id="authScreen">
+<div class="auth-shell">
+<div class="auth-brand"><div class="brand-mark">A</div><div><strong>Acadeloop</strong><span>Academic Program Quality</span></div></div>
+<div class="auth-card">
+<span class="eyebrow">Testing access</span>
+<h1 id="authTitle">Sign in to Acadeloop</h1>
+<p id="authMessage">Choose a preset test user or type the test username. This test build is designed to be served from Acadeloop.com or another web host. Data stays in this browser only.</p>
+<div id="authEmailStep">
+<label class="auth-field"><span>Test user</span><input autocomplete="off" id="loginUser" placeholder="TestHOD" type="text"/></label>
+<button class="btn btn-primary auth-submit" id="signInBtn" type="button">Sign in</button>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
+<button class="btn btn-ghost" data-test-login="TestHOD" type="button">TestHOD · HOD</button>
+<button class="btn btn-ghost" data-test-login="TestI" type="button">TestI · Instructor</button>
+<button class="btn btn-ghost" data-test-login="TestQ" type="button">TestQ · Coordinator</button>
+<button class="btn btn-ghost" data-test-login="TestI2" type="button">TestI2 · Instructor</button>
+</div>
+<div class="auth-note" style="margin-top:12px;border:1px solid #dbeafe;background:#eff6ff;color:#1d4ed8;border-radius:10px;padding:10px 12px">TEST MODE — preset users are already created. Do not use real institutional data in this build. HOD can add additional test users in this browser.</div>
+</div>
+<div class="auth-status" id="authStatus"></div>
+<div class="auth-note"><strong>Preset accounts:</strong> TestHOD, TestI, TestQ, TestI2. No registration is available.</div>
+</div>
+</div>
+</section>
+<div class="app-shell hidden" id="appShell">
+<aside class="sidebar" id="sidebar">
+<div class="brand">
+<div class="brand-mark">A</div>
+<div><strong>Acadeloop</strong><span>Program Quality</span></div>
+</div>
+<nav id="nav">
+<button class="nav-item active" data-view="dashboard" type="button"><span class="nav-icon">⌂</span>Overview</button>
+<button class="nav-item" data-view="course-reports" type="button"><span class="nav-icon">▦</span>Course Reports <span class="nav-badge" id="navCourseCount">0</span></button>
+<button class="nav-item" data-view="course-portfolios" type="button"><span class="nav-icon">▣</span>Course Portfolios <span class="nav-badge" id="navPortfolioCount">0</span></button>
+<button class="nav-item" data-view="plo" type="button"><span class="nav-icon">◎</span>PLO Attainment</button>
+<button class="nav-item" data-view="apr" type="button"><span class="nav-icon">◫</span>Annual Program Report</button>
+<button class="nav-item" data-view="operational" type="button"><span class="nav-icon">✓</span>Operational Plan</button>
+<button class="nav-item" data-view="automations" type="button"><span class="nav-icon">↯</span>Automations</button>
+<div class="nav-separator"></div>
+<button class="nav-item" data-view="users" type="button"><span class="nav-icon">♙</span>Users</button>
+<button class="nav-item" data-view="setup" type="button"><span class="nav-icon">⚙</span>Program Setup</button>
+</nav>
+<div class="sidebar-foot">
+<div class="mini-card">
+<span class="eyebrow">Academic year</span>
+<strong id="sideAcademicYear">2026–2027</strong>
+<span id="sideProgram">Program</span>
+</div>
+</div>
+</aside>
+<main class="main">
+<header class="topbar">
+<button aria-label="Open navigation menu" class="icon-btn mobile-only" id="menuBtn" type="button">☰</button>
+<div class="breadcrumb"><span id="pageKicker">Program workspace</span><strong id="pageTitle">Overview</strong></div>
+<div class="top-actions">
+<span class="role-context" id="roleContext"><span>Workspace</span><b>Loading</b></span>
+<button class="btn btn-ghost" id="quickAdd" type="button">＋ New</button>
+<div class="user-chip"><div class="avatar" id="avatarLabel" title="Current user">A</div><div><strong id="currentUserName">User</strong><span id="currentUserRole">Role</span></div></div>
+<button aria-label="Sign out" class="icon-btn" id="signOutBtn" title="Sign out" type="button">↪</button>
+</div>
+</header>
+<section class="content" id="content"><div class="card"><strong>Loading Acadeloop…</strong><p style="color:#71717a;margin-bottom:0">The application is starting in your browser.</p></div></section>
+</main>
+</div>
+<div class="drawer-backdrop hidden" id="drawerBackdrop"></div>
+<aside class="drawer hidden" id="drawer">
+<div class="drawer-head">
+<div><span class="eyebrow" id="drawerEyebrow">Course report</span><h2 id="drawerTitle">Edit report</h2></div>
+<button aria-label="Close course report" class="icon-btn" id="drawerClose" type="button">×</button>
+</div>
+<div class="drawer-body" id="drawerBody"></div>
+<div class="drawer-foot" id="drawerFoot"></div>
+</aside>
+<div class="modal-backdrop hidden" id="modalBackdrop"></div>
+<div class="modal hidden" id="modal">
+<div class="modal-head"><div><span class="eyebrow">Create</span><h2 id="modalTitle">New item</h2></div><button aria-label="Close dialog" class="icon-btn" id="modalClose" type="button">×</button></div>
+<div class="modal-body" id="modalBody"></div>
+</div>
+<div class="toast" id="toast"></div>
+<noscript><div style="position:fixed;inset:0;background:#fff;z-index:99999;padding:40px;font:16px Segoe UI,Arial,sans-serif"><h1>JavaScript is disabled</h1><p>Acadeloop needs JavaScript enabled in the browser.</p></div></noscript>
+<script src="vendor/jszip.min.js"></script>
+<script data-source="src/core.js">
+(function (root, factory) {
+  const api = factory();
+  if (typeof module === 'object' && module.exports) module.exports = api;
+  root.AcadeloopCore = api;
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+
+  const TERMS = Object.freeze(['S1', 'S2', 'Summer']);
+  const LETTER_GRADE_LABELS = Object.freeze(['A+', 'A', 'B+', 'B', 'C+', 'C', 'D+', 'D', 'F']);
+  const GRADE_DEFS = Object.freeze([
+    ['A+', 'a_plus_students', 'a_plus_percentage'],
+    ['A', 'a_students', 'a_percentage'],
+    ['B+', 'b_plus_students', 'b_plus_percentage'],
+    ['B', 'b_students', 'b_percentage'],
+    ['C+', 'c_plus_students', 'c_plus_percentage'],
+    ['C', 'c_students', 'c_percentage'],
+    ['D+', 'd_plus_students', 'd_plus_percentage'],
+    ['D', 'd_students', 'd_percentage'],
+    ['F', 'f_students', 'f_percentage'],
+    ['Denied', 'denied', 'denied_percentage'],
+    ['In Progress', 'in_progress', 'in_progress_percentage'],
+    ['Incomplete', 'incomplete', 'incomplete_percentage'],
+    ['Pass', 'pass', 'pass_percentage'],
+    ['Fail', 'fail', 'fail_percentage'],
+    ['Withdrawn', 'withdrawn', 'withdrawn_percentage']
+  ]);
+  const ALL_GRADE_LABELS = Object.freeze(GRADE_DEFS.map(([label]) => label));
+  const COMPLETION_GRADE_LABELS = Object.freeze([...LETTER_GRADE_LABELS, 'Pass', 'Fail']);
+
+  const sectionLabel = (key) => ({ male: 'Male', female: 'Female', combined: 'Combined', all: 'All' })[key] || 'Combined';
+  const isBlank = (value) => value === '' || value == null;
+  const numeric = (value) => Number(value);
+  const numberOrZero = (value) => Number(value) || 0;
+  const round1 = (value) => Math.round(Number(value) * 10) / 10;
+  const formatPercent = (value) => `${round1(value)}%`;
+  const clone = (value) => JSON.parse(JSON.stringify(value));
+
+  function blankGrades() {
+    return Object.fromEntries(ALL_GRADE_LABELS.map((label) => [label, 0]));
+  }
+
+  function blankSectionFor(report) {
+    return {
+      studentsStart: 0,
+      studentsComplete: 0,
+      grades: blankGrades(),
+      gradeComment: '',
+      gradeRecommendation: '',
+      cloRecommendation: '',
+      cloResults: Object.fromEntries((report.clos || []).map((clo) => [clo.code, { actual: '', comment: '' }]))
+    };
+  }
+
+  function normalizeSectionData(report, section) {
+    const source = section && typeof section === 'object' ? section : {};
+    const normalized = {
+      ...source,
+      studentsStart: numberOrZero(source.studentsStart),
+      studentsComplete: numberOrZero(source.studentsComplete),
+      grades: { ...blankGrades(), ...(source.grades || {}) },
+      gradeComment: source.gradeComment || '',
+      gradeRecommendation: source.gradeRecommendation || '',
+      cloRecommendation: source.cloRecommendation || '',
+      cloResults: source.cloResults && typeof source.cloResults === 'object' ? { ...source.cloResults } : {}
+    };
+    for (const clo of report.clos || []) {
+      normalized.cloResults[clo.code] = { actual: '', comment: '', ...(normalized.cloResults[clo.code] || {}) };
+    }
+    return normalized;
+  }
+
+  function effectiveSectionKey(report) {
+    return report.sectionMode === 'all' ? 'combined' : report.sectionMode;
+  }
+
+  function activeSectionKeys(report) {
+    return report.sectionMode === 'all' ? ['male', 'female', 'combined'] : [effectiveSectionKey(report)];
+  }
+
+  function combineText(male, female) {
+    const a = String(male || '').trim();
+    const b = String(female || '').trim();
+    if (a && b && a !== b) return `Male: ${a}\nFemale: ${b}`;
+    return a || b || '';
+  }
+
+  function weightedActual(maleActual, femaleActual, maleWeight, femaleWeight) {
+    if (isBlank(maleActual) || isBlank(femaleActual)) return '';
+    const male = numeric(maleActual);
+    const female = numeric(femaleActual);
+    if (!Number.isFinite(male) || !Number.isFinite(female)) return '';
+    const wm = Math.max(0, numberOrZero(maleWeight));
+    const wf = Math.max(0, numberOrZero(femaleWeight));
+    const total = wm + wf;
+    return round1(total ? (male * wm + female * wf) / total : (male + female) / 2);
+  }
+
+  function expectedCombinedSnapshot(report) {
+    const male = normalizeSectionData(report, report.sectionData?.male || blankSectionFor(report));
+    const female = normalizeSectionData(report, report.sectionData?.female || blankSectionFor(report));
+    const combined = blankSectionFor(report);
+
+    combined.studentsStart = male.studentsStart + female.studentsStart;
+    combined.studentsComplete = male.studentsComplete + female.studentsComplete;
+    for (const label of ALL_GRADE_LABELS) {
+      combined.grades[label] = numberOrZero(male.grades[label]) + numberOrZero(female.grades[label]);
+    }
+    for (const clo of report.clos || []) {
+      const m = male.cloResults[clo.code] || {};
+      const f = female.cloResults[clo.code] || {};
+      combined.cloResults[clo.code] = {
+        actual: weightedActual(m.actual, f.actual, male.studentsComplete, female.studentsComplete),
+        comment: combineText(m.comment, f.comment)
+      };
+    }
+    combined.gradeComment = combineText(male.gradeComment, female.gradeComment);
+    combined.gradeRecommendation = combineText(male.gradeRecommendation, female.gradeRecommendation);
+    combined.cloRecommendation = combineText(male.cloRecommendation, female.cloRecommendation);
+    return combined;
+  }
+
+  function sectionSnapshot(report, key) {
+    if (key === 'combined' && report.sectionMode === 'all') return expectedCombinedSnapshot(report);
+    return normalizeSectionData(report, report.sectionData?.[key] || blankSectionFor(report));
+  }
+
+  function applySectionToFlat(report, key) {
+    const section = sectionSnapshot(report, key);
+    report.studentsStart = section.studentsStart;
+    report.studentsComplete = section.studentsComplete;
+    report.grades = { ...section.grades };
+    report.gradeComment = section.gradeComment;
+    report.gradeRecommendation = section.gradeRecommendation;
+    report.cloRecommendation = section.cloRecommendation;
+    for (const clo of report.clos || []) {
+      const result = section.cloResults[clo.code] || {};
+      clo.actual = result.actual ?? '';
+      clo.comment = result.comment || '';
+    }
+    return report;
+  }
+
+  function syncFlatFromEffective(report) {
+    if (report.sectionData) applySectionToFlat(report, effectiveSectionKey(report));
+    return report;
+  }
+
+  function recomputeCombined(report, syncFlat = true) {
+    if (!report.sectionData) report.sectionData = {};
+    report.sectionData.combined = expectedCombinedSnapshot(report);
+    report.autoCombine = true;
+    if (syncFlat) syncFlatFromEffective(report);
+    return report.sectionData.combined;
+  }
+
+  function ensureSectionModel(report) {
+    if (!report.sectionData || typeof report.sectionData !== 'object') report.sectionData = {};
+    for (const key of ['male', 'female', 'combined']) {
+      report.sectionData[key] = normalizeSectionData(report, report.sectionData[key] || blankSectionFor(report));
+    }
+    if (report.sectionMode === 'all') recomputeCombined(report, false);
+    syncFlatFromEffective(report);
+    return report;
+  }
+
+  function sameNumber(a, b) {
+    return Math.abs(numberOrZero(a) - numberOrZero(b)) < 0.0001;
+  }
+
+  function combinedIntegrityAudit(report) {
+    if (report.sectionMode !== 'all') return { ok: true, errors: [] };
+    const expected = expectedCombinedSnapshot(report);
+    const actual = normalizeSectionData(report, report.sectionData?.combined || blankSectionFor(report));
+    const errors = [];
+
+    if (!sameNumber(actual.studentsStart, expected.studentsStart)) errors.push(`Students starting: expected ${expected.studentsStart}, found ${actual.studentsStart}`);
+    if (!sameNumber(actual.studentsComplete, expected.studentsComplete)) errors.push(`Students completed: expected ${expected.studentsComplete}, found ${actual.studentsComplete}`);
+    for (const label of ALL_GRADE_LABELS) {
+      if (!sameNumber(actual.grades[label], expected.grades[label])) errors.push(`${label}: expected ${numberOrZero(expected.grades[label])}, found ${numberOrZero(actual.grades[label])}`);
+    }
+    for (const field of ['gradeComment', 'gradeRecommendation', 'cloRecommendation']) {
+      if (String(actual[field] || '') !== String(expected[field] || '')) errors.push(`${field}: derived text is stale`);
+    }
+    for (const clo of report.clos || []) {
+      const a = actual.cloResults[clo.code] || {};
+      const e = expected.cloResults[clo.code] || {};
+      const numericEqual = !isBlank(a.actual) && !isBlank(e.actual) && Number.isFinite(numeric(a.actual)) && Number.isFinite(numeric(e.actual)) && sameNumber(a.actual, e.actual);
+      if (String(a.actual ?? '') !== String(e.actual ?? '') && !numericEqual) {
+        errors.push(`${clo.code} actual: expected ${e.actual === '' ? 'blank until both sections are entered' : e.actual}, found ${a.actual ?? ''}`);
+      }
+      if (String(a.comment || '') !== String(e.comment || '')) errors.push(`${clo.code} comment: derived text is stale`);
+    }
+    return { ok: errors.length === 0, errors, expected };
+  }
+
+  function enforceCombinedIntegrity(report, syncFlat = true) {
+    if (report.sectionMode !== 'all') {
+      if (syncFlat) syncFlatFromEffective(report);
+      return { ok: true, errors: [] };
+    }
+    recomputeCombined(report, syncFlat);
+    const audit = combinedIntegrityAudit(report);
+    if (!audit.ok) throw new Error(`Combined integrity check failed: ${audit.errors.join('; ')}`);
+    return audit;
+  }
+
+  function reportVariant(report, key) {
+    const variant = clone(report);
+    if (variant.sectionMode === 'all') enforceCombinedIntegrity(variant, false);
+    variant.sectionMode = key;
+    ensureSectionModel(variant);
+    applySectionToFlat(variant, key);
+    return variant;
+  }
+
+  function gradeCount(report, label) {
+    return numberOrZero(report.grades?.[label]);
+  }
+
+  function gradeTotal(report) {
+    return Object.values(report.grades || {}).reduce((sum, value) => sum + numberOrZero(value), 0);
+  }
+
+  function letterGradeTotalFromSection(section) {
+    return LETTER_GRADE_LABELS.reduce((sum, label) => sum + numberOrZero(section?.grades?.[label]), 0);
+  }
+
+  function completedStudentCountFromSection(section) {
+    return COMPLETION_GRADE_LABELS.reduce((sum, label) => sum + numberOrZero(section?.grades?.[label]), 0);
+  }
+
+  function gradeInflationForSection(section) {
+    const denominator = letterGradeTotalFromSection(section);
+    const aPlus = numberOrZero(section?.grades?.['A+']);
+    const a = numberOrZero(section?.grades?.A);
+    const aPlusPct = denominator ? (aPlus / denominator) * 100 : 0;
+    const aOrAbovePct = denominator ? ((aPlus + a) / denominator) * 100 : 0;
+    const reasons = [];
+    if (denominator && aPlusPct >= 20) reasons.push(`A+ ${formatPercent(aPlusPct)} ≥ 20%`);
+    if (denominator && aOrAbovePct > 60) reasons.push(`A and above ${formatPercent(aOrAbovePct)} > 60%`);
+    return { inflated: reasons.length > 0, denominator, aPlus, a, aPlusPct, aOrAbovePct, reasons };
+  }
+
+  function gradeInflationSections(report, sourceOnly = false) {
+    const keys = report.sectionMode === 'all'
+      ? (sourceOnly ? ['male', 'female'] : ['male', 'female', 'combined'])
+      : [effectiveSectionKey(report)];
+    return keys
+      .map((key) => ({ key, label: sectionLabel(key), ...gradeInflationForSection(sectionSnapshot(report, key)) }))
+      .filter((item) => item.denominator > 0);
+  }
+
+  function reportGradeInflation(report) {
+    const sections = gradeInflationSections(report, false);
+    const flagged = sections.filter((item) => item.inflated);
+    return {
+      inflated: flagged.length > 0,
+      sections,
+      flagged,
+      reasons: flagged.flatMap((item) => item.reasons.map((reason) => `${item.label}: ${reason}`))
+    };
+  }
+
+  function reportCloGaps(report) {
+    const keys = report.sectionMode === 'all' ? ['male', 'female', 'combined'] : [effectiveSectionKey(report)];
+    const gaps = [];
+    for (const key of keys) {
+      const section = sectionSnapshot(report, key);
+      for (const clo of report.clos || []) {
+        const actual = section.cloResults[clo.code]?.actual;
+        if (isBlank(actual)) continue;
+        const actualNumber = numeric(actual);
+        const target = numeric(clo.target);
+        if (Number.isFinite(actualNumber) && Number.isFinite(target) && actualNumber < target) {
+          gaps.push({ section: key, sectionLabel: sectionLabel(key), code: clo.code, actual: actualNumber, target, plo: clo.plo || '' });
+        }
+      }
+    }
+    return gaps;
+  }
+
+  function reportQualityFlags(report) {
+    const inflation = reportGradeInflation(report);
+    const cloGaps = reportCloGaps(report);
+    return { inflation, cloGaps, hasIssue: inflation.inflated || cloGaps.length > 0 };
+  }
+
+  function pooledGradeDistribution(reports) {
+    const totals = Object.fromEntries(LETTER_GRADE_LABELS.map((label) => [label, 0]));
+    let denominator = 0;
+    let courseCount = 0;
+    for (const report of reports || []) {
+      const section = sectionSnapshot(report, effectiveSectionKey(report));
+      const graded = letterGradeTotalFromSection(section);
+      if (!graded) continue;
+      courseCount += 1;
+      denominator += graded;
+      for (const label of LETTER_GRADE_LABELS) totals[label] += numberOrZero(section.grades[label]);
+    }
+    const percentages = Object.fromEntries(LETTER_GRADE_LABELS.map((label) => [label, denominator ? (totals[label] / denominator) * 100 : 0]));
+    return { totals, percentages, denominator, courseCount };
+  }
+
+  function reportAverageAttainment(report) {
+    const section = sectionSnapshot(report, effectiveSectionKey(report));
+    const values = (report.clos || [])
+      .map((clo) => section.cloResults[clo.code]?.actual)
+      .filter((value) => !isBlank(value) && Number.isFinite(numeric(value)))
+      .map(numeric);
+    return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null;
+  }
+
+  function reportCompleteness(report) {
+    let total = 0;
+    let done = 0;
+    const base = [report.courseCode, report.courseName, report.academicYear, report.semester, report.instructor, report.reportDate];
+    total += base.length;
+    done += base.filter((value) => String(value ?? '').trim() !== '').length;
+    const keys = report.sectionMode === 'all' ? ['male', 'female'] : [effectiveSectionKey(report)];
+    for (const key of keys) {
+      const section = sectionSnapshot(report, key);
+      total += 5;
+      if (numberOrZero(section.studentsStart) > 0) done += 1;
+      if (numberOrZero(section.studentsComplete) > 0) done += 1;
+      done += [section.gradeComment, section.gradeRecommendation, section.cloRecommendation]
+        .filter((value) => String(value || '').trim()).length;
+      for (const clo of report.clos || []) {
+        total += 2;
+        const result = section.cloResults[clo.code] || {};
+        if (!isBlank(result.actual)) done += 1;
+        if (String(result.comment || '').trim()) done += 1;
+      }
+    }
+    total += 1;
+    if ((report.improvements || []).length) done += 1;
+    return Math.round((done / Math.max(total, 1)) * 100);
+  }
+
+  function calculatePloRollups(reports, plos, year, term = 'Annual') {
+    const approved = (reports || []).filter((report) => report.status === 'Approved'
+      && (!year || report.academicYear === year)
+      && (term === 'Annual' || !term || report.semester === term));
+
+    return (plos || []).map((plo) => {
+      const rows = [];
+      for (const report of approved) {
+        const section = sectionSnapshot(report, effectiveSectionKey(report));
+        const weight = numberOrZero(section.studentsComplete);
+        if (weight <= 0) continue;
+        for (const clo of report.clos || []) {
+          if (clo.plo !== plo.code) continue;
+          const actual = section.cloResults[clo.code]?.actual;
+          if (isBlank(actual) || !Number.isFinite(numeric(actual))) continue;
+          rows.push({ report, clo: { ...clo, actual: numeric(actual), comment: section.cloResults[clo.code]?.comment || '' }, actual: numeric(actual), weight });
+        }
+      }
+      const totalWeight = rows.reduce((sum, row) => sum + row.weight, 0);
+      const actual = totalWeight ? rows.reduce((sum, row) => sum + row.actual * row.weight, 0) / totalWeight : null;
+      return { ...plo, actual, rows, totalWeight, met: actual !== null && actual >= numberOrZero(plo.target) };
+    });
+  }
+
+  function validateSection(report, key, requireInflationNarrative) {
+    const section = sectionSnapshot(report, key);
+    const label = sectionLabel(key);
+    const errors = [];
+
+    if (!Number.isInteger(numeric(section.studentsStart)) || numeric(section.studentsStart) <= 0) errors.push(`${label} students starting must be a positive whole number`);
+    if (!Number.isInteger(numeric(section.studentsComplete)) || numeric(section.studentsComplete) <= 0) errors.push(`${label} students completed must be a positive whole number`);
+    if (numeric(section.studentsComplete) > numeric(section.studentsStart)) errors.push(`${label} completed students cannot exceed starting students`);
+
+    let entered = 0;
+    for (const grade of ALL_GRADE_LABELS) {
+      const value = numeric(section.grades[grade]);
+      if (!Number.isInteger(value) || value < 0) errors.push(`${label} ${grade} count must be a non-negative whole number`);
+      else entered += value;
+    }
+    if (entered !== numeric(section.studentsStart)) errors.push(`${label} grade/status total (${entered}) must equal students starting (${section.studentsStart})`);
+
+    const completedFromGrades = completedStudentCountFromSection(section);
+    if (completedFromGrades !== numeric(section.studentsComplete)) {
+      errors.push(`${label} completed-grade total (${completedFromGrades}) must equal students completed (${section.studentsComplete})`);
+    }
+
+    if (requireInflationNarrative && gradeInflationForSection(section).inflated) {
+      if (!String(section.gradeComment || '').trim()) errors.push(`${label} Comment on Student Grades is required because grade inflation was detected`);
+      if (!String(section.gradeRecommendation || '').trim()) errors.push(`${label} Recommendations on Grades is required because grade inflation was detected`);
+    }
+
+    for (const clo of report.clos || []) {
+      const actual = section.cloResults[clo.code]?.actual;
+      if (isBlank(actual) || !Number.isFinite(numeric(actual))) errors.push(`${label} ${clo.code} actual is required`);
+      else if (numeric(actual) < 0 || numeric(actual) > 100) errors.push(`${label} ${clo.code} actual must be 0–100`);
+    }
+    return errors;
+  }
+
+  function validateReport(report, options = {}) {
+    const errors = [];
+    const ploCodes = new Set(options.ploCodes || []);
+
+    if (!report.academicYear) errors.push('academic year');
+    if (!TERMS.includes(report.semester)) errors.push('semester');
+    if (!String(report.courseCode || '').trim() || !String(report.courseName || '').trim()) errors.push('course identity');
+    if (!String(report.instructor || '').trim()) errors.push('instructor');
+    if (!String(report.reportDate || '').trim()) errors.push('report date');
+
+    const codes = new Set();
+    for (const clo of report.clos || []) {
+      const code = String(clo.code || '').trim();
+      if (!code) errors.push('CLO code is required');
+      else if (codes.has(code.toLowerCase())) errors.push(`Duplicate CLO code: ${code}`);
+      else codes.add(code.toLowerCase());
+      if (!String(clo.text || '').trim()) errors.push(`${code || 'CLO'} description is required`);
+      if (!String(clo.method || '').trim()) errors.push(`${code || 'CLO'} assessment method is required`);
+      if (!String(clo.plo || '').trim()) errors.push(`${code || 'CLO'} PLO mapping is required`);
+      else if (ploCodes.size && !ploCodes.has(clo.plo)) errors.push(`${code || 'CLO'} maps to an unknown PLO (${clo.plo})`);
+      if (isBlank(clo.target) || !Number.isFinite(numeric(clo.target)) || numeric(clo.target) < 0 || numeric(clo.target) > 100) errors.push(`${code || 'CLO'} target must be 0–100`);
+    }
+    if (!(report.clos || []).length) errors.push('at least one CLO is required');
+
+    const sourceKeys = report.sectionMode === 'all' ? ['male', 'female'] : [effectiveSectionKey(report)];
+    for (const key of sourceKeys) errors.push(...validateSection(report, key, true));
+
+    if (report.sectionMode === 'all') {
+      const combinedInflation = gradeInflationForSection(expectedCombinedSnapshot(report));
+      if (combinedInflation.inflated) {
+        // Combined is derived and read-only. Require both source narratives so the generated Combined report has an explanation.
+        for (const key of ['male', 'female']) {
+          const section = sectionSnapshot(report, key);
+          if (!String(section.gradeComment || '').trim()) errors.push(`${sectionLabel(key)} Comment on Student Grades is required because Combined grade inflation was detected`);
+          if (!String(section.gradeRecommendation || '').trim()) errors.push(`${sectionLabel(key)} Recommendations on Grades is required because Combined grade inflation was detected`);
+        }
+      }
+      try {
+        enforceCombinedIntegrity(report, true);
+        const audit = combinedIntegrityAudit(report);
+        if (!audit.ok) errors.push(...audit.errors.map((error) => `Combined check: ${error}`));
+      } catch (error) {
+        errors.push(error.message || 'Combined integrity check failed');
+      }
+    }
+
+    return [...new Set(errors)];
+  }
+
+  return Object.freeze({
+    TERMS,
+    LETTER_GRADE_LABELS,
+    GRADE_DEFS,
+    ALL_GRADE_LABELS,
+    COMPLETION_GRADE_LABELS,
+    sectionLabel,
+    blankGrades,
+    blankSectionFor,
+    normalizeSectionData,
+    effectiveSectionKey,
+    activeSectionKeys,
+    combineText,
+    weightedActual,
+    expectedCombinedSnapshot,
+    sectionSnapshot,
+    applySectionToFlat,
+    syncFlatFromEffective,
+    recomputeCombined,
+    ensureSectionModel,
+    combinedIntegrityAudit,
+    enforceCombinedIntegrity,
+    reportVariant,
+    gradeCount,
+    gradeTotal,
+    letterGradeTotalFromSection,
+    completedStudentCountFromSection,
+    gradeInflationForSection,
+    gradeInflationSections,
+    reportGradeInflation,
+    reportCloGaps,
+    reportQualityFlags,
+    pooledGradeDistribution,
+    reportAverageAttainment,
+    reportCompleteness,
+    calculatePloRollups,
+    validateReport
+  });
+});
+
+</script>
+<script data-source="src/seed.js">
+window.ACADELOOP_SEED = {
+    role:'Head of Department',
+    program:{institution:'Example University',college:'College of Applied Health Sciences',department:'Health Information Management',name:'Bachelor of Health Information Management',academicYear:'2026–2027'},
+    academicYears:['2026–2027','2025–2026'],
+    plos:[
+      {code:'K1',name:'Explain foundational concepts and principles in health information management.',target:70},
+      {code:'K2',name:'Interpret health data standards, classifications and information governance requirements.',target:70},
+      {code:'S1',name:'Apply health information methods to analyze and improve healthcare processes.',target:70},
+      {code:'S2',name:'Use digital health tools and data to support evidence-informed decisions.',target:70},
+      {code:'V1',name:'Demonstrate professional, ethical and responsible practice.',target:70},
+      {code:'V2',name:'Collaborate effectively and communicate within multidisciplinary healthcare settings.',target:70}
+    ],
+    reports:[
+      {
+        id:'r1', courseCode:'HIM301', courseName:'Health Data Standards', academicYear:'2026–2027', semester:'S1', instructor:'Dr. Sara Ahmed', coordinator:'Dr. Sara Ahmed', sectionMode:'all', autoCombine:true,
+        sections:2, location:'main', status:'Approved', submittedAt:'2026-06-16', approvedAt:'2026-06-18', approvedBy:'Coordinator', reportDate:'2026-06-16', revisionNote:'',
+        clos:[
+          {code:'1.1',domain:'K',text:'Describe major health data standards and classifications.',plo:'K2',method:'Written exam',target:70},
+          {code:'2.1',domain:'S',text:'Apply coding and data standards to structured healthcare cases.',plo:'S1',method:'Case assignment',target:70},
+          {code:'3.1',domain:'V',text:'Demonstrate accuracy and accountability when managing coded information.',plo:'V1',method:'Rubric / observation',target:70}
+        ],
+        sectionData:{
+          male:{studentsStart:20,studentsComplete:19,grades:{'A+':2,'A':3,'B+':4,'B':4,'C+':2,'C':2,'D+':1,'D':0,'F':1,'Denied':0,'In Progress':0,'Incomplete':0,'Pass':0,'Fail':0,'Withdrawn':1},gradeComment:'Male section achieved satisfactory results.',gradeRecommendation:'Add guided classification exercises.',cloRecommendation:'Continue formative CLO checks.',cloResults:{'1.1':{actual:76,comment:'Target achieved.'},'2.1':{actual:73,comment:'Target achieved.'},'3.1':{actual:80,comment:'Strong attainment.'}}},
+          female:{studentsStart:22,studentsComplete:21,grades:{'A+':2,'A':3,'B+':3,'B':4,'C+':4,'C':2,'D+':1,'D':1,'F':1,'Denied':0,'In Progress':0,'Incomplete':0,'Pass':0,'Fail':0,'Withdrawn':1},gradeComment:'Female section achieved satisfactory results.',gradeRecommendation:'Increase low-stakes practice before final assessment.',cloRecommendation:'Maintain direct assessment of mapped CLOs.',cloResults:{'1.1':{actual:80,comment:'Target achieved.'},'2.1':{actual:77,comment:'Target achieved.'},'3.1':{actual:84,comment:'Strong attainment.'}}},
+          combined:{studentsStart:42,studentsComplete:40,grades:{},gradeComment:'Overall performance was satisfactory.',gradeRecommendation:'Increase low-stakes formative practice.',cloRecommendation:'Maintain direct assessment of mapped CLOs.',cloResults:{}}
+        },
+        improvements:[{recommendation:'Increase guided coding practice.',action:'Add two formative case exercises before the midterm.',support:'LMS question bank and lab time'}],
+        activity:[{text:'Submitted for Coordinator approval',date:'2026-06-16'},{text:'Approved by Coordinator; CLO results released to PLO engine and HOD dashboard',date:'2026-06-18'}]
+      },
+      {
+        id:'r2', courseCode:'HIM352', courseName:'Healthcare Data Analytics', academicYear:'2026–2027', semester:'S2', instructor:'Dr. Omar Khalid', coordinator:'Dr. Omar Khalid', sectionMode:'combined', autoCombine:false,
+        sections:2, location:'main', status:'Approved', submittedAt:'2026-08-18', approvedAt:'2026-08-20', approvedBy:'Coordinator', reportDate:'2026-08-18', revisionNote:'',
+        clos:[
+          {code:'1.1',domain:'K',text:'Explain core concepts of healthcare data analytics.',plo:'K1',method:'Quiz / written exam',target:70},
+          {code:'2.1',domain:'S',text:'Analyze healthcare datasets using appropriate methods.',plo:'S2',method:'Practical project',target:70},
+          {code:'2.2',domain:'S',text:'Interpret analytical results for healthcare decision making.',plo:'S2',method:'Project presentation',target:70}
+        ],
+        sectionData:{combined:{studentsStart:38,studentsComplete:38,grades:{'A+':8,'A':7,'B+':5,'B':7,'C+':5,'C':3,'D+':1,'D':1,'F':1,'Denied':0,'In Progress':0,'Incomplete':0,'Pass':0,'Fail':0,'Withdrawn':0},gradeComment:'Strong applied analytics performance.',gradeRecommendation:'Add interpretation exercises using healthcare dashboards.',cloRecommendation:'Reinforce interpretation and communication.',cloResults:{'1.1':{actual:81,comment:'Target achieved.'},'2.1':{actual:74,comment:'Target achieved.'},'2.2':{actual:68,comment:'Below target; needs reinforcement.'}}}},
+        improvements:[{recommendation:'Improve interpretation of analytical results.',action:'Add structured interpretation checkpoints.',support:'Project rubric revision'}],
+        activity:[{text:'Approved by Coordinator',date:'2026-08-20'}]
+      },
+      {
+        id:'r3', courseCode:'HIM403', courseName:'Health Information Systems', academicYear:'2026–2027', semester:'S2', instructor:'Test Instructor', instructorEmail:'testi@acadeloop.test', coordinator:'Test Quality', sectionMode:'all', autoCombine:true,
+        sections:2, location:'main', status:'Awaiting Quality Approval', submittedAt:'2026-09-05', approvedAt:'', approvedBy:'', reportDate:'2026-09-05', revisionNote:'',
+        clos:[
+          {code:'1.1',domain:'K',text:'Explain components and functions of health information systems.',plo:'K1',method:'Written exam',target:70},
+          {code:'2.1',domain:'S',text:'Analyze healthcare workflows and system requirements.',plo:'S1',method:'System analysis project',target:70},
+          {code:'3.1',domain:'V',text:'Work responsibly in a team when proposing a health information solution.',plo:'V2',method:'Teamwork rubric',target:70}
+        ],
+        sectionData:{
+          male:{studentsStart:15,studentsComplete:15,grades:{'A+':1,'A':2,'B+':4,'B':3,'C+':2,'C':1,'D+':1,'D':0,'F':1,'Denied':0,'In Progress':0,'Incomplete':0,'Pass':0,'Fail':0,'Withdrawn':0},gradeComment:'Practical analysis stronger than theoretical justification.',gradeRecommendation:'Add theory-practice revision guide.',cloRecommendation:'Verify S1 evidence before approval.',cloResults:{'1.1':{actual:74,comment:'Target achieved.'},'2.1':{actual:70,comment:'At target.'},'3.1':{actual:77,comment:'Target achieved.'}}},
+          female:{studentsStart:16,studentsComplete:15,grades:{'A+':2,'A':3,'B+':3,'B':4,'C+':2,'C':1,'D+':0,'D':0,'F':0,'Denied':0,'In Progress':0,'Incomplete':0,'Pass':0,'Fail':0,'Withdrawn':1},gradeComment:'Good practical analysis and team performance.',gradeRecommendation:'Retain guided project checkpoints.',cloRecommendation:'Review S1 evidence consistency.',cloResults:{'1.1':{actual:78,comment:'Target achieved.'},'2.1':{actual:74,comment:'Target achieved.'},'3.1':{actual:81,comment:'Target achieved.'}}},
+          combined:{studentsStart:31,studentsComplete:30,grades:{},gradeComment:'',gradeRecommendation:'',cloRecommendation:'',cloResults:{}}
+        },
+        improvements:[{recommendation:'Strengthen theory-practice linkage.',action:'Add annotated exemplars to project briefing.',support:'Course coordinator review'}],
+        activity:[{text:'Submitted for Coordinator approval',date:'2026-09-05'}]
+      },
+      {
+        id:'r4', courseCode:'HIM474', courseName:'Applied Health Informatics Project', academicYear:'2026–2027', semester:'Summer', instructor:'Test Instructor', instructorEmail:'testi@acadeloop.test', coordinator:'Test Quality', sectionMode:'all', autoCombine:true,
+        sections:2, location:'main', status:'Draft', submittedAt:'', approvedAt:'', approvedBy:'', reportDate:'2026-09-07', revisionNote:'',
+        clos:[
+          {code:'2.1',domain:'S',text:'Design a health informatics solution to address a defined healthcare problem.',plo:'S2',method:'Capstone project',target:70},
+          {code:'3.1',domain:'V',text:'Demonstrate professional responsibility and communication in project delivery.',plo:'V1',method:'Project rubric',target:70}
+        ],
+        sectionData:{male:{studentsStart:12,studentsComplete:12,grades:{},gradeComment:'',gradeRecommendation:'',cloRecommendation:'',cloResults:{'2.1':{actual:'',comment:''},'3.1':{actual:'',comment:''}}},female:{studentsStart:14,studentsComplete:13,grades:{},gradeComment:'',gradeRecommendation:'',cloRecommendation:'',cloResults:{'2.1':{actual:'',comment:''},'3.1':{actual:'',comment:''}}},combined:{studentsStart:26,studentsComplete:25,grades:{},gradeComment:'',gradeRecommendation:'',cloRecommendation:'',cloResults:{}}},
+        improvements:[],activity:[{text:'Draft created',date:'2026-09-07'}]
+      }
+    ],
+    operational:[
+      {id:'o1',objective:'Improve program learning outcome attainment',kpi:'PLOs meeting target',target:85,actual:83,unit:'%',owner:'Coordinator',due:'2027-06-30',status:'On Track',evidence:'PLO attainment dashboard'},
+      {id:'o2',objective:'Complete course quality cycle on time',kpi:'Quality-approved course reports',target:100,actual:75,unit:'%',owner:'Coordinator',due:'2027-07-15',status:'Needs Attention',evidence:'Course report approval workflow'},
+      {id:'o3',objective:'Close approved course improvement actions',kpi:'Actions completed',target:90,actual:67,unit:'%',owner:'Course Coordinators',due:'2027-05-31',status:'On Track',evidence:'Improvement action tracker'}
+    ],
+    automations:[
+      {id:'a1',icon:'→',name:'Instructor submission → Quality approval queue',description:'Submitting a Course Report locks instructor editing and places the exact report in the Coordinator review queue.',on:true},
+      {id:'a2',icon:'✓',name:'Quality approval → official CLO results',description:'Only Coordinator-approved CLO results are released to PLO calculations and the HOD dashboard.',on:true},
+      {id:'a3',icon:'◎',name:'Approved CLO → semester PLO',description:'For All-section reports, Combined is recalculated and verified first; approved CLOs are then aggregated separately for S1, S2, and Summer, weighted by completed students.',on:true},
+      {id:'a4',icon:'◫',name:'Semester PLOs → Annual Program Report',description:'The APR combines approved S1, S2, and Summer results for the selected academic year with drill-down traceability.',on:true},
+      {id:'a5',icon:'▣',name:'Structured report data → Course Portfolio',description:'Course Portfolio files are generated on demand from Acadeloop data plus session-only document selections. Selected files are never stored by Acadeloop.',on:true}
+    ],
+    audit:[
+      {icon:'✓',title:'HIM352 approved',detail:'S2 2026–2027 results released to PLO K1 and S2.',time:'Recent'},
+      {icon:'→',title:'HIM403 submitted',detail:'Awaiting Coordinator approval; not yet visible in HOD official results.',time:'Recent'}
+    ]
+  };
+
+</script>
+<script data-source="src/app.js">
+
+(() => {
+  'use strict';
+
+  const $ = (id) => document.getElementById(id);
+  const esc = (v='') => String(v).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const uid = () => globalThis.crypto?.randomUUID?.() || Math.random().toString(36).slice(2,8) + Date.now().toString(36).slice(-5);
+  const nowDate = () => { const d=new Date(), pad=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; };
+  const clamp = (n,min=0,max=100) => Math.max(min,Math.min(max,Number(n)||0));
+  const Core = window.AcadeloopCore;
+  if(!Core) throw new Error('Acadeloop core failed to load.');
+  const {
+    TERMS, LETTER_GRADE_LABELS, GRADE_DEFS: gradeDefs,
+    sectionLabel, blankSectionFor, ensureSectionModel, effectiveSectionKey, activeSectionKeys,
+    syncFlatFromEffective, expectedCombinedSnapshot, enforceCombinedIntegrity, reportVariant,
+    gradeCount, gradeTotal, gradeInflationForSection, reportQualityFlags, pooledGradeDistribution,
+    reportAverageAttainment, reportCompleteness, calculatePloRollups,
+    validateReport
+  } = Core;
+  const STORAGE_KEY = 'acadeloop_program_quality_v100';
+  let dashboardInflationOnly = false;
+
+
+  const ROLE_CONFIG = {
+    'Instructor': {
+      views:['dashboard','course-reports','course-portfolios'], label:'Instructor workspace', avatar:'IN',
+      dashboard:'My Course Quality', description:'Create course reports by reporting period and section, then submit them for coordinator approval.'
+    },
+    'Coordinator': {
+      views:['dashboard','course-reports','course-portfolios','plo','apr','operational','automations'], label:'Quality coordination', avatar:'CO',
+      dashboard:'Quality Approval Center', description:'Review submitted reports exactly as entered, return them for revision, or approve them into official program calculations.'
+    },
+    'Head of Department': {
+      views:['dashboard','course-reports','course-portfolios','plo','apr','operational','users','setup'], label:'Executive oversight', avatar:'HD',
+      dashboard:'Department Quality Overview', description:'View approved quality results and control who is allowed to access Acadeloop.'
+    }
+  };
+
+  const seed = window.ACADELOOP_SEED;
+
+
+  let currentUser = null;
+  let userDirectory = [];
+  const SESSION_KEY = 'acadeloop_session_v100';
+  const USERS_KEY = 'acadeloop_authorized_users_v100';
+  const memoryStorage = new Map();
+  function storageGet(key){try{const value=localStorage.getItem(key);if(value!==null)return value}catch{}return memoryStorage.has(key)?memoryStorage.get(key):null}
+  function storageSet(key,value){const text=String(value);memoryStorage.set(key,text);try{localStorage.setItem(key,text)}catch{}}
+  function storageRemove(key){memoryStorage.delete(key);try{localStorage.removeItem(key)}catch{}}
+
+  function currentUserName(){
+    if(!currentUser) return 'User';
+    return [currentUser.firstName,currentUser.lastName].filter(Boolean).join(' ').trim() || currentUser.email || 'User';
+  }
+  function currentUserInitials(){
+    const n=currentUserName().split(/\s+/).filter(Boolean);
+    return (n.length>1?(n[0][0]+n[n.length-1][0]):(n[0]||'Q').slice(0,2)).toUpperCase();
+  }
+  function authToken(){return storageGet(SESSION_KEY)||''}
+  function setAuthToken(v){if(v)storageSet(SESSION_KEY,v);else storageRemove(SESSION_KEY)}
+  function defaultTestUsers(){
+    const department=state?.program?.department||seed.program.department;
+    return [
+      {id:'test-hod',username:'TestHOD',firstName:'Test',lastName:'HOD',department,role:'Head of Department',email:'testhod@acadeloop.test',active:true,createdAt:nowDate(),preset:true},
+      {id:'test-i',username:'TestI',firstName:'Test',lastName:'Instructor',department,role:'Instructor',email:'testi@acadeloop.test',active:true,createdAt:nowDate(),preset:true},
+      {id:'test-q',username:'TestQ',firstName:'Test',lastName:'Quality',department,role:'Coordinator',email:'testq@acadeloop.test',active:true,createdAt:nowDate(),preset:true},
+      {id:'test-i2',username:'TestI2',firstName:'Test',lastName:'Instructor 2',department,role:'Instructor',email:'testi2@acadeloop.test',active:true,createdAt:nowDate(),preset:true}
+    ];
+  }
+  function loadLocalUsers(){
+    let users=[];
+    try{const raw=storageGet(USERS_KEY);if(raw)users=JSON.parse(raw)}catch(e){}
+    if(!Array.isArray(users))users=[];
+    for(const preset of defaultTestUsers()){
+      const i=users.findIndex(u=>String(u.username||'').toLowerCase()===preset.username.toLowerCase()||String(u.email||'').toLowerCase()===preset.email.toLowerCase());
+      if(i<0)users.push(preset); else users[i]={...users[i],...preset,active:true};
+    }
+    users.sort((a,b)=>(a.preset===b.preset?String(a.username||a.email).localeCompare(String(b.username||b.email)):(a.preset?-1:1)));
+    storageSet(USERS_KEY,JSON.stringify(users))
+    return users;
+  }
+  function saveLocalUsers(users){
+    storageSet(USERS_KEY,JSON.stringify(users))
+  }
+  function localUserByLogin(login){
+    const key=String(login||'').trim().toLowerCase();
+    return loadLocalUsers().find(u=>u.active!==false&&(String(u.username||'').toLowerCase()===key||String(u.email||'').toLowerCase()===key))||null;
+  }
+
+  let state = normalizeState(loadState());
+  let currentView = 'dashboard';
+  let currentReportId = null;
+  let currentPortfolioId = null;
+  // Course Portfolio uploads are intentionally session-only. File objects are kept in memory and are never written to localStorage.
+  const portfolioUploadFiles = new Map();
+  const portfolioActiveTerms = new Map();
+  let activePlo = null;
+  let ploYear = state.program.academicYear;
+  let ploTerm = 'Annual';
+
+  function loadState(){
+    try{const raw=storageGet(STORAGE_KEY); if(raw) return JSON.parse(raw);}catch(e){}
+    return JSON.parse(JSON.stringify(seed));
+  }
+  function saveState(){
+    storageSet(STORAGE_KEY,JSON.stringify(state));
+    syncChrome();
+  }
+  function normalizeState(s){
+    s = s && typeof s === 'object' ? s : JSON.parse(JSON.stringify(seed));
+    s.program = s.program || JSON.parse(JSON.stringify(seed.program));
+    s.academicYears = Array.isArray(s.academicYears) && s.academicYears.length ? s.academicYears : [s.program.academicYear];
+    if(!s.academicYears.includes(s.program.academicYear)) s.academicYears.unshift(s.program.academicYear);
+    s.reports = Array.isArray(s.reports) ? s.reports : [];
+    s.plos = Array.isArray(s.plos) ? s.plos : [];
+    s.operational = Array.isArray(s.operational) ? s.operational : [];
+    s.automations = Array.isArray(s.automations) ? s.automations : [];
+    s.audit = Array.isArray(s.audit) ? s.audit : [];
+    if(!ROLE_CONFIG[s.role]) s.role='Head of Department';
+    s.reports.forEach(r=>{
+      r.academicYear = r.academicYear || s.program.academicYear;
+      if(r.semester==='First') r.semester='S1';
+      if(r.semester==='Second') r.semester='S2';
+      if(!TERMS.includes(r.semester)) r.semester='S1';
+      if(r.status==='In Review') r.status='Awaiting Quality Approval';
+      if(r.status==='Needs Revision') r.status='Returned for Revision';
+      r.revisionNote = r.revisionNote || '';
+      r.sectionMode = ['male','female','combined','all'].includes(r.sectionMode) ? r.sectionMode : 'combined';
+      // Combined is never manually maintained when the instructor enters Male + Female.
+      // It is a deterministic derived record, so stale/manual Combined values cannot survive reload.
+      r.autoCombine = r.sectionMode === 'all' ? true : r.autoCombine !== false;
+      r.clos = Array.isArray(r.clos) ? r.clos : [];
+      r.improvements = Array.isArray(r.improvements) ? r.improvements : [];
+      ensureSectionModel(r);
+    });
+    return s;
+  }
+
+  function roleConfig(){return ROLE_CONFIG[state.role] || ROLE_CONFIG.Instructor}
+  function roleCanView(view){return roleConfig().views.includes(view)}
+  function canCreateReport(){return state.role==='Instructor'}
+  function isInstructorOwner(r){
+    if(state.role!=='Instructor') return false;
+    if(r.instructorEmail&&currentUser?.email) return r.instructorEmail.toLowerCase()===currentUser.email.toLowerCase();
+    return r.instructor===currentUserName();
+  }
+  function canEditReport(r){return state.role==='Instructor' && isInstructorOwner(r) && (r.status==='Draft'||r.status==='Returned for Revision')}
+  function reportsForRole(){
+    const all=state.reports||[];
+    if(state.role==='Instructor') return all.filter(isInstructorOwner);
+    if(state.role==='Head of Department') return all.filter(r=>r.status==='Approved');
+    return all;
+  }
+  function approvedReports(year=null,term='Annual'){
+    return state.reports.filter(r=>r.status==='Approved' && (!year || r.academicYear===year) && (term==='Annual'||!term||r.semester===term));
+  }
+
+  function sectionPill(k){return `<span class="section-scope-pill ${esc(k||'combined')}">${esc(sectionLabel(k||'combined'))}</span>`}
+  function periodLabel(r){return `${r.semester} ${r.academicYear}`}
+  function periodPill(r){return `<span class="period-pill"><b>${esc(r.semester)}</b><span>${esc(r.academicYear)}</span></span>`}
+
+  function formatPct(v){if(v===''||v==null)return '—';const n=Number(v);return Number.isFinite(n)?`${Math.round(n*10)/10}%`:'—'}
+  function statusClass(s){return `status-${String(s).replace(/[^A-Za-z0-9_-]/g,'')}`}
+  function statusPill(s){return `<span class="status-pill ${statusClass(s)}">${esc(s)}</span>`}
+  function progressHtml(n){return `<div class="progress-wrap"><div class="progress-track"><div class="progress-fill" style="width:${clamp(n)}%"></div></div><span>${clamp(n)}%</span></div>`}
+  function semesterFolderName(term){return term==='S1'?'Semester 1':term==='S2'?'Semester 2':'Summer'}
+  function portfolioGroupKey(r){return `${r.courseCode}|||${r.academicYear}`}
+  function portfolioGroupsForRole(){
+    const groups=new Map();
+    reportsForRole().forEach(r=>{
+      const key=portfolioGroupKey(r);
+      if(!groups.has(key))groups.set(key,{key,courseCode:r.courseCode,courseName:r.courseName,academicYear:r.academicYear,reports:[]});
+      groups.get(key).reports.push(r);
+    });
+    return Array.from(groups.values()).sort((a,b)=>a.courseCode.localeCompare(b.courseCode)||b.academicYear.localeCompare(a.academicYear));
+  }
+  function portfolioPeriodReports(g,term){return g.reports.filter(r=>r.semester===term)}
+  function portfolioApprovedReports(g,term=null){return g.reports.filter(r=>r.status==='Approved'&&(!term||r.semester===term))}
+  function portfolioOfficialPercent(g){return g.reports.length?Math.round(portfolioApprovedReports(g).length/g.reports.length*100):0}
+  function portfolioStatusText(g){
+    const a=portfolioApprovedReports(g).length,t=g.reports.length;
+    if(!t)return 'No reports';
+    if(a===t)return 'Official';
+    if(a>0)return 'Partially approved';
+    return 'Waiting for approval';
+  }
+  function periodStatusHtml(g,term){
+    const rs=portfolioPeriodReports(g,term);if(!rs.length)return '<span class="tiny">No report</span>';
+    const approved=rs.filter(r=>r.status==='Approved').length;
+    if(approved===rs.length)return '<span class="portfolio-ready">Approved</span>';
+    if(approved>0)return '<span class="portfolio-attention">Partial</span>';
+    const first=rs[0];return statusPill(first.status);
+  }
+
+  function ploRollups(year=state.program.academicYear,term='Annual'){
+    return calculatePloRollups(state.reports,state.plos,year,term);
+  }
+  function overallPlo(year=state.program.academicYear,term='Annual'){const vals=ploRollups(year,term).map(x=>x.actual).filter(x=>x!==null);return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null}
+  function reportingReadiness(year=state.program.academicYear,term='Annual'){
+    const rs=state.reports.filter(r=>r.academicYear===year&&(term==='Annual'||r.semester===term));
+    return rs.length?Math.round(rs.filter(r=>r.status==='Approved').length/rs.length*100):0;
+  }
+  function aprReadiness(year=state.program.academicYear){return reportingReadiness(year,'Annual')}
+
+  function syncRoleUI(){
+    const cfg=roleConfig();
+    document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.classList.toggle('role-hidden',!cfg.views.includes(b.dataset.view)));
+    if($('roleContext')) $('roleContext').innerHTML=`<span>Workspace</span><b>${esc(cfg.label)}</b>`;
+    if($('avatarLabel')){$('avatarLabel').textContent=currentUserInitials();$('avatarLabel').title=currentUserName();}
+    if($('currentUserName'))$('currentUserName').textContent=currentUserName();
+    if($('currentUserRole'))$('currentUserRole').textContent=state.role;
+    if($('quickAdd')){$('quickAdd').style.display=canCreateReport()?'inline-flex':'none';$('quickAdd').textContent='＋ New report';}
+  }
+  function syncChrome(){
+    if($('sideAcademicYear'))$('sideAcademicYear').textContent=state.program.academicYear; if($('sideProgram'))$('sideProgram').textContent=state.program.name;
+    if($('navCourseCount'))$('navCourseCount').textContent=reportsForRole().length; if($('navPortfolioCount'))$('navPortfolioCount').textContent=portfolioGroupsForRole().length;
+    syncRoleUI();
+  }
+  function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),2600)}
+  function pageHead(kicker,title,desc,actions=''){return `<div class="page-head"><div><span class="eyebrow">${esc(kicker)}</span><h1>${esc(title)}</h1><p>${esc(desc)}</p></div><div class="page-actions">${actions}</div></div>`}
+  function roleHero(){const c=roleConfig();return `<div class="role-hero"><div class="copy"><span>${esc(c.label)}</span><strong>${esc(c.dashboard)}</strong><p>${esc(c.description)}</p></div><span class="role-chip">${esc(state.role)}</span></div>`}
+  function periodFilter(yearId='periodYear',termId='periodTerm',includeAnnual=true){return `<div class="period-filter"><label><span>Academic year</span><select id="${yearId}">${state.academicYears.map(y=>`<option ${y===ploYear?'selected':''}>${esc(y)}</option>`).join('')}</select></label><label><span>Period</span><select id="${termId}">${includeAnnual?'<option>Annual</option>':''}${TERMS.map(t=>`<option ${t===ploTerm?'selected':''}>${t}</option>`).join('')}</select></label></div>`}
+
+  function render(){
+    if(!roleCanView(currentView)) currentView='dashboard';
+    const titles={dashboard:[roleConfig().label,roleConfig().dashboard],'course-reports':[state.role==='Instructor'?'My reporting':'Quality cycle',state.role==='Instructor'?'My Course Reports':state.role==='Coordinator'?'Course Report Approval':'Course Reports'],'course-portfolios':['Portfolio builder','Course Portfolios'],plo:['Outcome analytics','PLO Attainment'],apr:['Program reporting','Annual Program Report'],operational:['Execution','Operational Plan'],automations:['Workflow engine','Automations'],users:['Access control','Users'],setup:['Administration','Program Setup']};
+    if(currentView==='course-portfolios'&&currentPortfolioId){const g=portfolioGroupsForRole().find(x=>x.key===currentPortfolioId);if(g)titles['course-portfolios']=['Course portfolio',g.courseCode];}
+    $('pageKicker').textContent=titles[currentView][0];$('pageTitle').textContent=titles[currentView][1];
+    document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===currentView));
+    const map={dashboard:renderDashboard,'course-reports':renderCourseReports,'course-portfolios':renderCoursePortfolios,plo:renderPlo,apr:renderApr,operational:renderOperational,automations:renderAutomations,users:renderUsers,setup:renderSetup};
+    $('content').innerHTML=map[currentView](); syncRoleUI(); bindViewEvents();
+  }
+
+  function dashboardQualitySection(reports,year=ploYear,term=ploTerm){
+    const rs=(reports||[]).filter(r=>r.academicYear===year&&(term==='Annual'||r.semester===term));
+    const flagged=rs.map(r=>({r,flags:reportQualityFlags(r)}));
+    const inflationCount=flagged.filter(x=>x.flags.inflation.inflated).length;
+    const cloCount=flagged.filter(x=>x.flags.cloGaps.length).length;
+    const dist=pooledGradeDistribution(rs);
+    const gradeItems=LETTER_GRADE_LABELS.map(g=>`<div class="grade-average-item"><b>${esc(g)}</b><strong>${formatPct(dist.percentages[g])}</strong><div class="mini-grade-track"><div class="mini-grade-fill" style="width:${Math.min(100,Math.max(0,dist.percentages[g]))}%"></div></div></div>`).join('');
+    const rows=flagged.slice().sort((a,b)=>Number(b.flags.hasIssue)-Number(a.flags.hasIssue)||a.r.courseCode.localeCompare(b.r.courseCode)).map(({r,flags})=>{
+      const inflation=flags.inflation.inflated?`<div class="signal-stack">${flags.inflation.flagged.map(x=>`<span class="signal-chip alert">${esc(x.label)} · ${esc(x.reasons.join(' / '))}</span>`).join('')}</div>`:'<span class="signal-chip ok">No inflation</span>';
+      const gaps=flags.cloGaps.length?`<div class="signal-stack">${flags.cloGaps.slice(0,4).map(g=>`<span class="signal-chip bad">${esc(g.sectionLabel)} ${esc(g.code)} · ${formatPct(g.actual)} &lt; ${formatPct(g.target)}</span>`).join('')}${flags.cloGaps.length>4?`<span class="signal-chip bad">+${flags.cloGaps.length-4} more</span>`:''}</div>`:'<span class="signal-chip ok">Targets met</span>';
+      return `<tr data-dashboard-course data-inflation="${flags.inflation.inflated?'1':'0'}"><td><strong>${esc(r.courseCode)}</strong><div class="tiny">${esc(r.courseName)}</div></td><td>${periodPill(r)}</td><td>${inflation}</td><td>${gaps}</td><td>${statusPill(r.status)}</td><td><button class="btn btn-ghost" data-edit-report="${r.id}">View</button></td></tr>`;
+    }).join('');
+    return `<div class="section"><div class="section-title"><div><h2>Academic performance signals</h2><p>Grade inflation is detected when A+ is at least 20% of letter-graded students, or A and above is more than 60%. CLO alerts appear whenever an actual result is below its target.</p></div></div>
+      <div class="quality-signal-grid"><div class="quality-signal-card"><div class="label">Courses with grade inflation</div><strong>${inflationCount}</strong><small>${rs.length} course report${rs.length===1?'':'s'} included</small></div><div class="quality-signal-card"><div class="label">Courses with CLO below target</div><strong>${cloCount}</strong><small>Any section/CLO actual below its target is flagged</small></div></div>
+      <div class="grade-average-card"><div class="grade-average-head"><div><h3>Average grade distribution across courses</h3><p>Enrollment-weighted across letter grades A+ through F for ${esc(term==='Annual'?year:`${term} ${year}`)}. Status categories such as Withdrawn or Incomplete are excluded.</p></div><span class="tag">${dist.courseCount} courses · ${dist.denominator} graded students</span></div><div class="grade-average-grid">${gradeItems}</div></div>
+      <div class="quality-monitor-tools"><div><strong style="font-size:11px">Course quality monitor</strong><div class="tiny">Use the checkbox to isolate courses with grade inflation.</div></div><label><input type="checkbox" id="inflationOnlyCheck" ${dashboardInflationOnly?'checked':''}> Show courses only with grade inflation</label></div>
+      <div class="table-card"><table class="data-table"><thead><tr><th>Course</th><th>Period</th><th>Grade inflation</th><th>CLO below target</th><th>Status</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan="6" class="empty">No course reports are available for this academic year.</td></tr>'}</tbody></table></div>
+    </div>`;
+  }
+
+  function renderDashboard(){
+    const rs=reportsForRole();
+    if(state.role==='Instructor'){
+      const open=rs.filter(r=>r.status==='Draft'||r.status==='Returned for Revision').length;
+      return roleHero()+pageHead('Instructor quality cycle','My Course Quality','Each Course Report is tied to an academic year and semester. Choose Male, Female, Combined, or All; All lets you enter Male and Female together.',`<button class="btn btn-primary" data-new="report">＋ New course report</button>`)+`
+      <div class="grid grid-4"><div class="card metric"><div class="label">My reports</div><div class="value">${rs.length}</div><div class="sub">${open} open for editing</div></div><div class="card metric"><div class="label">Awaiting quality approval</div><div class="value">${rs.filter(r=>r.status==='Awaiting Quality Approval').length}</div><div class="sub">Locked after submission</div></div><div class="card metric"><div class="label">Approved</div><div class="value">${rs.filter(r=>r.status==='Approved').length}</div><div class="sub">Released to official program calculations</div></div><div class="card metric"><div class="label">Generated portfolios</div><div class="value">${rs.filter(r=>r.status==='Approved').length}</div><div class="sub">Generated on demand; no portfolio files stored</div></div></div>
+      ${reportBoard(rs,'My reporting board')}`;
+    }
+    if(state.role==='Coordinator'){
+      const yr=ploYear,term=ploTerm;
+      const periodReports=state.reports.filter(r=>r.academicYear===yr&&(term==='Annual'||r.semester===term));
+      const waiting=periodReports.filter(r=>r.status==='Awaiting Quality Approval');
+      const returned=periodReports.filter(r=>r.status==='Returned for Revision').length;
+      return roleHero()+pageHead('Mandatory approval gate','Quality Approval Center','Submitted reports appear here exactly as the instructor entered them. Only your approval releases CLO data to PLO calculations and the HOD dashboard.',`<button class="btn btn-primary" data-go="course-reports">Open approval queue</button>`)+periodFilter()+`
+      <div class="grid grid-4"><div class="card metric"><div class="label">Awaiting approval</div><div class="value">${waiting.length}</div><div class="sub">Official gate before PLO/APR/HOD</div></div><div class="card metric"><div class="label">Returned</div><div class="value">${returned}</div><div class="sub">Instructor revision required</div></div><div class="card metric"><div class="label">Approved</div><div class="value">${approvedReports(yr,term).length}</div><div class="sub">${esc(term==='Annual'?yr:`${term} ${yr}`)}</div></div><div class="card metric"><div class="label">Reporting readiness</div><div class="value">${reportingReadiness(yr,term)}%</div><div class="sub">Approved reporting coverage</div></div></div>
+      <div class="section"><div class="section-title"><div><h2>Approval queue</h2><p>Semester and academic year remain visible throughout review.</p></div></div><div class="table-card"><table class="data-table"><thead><tr><th>Course</th><th>Reporting period</th><th>Instructor</th><th>Scope</th><th>Submitted</th><th>Status</th><th></th></tr></thead><tbody>${waiting.length?waiting.map(r=>`<tr><td><strong>${esc(r.courseCode)}</strong><div class="tiny">${esc(r.courseName)}</div></td><td>${periodPill(r)}</td><td>${esc(r.instructor)}</td><td>${sectionPill(r.sectionMode)}</td><td>${esc(r.submittedAt||r.reportDate||'—')}</td><td>${statusPill(r.status)}</td><td><button class="btn btn-primary" data-edit-report="${r.id}">Review</button></td></tr>`).join(''):'<tr><td colspan="7" class="empty">No reports are waiting for approval in this period.</td></tr>'}</tbody></table></div></div>
+      ${dashboardQualitySection(state.reports.filter(r=>r.status!=='Draft'),yr,term)}`;
+    }
+    if(state.role==='Head of Department'){
+      const yr=ploYear,term=ploTerm,approved=approvedReports(yr,term),roll=ploRollups(yr,term),met=roll.filter(x=>x.met).length;
+      return roleHero()+pageHead('Official approved data only','Department Quality Overview','Reports appear here only after coordinator approval. Drafts, returned reports, and reports awaiting approval are excluded.',`<button class="btn btn-ghost" data-go="users">Manage users</button><button class="btn btn-ghost" data-go="plo">PLO attainment</button><button class="btn btn-primary" data-go="apr">Open APR</button>`)+periodFilter()+`
+      <div class="grid grid-4"><div class="card metric"><div class="label">Approved reports</div><div class="value">${approved.length}</div><div class="sub">${esc(term==='Annual'?yr:`${term} ${yr}`)} official reports</div></div><div class="card metric"><div class="label">PLOs meeting target</div><div class="value">${met}/${roll.length}</div><div class="sub">Weighted approved CLO evidence</div></div><div class="card metric"><div class="label">Reporting readiness</div><div class="value">${reportingReadiness(yr,term)}%</div><div class="sub">Based on approved reports</div></div><div class="card metric"><div class="label">Authorized users</div><div class="value">${userDirectory.length||'—'}</div><div class="sub">HOD-controlled access</div></div></div>
+      ${dashboardQualitySection(approved,yr,term)}
+      ${reportBoard(approved,'Recently approved course reports',true)}`;
+    }
+    const yr=state.program.academicYear,roll=ploRollups(yr,'Annual'),approved=approvedReports(yr,'Annual');
+    return roleHero()+pageHead('Program quality','Quality Overview','Monitor reporting coverage and approved outcomes.',`<button class="btn btn-ghost" data-go="course-reports">Course reports</button><button class="btn btn-primary" data-go="apr">Annual Program Report</button>`)+`
+    <div class="grid grid-4"><div class="card metric"><div class="label">All reports</div><div class="value">${state.reports.filter(r=>r.academicYear===yr).length}</div><div class="sub">${esc(yr)}</div></div><div class="card metric"><div class="label">Quality approved</div><div class="value">${approved.length}</div><div class="sub">Official program data</div></div><div class="card metric"><div class="label">Awaiting approval</div><div class="value">${state.reports.filter(r=>r.academicYear===yr&&r.status==='Awaiting Quality Approval').length}</div><div class="sub">Coordinator queue</div></div><div class="card metric"><div class="label">PLOs meeting target</div><div class="value">${roll.filter(x=>x.met).length}/${roll.length}</div><div class="sub">Annual approved roll-up</div></div></div>
+    ${reportBoard(state.reports.filter(r=>r.academicYear===yr),'Reporting coverage')}`;
+  }
+
+  function reportBoard(rs,title,approvedOnly=false){
+    return `<div class="section"><div class="section-title"><div><h2>${esc(title)}</h2><p>${approvedOnly?'Quality-approved reports only.':'Course, reporting period, section scope, and approval status are separated.'}</p></div></div><div class="table-card"><table class="data-table"><thead><tr><th>Course</th><th>Period</th><th>Scope</th><th>Status</th><th>CLO</th><th></th></tr></thead><tbody>${rs.length?rs.map(r=>`<tr><td><div class="course-cell"><div class="course-code">${esc(r.courseCode.slice(-3))}</div><div class="course-meta"><strong>${esc(r.courseCode)}</strong><span>${esc(r.courseName)}</span></div></div></td><td>${periodPill(r)}</td><td>${sectionPill(r.sectionMode)}</td><td>${statusPill(r.status)}</td><td><strong>${reportAverageAttainment(r)!==null?formatPct(reportAverageAttainment(r)):'—'}</strong></td><td><button class="btn btn-ghost" data-edit-report="${r.id}">${state.role==='Coordinator'&&r.status==='Awaiting Quality Approval'?'Review':'View'}</button></td></tr>`).join(''):'<tr><td colspan="6" class="empty">No reports in this workspace.</td></tr>'}</tbody></table></div></div>`;
+  }
+
+  function renderCourseReports(){
+    const rs=reportsForRole();
+    const title=state.role==='Instructor'?'My Course Reports':state.role==='Coordinator'?'Course Report Approval':'Course Reports';
+    const desc=state.role==='Instructor'?'Create one report per Course + Academic Year + Semester. Submit to the Coordinator when complete.':state.role==='Coordinator'?'Review the exact instructor-entered report. Approve or return it; do not edit instructor data.':state.role==='Head of Department'?'Only Coordinator-approved reports are visible here.':'Monitor all reports and their Quality approval status.';
+    return roleHero()+pageHead('Reporting cycle',title,desc,`${canCreateReport()?'<button class="btn btn-primary" data-new="report">＋ New report</button>':''}`)+`
+      <div class="table-card"><div class="board-tools"><div class="left"><input class="search" id="reportSearch" placeholder="Search course or instructor…"><select class="filter-select" id="yearFilter"><option value="">All academic years</option>${state.academicYears.map(y=>`<option>${esc(y)}</option>`).join('')}</select><select class="filter-select" id="semesterFilter"><option value="">All semesters</option>${TERMS.map(t=>`<option>${t}</option>`).join('')}</select><select class="filter-select" id="statusFilter"><option value="">All statuses</option><option>Draft</option><option>Awaiting Quality Approval</option><option>Returned for Revision</option><option>Approved</option></select></div><div class="right"><span class="tiny">${rs.length} report${rs.length===1?'':'s'}</span></div></div>
+      <table class="data-table" id="reportsTable"><thead><tr><th>Course</th><th>Reporting period</th><th>Instructor</th><th>Scope</th><th>Status</th><th>Completion</th><th>Official CLO</th><th></th></tr></thead><tbody>${rs.length?rs.map(r=>reportRow(r)).join(''):'<tr><td colspan="8" class="empty">No course reports in this workspace.</td></tr>'}</tbody></table></div>`;
+  }
+  function reportRow(r){return `<tr data-report-row data-search="${esc((r.courseCode+' '+r.courseName+' '+r.instructor).toLowerCase())}" data-year="${esc(r.academicYear)}" data-semester="${esc(r.semester)}" data-status="${esc(r.status)}"><td><div class="course-cell"><div class="course-code">${esc(r.courseCode.slice(-3))}</div><div class="course-meta"><strong>${esc(r.courseCode)}</strong><span>${esc(r.courseName)}</span></div></div></td><td>${periodPill(r)}</td><td>${esc(r.instructor)}</td><td>${sectionPill(r.sectionMode)}</td><td>${statusPill(r.status)}</td><td>${progressHtml(reportCompleteness(r))}</td><td><strong>${r.status==='Approved'&&reportAverageAttainment(r)!==null?formatPct(reportAverageAttainment(r)):'—'}</strong></td><td><button class="btn ${state.role==='Coordinator'&&r.status==='Awaiting Quality Approval'?'btn-primary':'btn-ghost'}" data-edit-report="${r.id}">${state.role==='Coordinator'&&r.status==='Awaiting Quality Approval'?'Review':'Open'}</button></td></tr>`}
+
+  function portfolioUploadStore(g){
+    if(!portfolioUploadFiles.has(g.key)) portfolioUploadFiles.set(g.key,new Map());
+    return portfolioUploadFiles.get(g.key);
+  }
+  function portfolioFilesAt(g,path){return portfolioUploadStore(g).get(path)||[]}
+  function portfolioSelectedCount(g,prefix=''){
+    let n=0; for(const [path,files] of portfolioUploadStore(g).entries()) if(!prefix||path.startsWith(prefix)) n+=files.length; return n;
+  }
+  function addPortfolioFiles(g,path,newFiles){
+    const store=portfolioUploadStore(g),current=store.get(path)||[],merged=[...current];
+    for(const f of newFiles){const key=`${f.name}|${f.size}|${f.lastModified}`;if(!merged.some(x=>`${x.name}|${x.size}|${x.lastModified}`===key))merged.push(f)}
+    store.set(path,merged);
+  }
+  function clearPortfolioFiles(g,path){portfolioUploadStore(g).delete(path)}
+  function portfolioFileSummary(files){
+    if(!files.length)return '<span class="portfolio-upload-empty">No files selected</span>';
+    const names=files.slice(0,2).map(f=>esc(f.name)).join(', '),more=files.length>2?` +${files.length-2} more`:'';
+    return `<span class="portfolio-upload-selected"><b>${files.length}</b> file${files.length===1?'':'s'} · ${names}${more}</span>`;
+  }
+  function portfolioUploadButton(g,path,label='Choose files'){
+    const files=portfolioFilesAt(g,path);
+    return `<div class="portfolio-upload-control"><label class="portfolio-file-button">${files.length?'Add files':label}<input type="file" multiple data-portfolio-upload="${esc(path)}"></label>${files.length?`<button class="portfolio-clear-button" type="button" data-portfolio-clear="${esc(path)}" title="Remove selected files">Clear</button>`:''}<div class="portfolio-file-summary">${portfolioFileSummary(files)}</div></div>`;
+  }
+  function portfolioUploadRow(g,label,path,description=''){
+    return `<div class="portfolio-upload-row"><div class="portfolio-upload-label"><strong>${esc(label)}</strong>${description?`<span>${esc(description)}</span>`:''}</div>${portfolioUploadButton(g,path)}</div>`;
+  }
+  function portfolioAssessmentCell(g,path){
+    const files=portfolioFilesAt(g,path);
+    return `<div class="portfolio-matrix-cell"><label class="portfolio-matrix-button">${files.length?`${files.length} file${files.length===1?'':'s'}`:'Add files'}<input type="file" multiple data-portfolio-upload="${esc(path)}"></label>${files.length?`<button type="button" class="portfolio-mini-clear" data-portfolio-clear="${esc(path)}" title="Clear">×</button>`:''}</div>`;
+  }
+  function portfolioAssessmentRow(g,base,label){
+    const sample=`${base}/Sample of students answer`;
+    return `<div class="portfolio-matrix-row"><div class="portfolio-matrix-name"><strong>${esc(label)}</strong></div>${portfolioAssessmentCell(g,`${base}/Questions with answer key`)}${portfolioAssessmentCell(g,`${sample}/Excellent`)}${portfolioAssessmentCell(g,`${sample}/Average`)}${portfolioAssessmentCell(g,`${sample}/Poor`)}</div>`;
+  }
+  function portfolioCourseDocumentsHtml(g){
+    const instructors=[...new Set(g.reports.map(r=>r.instructor).filter(Boolean))];
+    return `<section class="portfolio-panel"><div class="portfolio-panel-head"><div><h2>Course documents</h2><p>Add the course-level documents that will be placed into the generated portfolio.</p></div><span class="portfolio-session-chip">Session only</span></div><div class="portfolio-upload-section">${portfolioUploadRow(g,'Course Specification (CS)','Course Specification (CS)','Course specification document(s)')}${portfolioUploadRow(g,'Teaching Materials (TM)','Teaching Materials (TM)','Lecture materials, learning resources, or related teaching documents')}${instructors.map(name=>`<div class="portfolio-instructor-group"><div class="portfolio-instructor-title"><span>Instructor</span><strong>${esc(name)}</strong></div>${portfolioUploadRow(g,'Curriculum Vitae (CV)',`Instructors/${safeFolderName(name)}/Curriculum Vitae (CV)`)}${portfolioUploadRow(g,'Teaching Philosophy (TP)',`Instructors/${safeFolderName(name)}/Teaching Philosophy (TP)`)}</div>`).join('')||'<div class="portfolio-empty-inline">Instructor information will appear after a Course Report is created.</div>'}</div></section>`;
+  }
+  function portfolioSemesterUploadsHtml(g,term){
+    const base=`Year ${safeFolderName(g.academicYear)}/${semesterFolderName(term)}`,assessment=`${base}/Assessments`;
+    const approved=portfolioApprovedReports(g,term);
+    const rows=[
+      portfolioAssessmentRow(g,`${assessment}/Assignment`,'Assignment'),
+      portfolioAssessmentRow(g,`${assessment}/Midterm Exam/Theory`,'Midterm · Theory'),
+      portfolioAssessmentRow(g,`${assessment}/Midterm Exam/Practical`,'Midterm · Practical'),
+      portfolioAssessmentRow(g,`${assessment}/Midterm Exam/Clinical`,'Midterm · Clinical'),
+      portfolioAssessmentRow(g,`${assessment}/Final Exam/Theory`,'Final · Theory'),
+      portfolioAssessmentRow(g,`${assessment}/Final Exam/Practical`,'Final · Practical'),
+      portfolioAssessmentRow(g,`${assessment}/Final Exam/Clinical`,'Final · Clinical')
+    ].join('');
+    return `<section class="portfolio-panel"><div class="portfolio-panel-head"><div><h2>${semesterFolderName(term)} uploads</h2><p>Upload assessment evidence and survey files for this semester. Acadeloop puts each file in its correct portfolio folder when you download.</p></div><span class="portfolio-file-count">${portfolioSelectedCount(g,base)} selected</span></div>
+      <div class="portfolio-assessment-wrap"><div class="portfolio-subhead"><strong>Assessments</strong><span>Questions/answer keys and student samples</span></div><div class="portfolio-matrix"><div class="portfolio-matrix-header"><span>Assessment</span><span>Questions + key</span><span>Excellent</span><span>Average</span><span>Poor</span></div>${rows}</div>${portfolioUploadRow(g,'Other assessment files',`${assessment}/Others`,'Any assessment material that does not fit the categories above')}</div>
+      <div class="portfolio-survey-wrap"><div class="portfolio-subhead"><strong>Reports and surveys</strong><span>Semester-specific supporting documents</span></div><div class="portfolio-two-col">${portfolioUploadRow(g,'Course Evaluation Survey',`${base}/Reports and Surveys/Course Evaluation Survey`)}${portfolioUploadRow(g,'Informal feedback',`${base}/Reports and Surveys/Informal feedback`)}</div></div>
+      <div class="portfolio-generated-strip"><div><span class="portfolio-generated-icon">DOCX</span><p><strong>Course Report</strong><small>${approved.length?'Automatically generated from Coordinator-approved report data.':'Waiting for Coordinator approval; the folder will still be created.'}</small></p><b class="${approved.length?'ready':'waiting'}">${approved.length?'Generated':'Waiting'}</b></div><div><span class="portfolio-generated-icon">CSV</span><p><strong>CLOs Assessment Report</strong><small>${approved.length?'Automatically generated from approved CLO results.':'Waiting for Coordinator approval; the folder will still be created.'}</small></p><b class="${approved.length?'ready':'waiting'}">${approved.length?'Generated':'Waiting'}</b></div></div>
+    </section>`;
+  }
+  function renderCoursePortfolios(){
+    const groups=portfolioGroupsForRole();
+    if(currentPortfolioId){const g=groups.find(x=>x.key===currentPortfolioId);if(g)return renderCoursePortfolioDetail(g);currentPortfolioId=null;}
+    const approvedGroups=groups.filter(g=>portfolioApprovedReports(g).length>0).length;
+    return roleHero()+pageHead('Generate on demand','Course Portfolios','Open a course, add the portfolio documents into the sections provided, then download the generated portfolio ZIP. Files selected here are temporary and are never saved by Acadeloop.',``)+`
+      <div class="portfolio-summary-strip"><div><span>Course portfolios</span><strong>${groups.length}</strong><small>course + academic year</small></div><div><span>With approved reports</span><strong>${approvedGroups}</strong><small>Course Report and CLO files auto-generate</small></div><div><span>Reporting periods</span><strong>S1 · S2 · Summer</strong><small>upload sections kept separate</small></div><div><span>Uploaded files</span><strong>Temporary</strong><small>used only for the current download session</small></div></div>
+      <div class="table-card section portfolio-board"><table class="data-table"><thead><tr><th>Course</th><th>Academic year</th><th>S1</th><th>S2</th><th>Summer</th><th>Approval</th><th></th></tr></thead><tbody>${groups.map(g=>`<tr><td><strong>${esc(g.courseCode)}</strong><div class="tiny">${esc(g.courseName)}</div></td><td><strong>${esc(g.academicYear)}</strong></td><td>${periodStatusHtml(g,'S1')}</td><td>${periodStatusHtml(g,'S2')}</td><td>${periodStatusHtml(g,'Summer')}</td><td>${progressHtml(portfolioOfficialPercent(g))}<div class="tiny" style="margin-top:4px">${esc(portfolioStatusText(g))}</div></td><td><button class="btn btn-ghost" data-open-portfolio="${esc(g.key)}">Build portfolio →</button></td></tr>`).join('')}</tbody></table></div>`;
+  }
+  function renderCoursePortfolioDetail(g){
+    const approved=portfolioApprovedReports(g),instructors=[...new Set(g.reports.map(r=>r.instructor).filter(Boolean))];
+    const term=portfolioActiveTerms.get(g.key)||g.reports.find(r=>r.semester)?.semester||'S1';portfolioActiveTerms.set(g.key,term);
+    const selected=portfolioSelectedCount(g);
+    return `<button class="btn btn-ghost" id="portfolioBack">← Course Portfolios</button>
+      <div class="portfolio-detail-hero"><div class="portfolio-title-line"><div><span class="eyebrow">Course portfolio builder</span><h1>${esc(g.courseCode)} <span>— ${esc(g.courseName)}</span></h1><p>Add documents to the sections below, then download the portfolio. Acadeloop uses the files only to build the ZIP; it does not save or upload them anywhere.</p></div><div class="page-actions"><button class="btn btn-primary" id="downloadPortfolioZip">Download portfolio ZIP</button></div></div>
+      <div class="portfolio-meta-row"><div><span>Academic year</span><strong>${esc(g.academicYear)}</strong></div><div><span>Instructors</span><strong>${esc(instructors.join(', ')||'—')}</strong></div><div><span>Files selected</span><strong>${selected}</strong></div><div><span>Approved reports</span><strong>${approved.length}</strong></div></div></div>
+      <div class="portfolio-session-notice"><div><strong>Files are temporary</strong><span>Selected documents remain only in this open browser session. Refreshing or closing the page clears them.</span></div><span class="portfolio-session-pill">Not stored</span></div>
+      ${portfolioCourseDocumentsHtml(g)}
+      <div class="portfolio-term-tabs">${TERMS.map(t=>`<button type="button" class="portfolio-term-tab ${t===term?'active':''}" data-portfolio-term="${t}"><strong>${semesterFolderName(t)}</strong><span>${portfolioSelectedCount(g,`Year ${safeFolderName(g.academicYear)}/${semesterFolderName(t)}`)} files</span></button>`).join('')}</div>
+      ${portfolioSemesterUploadsHtml(g,term)}
+      <div class="portfolio-download-footer"><div><strong>Ready to generate</strong><span>${selected} selected file${selected===1?'':'s'} will be packaged with ${approved.length} approved Course Report record${approved.length===1?'':'s'} and generated CLO data.</span></div><button class="btn btn-primary" id="downloadPortfolioZipBottom">Download portfolio ZIP</button></div>`;
+  }
+
+  function renderPlo(){
+    const roll=ploRollups(ploYear,ploTerm); const selected=activePlo?roll.find(x=>x.code===activePlo):null;
+    return roleHero()+pageHead('Approved outcomes only','PLO Attainment','PLOs are calculated only from Coordinator-approved reports. Switch between S1, S2, Summer, or Annual for the selected academic year.',periodFilter())+`
+      <div class="grid grid-4"><div class="card metric"><div class="label">Reporting period</div><div class="value period-value">${esc(ploTerm)}</div><div class="sub">${esc(ploYear)}</div></div><div class="card metric"><div class="label">Approved reports used</div><div class="value">${approvedReports(ploYear,ploTerm).length}</div><div class="sub">Pending/returned excluded</div></div><div class="card metric"><div class="label">Overall attainment</div><div class="value">${formatPct(overallPlo(ploYear,ploTerm))}</div><div class="sub">Weighted by completed students</div></div><div class="card metric"><div class="label">PLOs meeting target</div><div class="value">${roll.filter(x=>x.met).length}/${roll.length}</div><div class="sub">Official results</div></div></div>
+      <div class="plo-grid section">${roll.map(p=>`<div class="plo-card ${activePlo===p.code?'active':''}" data-plo="${esc(p.code)}"><div class="plo-card-head"><span class="plo-code">${esc(p.code)}</span><span class="plo-score ${p.actual!==null&&!p.met?'text-warn':''}">${p.actual===null?'—':formatPct(p.actual)}</span></div><div class="plo-name">${esc(p.name)}</div><div class="mini-bar"><span style="width:${clamp(p.actual||0)}%"></span></div><div class="tiny" style="margin-top:8px">Target ${p.target}% · ${p.rows.length} approved CLO source${p.rows.length===1?'':'s'}</div></div>`).join('')}</div>
+      ${selected?renderPloDetail(selected):''}`;
+  }
+  function renderPloDetail(p){return `<div class="section"><div class="section-title"><div><h2>${esc(p.code)} traceability</h2><p>Every contribution links back to an approved Course Report and reporting period.</p></div></div><div class="table-card"><table class="data-table rollup-table"><thead><tr><th>Course</th><th>Period</th><th>CLO</th><th>Actual</th><th>Completed students</th><th></th></tr></thead><tbody>${p.rows.length?p.rows.map(x=>`<tr><td>${esc(x.report.courseCode)}</td><td>${periodPill(x.report)}</td><td><strong>${esc(x.clo.code)}</strong><div class="tiny">${esc(x.clo.text)}</div></td><td>${formatPct(x.actual)}</td><td>${x.weight}</td><td><button class="btn btn-ghost" data-edit-report="${x.report.id}">View approved report</button></td></tr>`).join(''):'<tr><td colspan="6" class="empty">No approved CLO evidence for this PLO in the selected period.</td></tr>'}</tbody></table></div></div>`}
+
+  function renderApr(){
+    const year=ploYear,annual=ploRollups(year,'Annual'),terms=TERMS.map(t=>({t,roll:ploRollups(year,t)}));
+    return roleHero()+pageHead('Annual aggregation','Annual Program Report',`APR ${year} combines only approved S1, S2, and Summer course-report results. Semester results remain traceable separately.`,`<label class="inline-select-label"><span>Academic year</span><select id="aprYear">${state.academicYears.map(y=>`<option ${y===year?'selected':''}>${esc(y)}</option>`).join('')}</select></label><button class="btn btn-ghost" id="exportAprCsv">Export APR data</button>`)+`
+      <div class="apr-hero"><div><span class="eyebrow">APR ${esc(year)}</span><h2>${aprReadiness(year)}% reporting readiness</h2><p>${approvedReports(year,'Annual').length} Quality-approved report${approvedReports(year,'Annual').length===1?'':'s'} currently feed the annual program report.</p></div><div class="apr-score">${formatPct(overallPlo(year,'Annual'))}<span>overall PLO attainment</span></div></div>
+      <div class="section"><div class="section-title"><div><h2>Semester separation</h2><p>Annual values do not overwrite semester results.</p></div></div><div class="grid grid-3">${terms.map(x=>`<div class="card"><span class="eyebrow">${x.t} ${esc(year)}</span><div class="big-inline">${formatPct(overallPlo(year,x.t))}</div><div class="tiny">${approvedReports(year,x.t).length} approved report${approvedReports(year,x.t).length===1?'':'s'} · ${x.roll.filter(p=>p.met).length}/${x.roll.length} PLOs meeting target</div></div>`).join('')}</div></div>
+      <div class="section"><div class="section-title"><div><h2>Annual PLO table</h2><p>Weighted by completed students across all approved semesters.</p></div></div><div class="table-card"><table class="data-table"><thead><tr><th>PLO</th><th>Target</th><th>S1</th><th>S2</th><th>Summer</th><th>Annual</th><th>Status</th></tr></thead><tbody>${annual.map(p=>`<tr><td><strong>${esc(p.code)}</strong><div class="tiny">${esc(p.name)}</div></td><td>${p.target}%</td>${TERMS.map(t=>{const q=ploRollups(year,t).find(z=>z.code===p.code);return `<td>${q?.actual==null?'—':formatPct(q.actual)}</td>`}).join('')}<td><strong>${p.actual==null?'—':formatPct(p.actual)}</strong></td><td>${p.actual==null?'<span class="tag">No data</span>':p.met?'<span class="tag blue">Achieved</span>':'<span class="status-pill status-ReturnedforRevision">Below target</span>'}</td></tr>`).join('')}</tbody></table></div></div>`;
+  }
+
+  function renderOperational(){
+    const editable=state.role==='Coordinator';
+    return roleHero()+pageHead('Execution','Operational Plan','Track objectives and KPIs separately from Course Report approval. Approved course-report and PLO data can be cited as evidence.',editable?'<button class="btn btn-primary" data-new="plan">＋ New KPI</button>':'')+`
+      <div class="table-card"><table class="data-table"><thead><tr><th>Objective</th><th>KPI</th><th>Target</th><th>Actual</th><th>Owner</th><th>Due</th><th>Status</th></tr></thead><tbody>${state.operational.map(x=>`<tr><td><strong>${esc(x.objective)}</strong></td><td>${esc(x.kpi)}</td><td>${x.target}${esc(x.unit||'%')}</td><td>${x.actual}${esc(x.unit||'%')}</td><td>${esc(x.owner)}</td><td>${esc(x.due||'—')}</td><td>${statusPill(x.status)}</td></tr>`).join('')}</tbody></table></div>`;
+  }
+  function renderAutomations(){return roleHero()+pageHead('Workflow engine','Automations','Core controls that prevent unapproved data from entering official program quality results.')+`<div class="grid grid-2">${state.automations.map(a=>`<div class="card automation-card"><div class="automation-icon">${esc(a.icon)}</div><div><strong>${esc(a.name)}</strong><p>${esc(a.description)}</p></div><span class="tag blue">Active</span></div>`).join('')}</div>`}
+
+  function renderUsers(){
+    const rows=userDirectory.map(u=>`<tr><td><strong>${esc(u.firstName)} ${esc(u.lastName)}</strong><div class="tiny">${esc(u.email)}</div></td><td>${esc(u.department||'—')}</td><td><span class="user-table-role">${esc(u.role)}</span></td><td><span class="user-table-role user-status-active">${u.active===false?'Inactive':'Active'}</span></td><td>${esc(u.createdAt?String(u.createdAt).slice(0,10):'—')}</td></tr>`).join('');
+    return roleHero()+pageHead('Access control','Users','Only the Head of Department can add users. There is no registration page. In this offline testing build, preset users sign in by test username and HOD-added users sign in by email.')+`
+      <div class="user-directory-note"><div class="automation-icon">↗</div><div><strong>Offline testing access</strong><span>Adding a user authorizes that email address in this browser. Preset accounts use test usernames. No password, code, or registration is used in this testing build.</span></div></div>
+      <div class="user-admin-grid"><div class="table-card"><table class="data-table"><thead><tr><th>User</th><th>Department</th><th>Role</th><th>Status</th><th>Added</th></tr></thead><tbody>${rows||'<tr><td colspan="5" class="empty">No authorized users have been added yet.</td></tr>'}</tbody></table></div>
+      <div class="card user-add-card"><h3>Add authorized user</h3><p>The role can only be Instructor or Coordinator. Preset test accounts are TestHOD, TestI, TestQ, and TestI2.</p><div class="form-grid"><div class="field f6"><label>First name *</label><input id="auFirst" autocomplete="off"></div><div class="field f6"><label>Last name *</label><input id="auLast" autocomplete="off"></div><div class="field f12"><label>Department *</label><input id="auDepartment" value="${esc(state.program.department)}"></div><div class="field f12"><label>Role *</label><select id="auRole"><option>Instructor</option><option>Coordinator</option></select></div><div class="field f12"><label>Email *</label><input type="email" id="auEmail" placeholder="name@university.edu"></div><div class="field f12"><button class="btn btn-primary" id="addAuthorizedUser" style="width:100%">Add user</button></div></div></div></div>`;
+  }
+
+  function renderSetup(){return roleHero()+pageHead('Administration','Program Setup','Configure program identity, academic years, and PLO targets. Academic year and semester are mandatory on every Course Report.')+`
+    <div class="grid grid-2"><div class="card"><div class="form-grid"><div class="field f12"><label>Institution</label><input id="spInstitution" value="${esc(state.program.institution)}"></div><div class="field f12"><label>College</label><input id="spCollege" value="${esc(state.program.college)}"></div><div class="field f12"><label>Department</label><input id="spDepartment" value="${esc(state.program.department)}"></div><div class="field f12"><label>Program</label><input id="spProgram" value="${esc(state.program.name)}"></div><div class="field f6"><label>Current academic year</label><input id="spYear" value="${esc(state.program.academicYear)}"></div><div class="field f6"><label>Available years</label><input id="spYears" value="${esc(state.academicYears.join(', '))}"></div><div class="field f12"><button class="btn btn-primary" id="saveSetup">Save program setup</button></div></div></div><div class="card"><h3 style="margin-top:0">PLO targets</h3>${state.plos.map((p,i)=>`<div class="setup-plo-row"><strong>${esc(p.code)}</strong><span>${esc(p.name)}</span><input type="number" min="0" max="100" value="${p.target}" data-plo-target="${i}"></div>`).join('')}<button class="btn btn-ghost" id="savePloTargets" style="margin-top:12px">Save targets</button></div></div>`}
+
+  function openReport(id){
+    const r=state.reports.find(x=>x.id===id); if(!r)return; ensureSectionModel(r); currentReportId=id;
+    $('drawerEyebrow').textContent = state.role==='Coordinator'&&r.status==='Awaiting Quality Approval'?'Quality approval review':'Course report';
+    $('drawerTitle').textContent = `${r.courseCode} · ${periodLabel(r)}`;
+    const editable=canEditReport(r), review=state.role==='Coordinator'&&r.status==='Awaiting Quality Approval';
+    $('drawerBody').innerHTML=reportFormHtml(r,editable,review);
+    const actions=[];
+    actions.push(`<button class="btn btn-ghost" id="downloadReport">Generate DOCX</button>`);
+    if(editable){actions.push(`<button class="btn btn-soft" id="saveReport">Save draft</button><button class="btn btn-primary" id="submitReport">Submit for Quality Approval</button>`);}
+    if(review){actions.push(`<button class="btn btn-danger" id="returnReport">Return for Revision</button><button class="btn btn-primary" id="approveReport">Approve Course Report</button>`);}
+    $('drawerFoot').innerHTML=actions.join(''); showDrawer(); bindReportEvents(r,editable,review);
+  }
+
+  function reportFormHtml(r,editable,review){
+    const dis=editable?'':'disabled';
+    return `<div class="review-banner"><strong>${esc(periodLabel(r))}</strong><span>${sectionLabel(r.sectionMode)} scope · ${esc(r.instructor)} · ${statusPill(r.status)}</span></div>
+      ${review?'<div class="approval-gate-note"><strong>Quality approval gate</strong><span>You are reviewing the exact instructor-entered data. Fields are read-only. Approve to release CLOs to PLO/APR/HOD, or return with a revision reason.</span></div>':''}
+      ${r.status==='Returned for Revision'&&r.revisionNote?`<div class="revision-note"><strong>Coordinator revision request</strong><span>${esc(r.revisionNote)}</span></div>`:''}
+      <div class="form-grid"><div class="field f3"><label>Course code</label><input id="rfCode" value="${esc(r.courseCode)}" ${dis}></div><div class="field f9"><label>Course title</label><input id="rfName" value="${esc(r.courseName)}" ${dis}></div><div class="field f4"><label>Academic year</label><select id="rfYear" ${dis}>${state.academicYears.map(y=>`<option ${y===r.academicYear?'selected':''}>${esc(y)}</option>`).join('')}</select></div><div class="field f4"><label>Semester</label><select id="rfSemester" ${dis}>${TERMS.map(t=>`<option ${t===r.semester?'selected':''}>${t}</option>`).join('')}</select></div><div class="field f4"><label>Report date</label><input type="date" id="rfDate" value="${esc(r.reportDate||nowDate())}" ${dis}></div><div class="field f6"><label>Instructor</label><input id="rfInstructor" value="${esc(r.instructor)}" disabled></div><div class="field f6"><label>Coordinator</label><input id="rfCoordinator" value="${esc(r.coordinator||r.instructor)}" ${dis}></div></div>
+      <div class="drawer-section"><div class="drawer-section-head"><h3>Section reporting scope</h3><span>${sectionPill(r.sectionMode)}</span></div>${editable?`<div class="scope-selector">${[['male','Male','Male section only'],['female','Female','Female section only'],['combined','Combined','Combined result only'],['all','All','Enter Male + Female together; Combined auto-calculates']].map(([k,l,d])=>`<div class="scope-option"><input type="radio" name="reportScope" id="scope_${k}" value="${k}" ${r.sectionMode===k?'checked':''}><label for="scope_${k}"><strong>${l}</strong><span>${d}</span></label></div>`).join('')}</div>`:`<p class="tiny">${esc(sectionLabel(r.sectionMode))} section reporting scope</p>`}${r.sectionMode==='all'?`<div class="auto-combine-banner"><div><strong>Combined is calculated automatically and cannot be edited</strong><span>Student counts and every grade/status count are added Male + Female. CLO actuals are weighted by completed students. Acadeloop verifies the arithmetic again before save, submission, approval, PLO calculation, and export.</span></div><span class="tag blue">Calculation locked</span></div>`:''}</div>
+      <div class="drawer-section"><div class="drawer-section-head"><h3>Course Learning Outcomes</h3><span class="tiny">Mapping and assessment definition</span></div><div class="clo-master">${(r.clos||[]).map((c,i)=>`<div class="clo-master-row"><span class="cm-code">${esc(c.code)}</span><input data-clo-text="${i}" value="${esc(c.text)}" ${dis}><select data-clo-domain="${i}" ${dis}>${['K','S','V'].map(d=>`<option ${d===c.domain?'selected':''}>${d}</option>`).join('')}</select><input data-clo-method="${i}" value="${esc(c.method||'')}" placeholder="Assessment method" ${dis}><select data-clo-plo="${i}" ${dis}>${state.plos.map(p=>`<option value="${esc(p.code)}" ${p.code===c.plo?'selected':''}>${esc(p.code)}</option>`).join('')}</select><input data-clo-target="${i}" type="number" min="0" max="100" value="${esc(c.target)}" ${dis}></div>`).join('')}</div>${editable?'<button class="btn btn-ghost" id="addClo" style="margin-top:8px">＋ Add CLO</button>':''}</div>
+      <div class="drawer-section"><div class="drawer-section-head"><h3>Section results</h3><span class="tiny">All sections can be entered on the same screen</span></div><div class="report-section-stack">${activeSectionKeys(r).map(k=>sectionEditorHtml(r,k,editable)).join('')}</div></div>
+      <div class="drawer-section"><div class="drawer-section-head"><h3>Course Improvement Plan</h3><span class="tiny">Generated into report and portfolio</span></div><div id="improvementList">${(r.improvements||[]).map((x,i)=>improvementRowHtml(x,i,editable)).join('')}</div>${editable?'<button class="btn btn-ghost" id="addImprovement">＋ Add improvement action</button>':''}</div>
+      <div class="drawer-section"><div class="drawer-section-head"><h3>Approval trail</h3></div><div class="activity">${(r.activity||[]).slice().reverse().map(a=>`<div class="activity-row"><div class="activity-icon">•</div><div><strong>${esc(a.text)}</strong></div><time>${esc(a.date)}</time></div>`).join('')}</div></div>`;
+  }
+
+  function sectionEditorHtml(r,key,editable){
+    const sec=r.sectionData[key], combinedAuto=key==='combined'&&r.sectionMode==='all'; const dis=editable&&!combinedAuto?'':'disabled';
+    const inflation=gradeInflationForSection(sec),inflationReason=inflation.inflated?inflation.reasons.join(' · '):`A+ ${formatPct(inflation.aPlusPct)} · A and above ${formatPct(inflation.aOrAbovePct)}`;
+    const combinedInflated=r.sectionMode==='all'&&gradeInflationForSection(expectedCombinedSnapshot(r)).inflated;
+    const narrativeRequired=!combinedAuto&&(inflation.inflated||combinedInflated);
+    const reqReason=inflation.inflated?'grade inflation detected':'Combined grade inflation detected';
+    const reqNote=narrativeRequired?`<span class="inflation-required-note">Required — ${reqReason}</span>`:'';
+    const reqClass=narrativeRequired?'inflation-required-field':'';
+    return `<div class="report-section-card ${key}"><div class="report-section-head"><div><h4>${esc(sectionLabel(key))} section</h4><p>${combinedAuto?'Calculated automatically from Male + Female':'Enter this section directly'}</p></div>${sectionPill(key)}</div><div class="report-section-body">
+      <div class="section-summary-grid"><div class="field"><label>Students starting</label><input type="number" min="0" step="1" data-sec="${key}" data-field="studentsStart" value="${sec.studentsStart}" ${dis}></div><div class="field"><label>Students completed</label><input type="number" min="0" step="1" data-sec="${key}" data-field="studentsComplete" value="${sec.studentsComplete}" ${dis}></div><div class="field"><label>Grade total entered</label><input data-grade-total-sec="${key}" value="${Object.values(sec.grades).reduce((a,b)=>a+(Number(b)||0),0)}" disabled></div></div>${combinedAuto?'<div class="combined-math-note">Verified sum: Combined counts = Male + Female. Example: 20 A+ + 15 A+ = 35 A+.</div>':''}
+      <div class="grade-grid">${gradeDefs.map(([label])=>`<label><span>${esc(label)}</span><input type="number" min="0" step="1" data-grade-sec="${key}" data-grade="${esc(label)}" value="${Number(sec.grades[label])||0}" ${dis}></label>`).join('')}</div>
+      <div class="grade-inflation-banner ${inflation.inflated?'is-alert':''}" data-inflation-sec="${key}"><div><strong>${inflation.inflated?'Grade inflation detected':'Grade inflation check'}</strong><span>${esc(inflationReason)}${inflation.denominator?` · ${inflation.denominator} letter-graded students`:''}</span></div><span>${inflation.inflated?'Comment + recommendation required':'No inflation detected'}</span></div>
+      <div class="section-comment-grid"><div class="field"><label>Comment on student grades <span data-inflation-required-note="${key}">${reqNote}</span></label><textarea data-sec="${key}" data-field="gradeComment" class="${reqClass}" ${dis}>${esc(sec.gradeComment)}</textarea></div><div class="field"><label>Recommendations on grades <span data-inflation-required-note2="${key}">${reqNote}</span></label><textarea data-sec="${key}" data-field="gradeRecommendation" class="${reqClass}" ${dis}>${esc(sec.gradeRecommendation)}</textarea></div><div class="field full"><label>Recommendations on CLOs</label><textarea data-sec="${key}" data-field="cloRecommendation" ${dis}>${esc(sec.cloRecommendation)}</textarea></div></div>
+      <div class="section-title mini"><div><h2>CLO results</h2><p>Actual attainment and comment for this section</p></div></div><table class="clo-result-table"><thead><tr><th>CLO</th><th>PLO</th><th>Target</th><th>Actual</th><th>Comment</th></tr></thead><tbody>${(r.clos||[]).map(c=>{const cr=sec.cloResults[c.code]||{};return `<tr><td class="code-cell">${esc(c.code)}</td><td>${esc(c.plo)}</td><td>${esc(c.target)}%</td><td class="actual-cell"><input type="number" min="0" max="100" step="0.1" data-clo-result-sec="${key}" data-clo-code="${esc(c.code)}" data-result-field="actual" value="${esc(cr.actual)}" class="${combinedAuto?'combined-readonly':''}" ${dis}></td><td><input data-clo-result-sec="${key}" data-clo-code="${esc(c.code)}" data-result-field="comment" value="${esc(cr.comment||'')}" class="${combinedAuto?'combined-readonly':''}" ${dis}></td></tr>`}).join('')}</tbody></table>
+    </div></div>`;
+  }
+  function improvementRowHtml(x,i,editable){const dis=editable?'':'disabled';return `<div class="improvement-row"><input data-imp-rec="${i}" placeholder="Recommendation" value="${esc(x.recommendation||'')}" ${dis}><input data-imp-action="${i}" placeholder="Action needed" value="${esc(x.action||'')}" ${dis}><input data-imp-support="${i}" placeholder="Support required" value="${esc(x.support||'')}" ${dis}></div>`}
+
+  function collectReport(r){
+    if(!$('rfCode'))return;
+    if(canEditReport(r)){
+      r.courseCode=$('rfCode').value.trim(); r.courseName=$('rfName').value.trim(); r.academicYear=$('rfYear').value; r.semester=$('rfSemester').value; r.reportDate=$('rfDate').value; r.coordinator=$('rfCoordinator').value.trim();
+      const scope=document.querySelector('input[name="reportScope"]:checked'); if(scope)r.sectionMode=scope.value; if(r.sectionMode==='all')r.autoCombine=true;
+      document.querySelectorAll('[data-clo-text]').forEach(el=>{const i=Number(el.dataset.cloText);r.clos[i].text=el.value});
+      document.querySelectorAll('[data-clo-domain]').forEach(el=>r.clos[Number(el.dataset.cloDomain)].domain=el.value);
+      document.querySelectorAll('[data-clo-method]').forEach(el=>r.clos[Number(el.dataset.cloMethod)].method=el.value);
+      document.querySelectorAll('[data-clo-plo]').forEach(el=>r.clos[Number(el.dataset.cloPlo)].plo=el.value);
+      document.querySelectorAll('[data-clo-target]').forEach(el=>r.clos[Number(el.dataset.cloTarget)].target=Number(el.value)||0);
+      document.querySelectorAll('[data-sec][data-field]').forEach(el=>{if(r.sectionMode==='all'&&el.dataset.sec==='combined')return;const s=r.sectionData[el.dataset.sec];if(!s)return;const f=el.dataset.field;s[f]=(f==='studentsStart'||f==='studentsComplete')?Number(el.value)||0:el.value});
+      document.querySelectorAll('[data-grade-sec]').forEach(el=>{if(r.sectionMode==='all'&&el.dataset.gradeSec==='combined')return;r.sectionData[el.dataset.gradeSec].grades[el.dataset.grade]=Number(el.value)||0});
+      document.querySelectorAll('[data-clo-result-sec]').forEach(el=>{if(r.sectionMode==='all'&&el.dataset.cloResultSec==='combined')return;const sec=r.sectionData[el.dataset.cloResultSec],code=el.dataset.cloCode,field=el.dataset.resultField;if(!sec.cloResults[code])sec.cloResults[code]={actual:'',comment:''};sec.cloResults[code][field]=field==='actual'?(el.value===''?'':Number(el.value)):el.value});
+      r.improvements=(r.improvements||[]).map((x,i)=>({recommendation:document.querySelector(`[data-imp-rec="${i}"]`)?.value||x.recommendation||'',action:document.querySelector(`[data-imp-action="${i}"]`)?.value||x.action||'',support:document.querySelector(`[data-imp-support="${i}"]`)?.value||x.support||''}));
+      if(r.sectionMode==='all')enforceCombinedIntegrity(r,false); syncFlatFromEffective(r);
+    }
+  }
+
+  function refreshGradeTotalsUI(r){
+    if(!r.sectionData)return;
+    ['male','female','combined'].forEach(key=>{const sec=r.sectionData[key];if(!sec)return;const el=document.querySelector(`[data-grade-total-sec="${key}"]`);if(el)el.value=gradeDefs.reduce((sum,[label])=>sum+(Number(sec.grades[label])||0),0);});
+  }
+  function refreshGradeInflationUI(r){
+    if(!r.sectionData)return;
+    activeSectionKeys(r).forEach(key=>{
+      const sec=r.sectionData[key],info=gradeInflationForSection(sec),combinedAuto=key==='combined'&&r.sectionMode==='all';
+      const banner=document.querySelector(`[data-inflation-sec="${key}"]`);
+      if(banner){banner.classList.toggle('is-alert',info.inflated);const reason=info.inflated?info.reasons.join(' · '):`A+ ${formatPct(info.aPlusPct)} · A and above ${formatPct(info.aOrAbovePct)}`;banner.innerHTML=`<div><strong>${info.inflated?'Grade inflation detected':'Grade inflation check'}</strong><span>${esc(reason)}${info.denominator?` · ${info.denominator} letter-graded students`:''}</span></div><span>${info.inflated&&!combinedAuto?'Comment + recommendation required':info.inflated?'Derived from source sections':'No inflation detected'}</span>`;}
+      const combinedInflated=r.sectionMode==='all'&&gradeInflationForSection(expectedCombinedSnapshot(r)).inflated;
+      const required=!combinedAuto&&(info.inflated||combinedInflated);
+      const reason=info.inflated?'grade inflation detected':'Combined grade inflation detected';
+      const note=`${required?`<span class="inflation-required-note">Required — ${reason}</span>`:''}`;
+      const n1=document.querySelector(`[data-inflation-required-note="${key}"]`),n2=document.querySelector(`[data-inflation-required-note2="${key}"]`);if(n1)n1.innerHTML=note;if(n2)n2.innerHTML=note;
+      ['gradeComment','gradeRecommendation'].forEach(field=>{const el=document.querySelector(`[data-sec="${key}"][data-field="${field}"]`);if(el)el.classList.toggle('inflation-required-field',required);});
+    });
+  }
+
+  function refreshCombinedUI(r){
+    if(r.sectionMode!=='all')return;
+    enforceCombinedIntegrity(r,false);
+    const c=r.sectionData.combined;
+    const setValue=(selector,value)=>{const el=document.querySelector(selector);if(el)el.value=value??'';};
+    // Keep source-section totals visible while typing as well as the derived Combined total.
+    refreshGradeTotalsUI(r);
+    setValue('[data-sec="combined"][data-field="studentsStart"]',c.studentsStart);
+    setValue('[data-sec="combined"][data-field="studentsComplete"]',c.studentsComplete);
+    document.querySelectorAll('[data-grade-sec="combined"]').forEach(el=>{el.value=Number(c.grades[el.dataset.grade])||0;});
+    document.querySelectorAll('[data-clo-result-sec="combined"]').forEach(el=>{const cr=c.cloResults[el.dataset.cloCode]||{};el.value=el.dataset.resultField==='actual'?(cr.actual??''):(cr.comment||'');});
+    setValue('[data-sec="combined"][data-field="gradeComment"]',c.gradeComment);
+    setValue('[data-sec="combined"][data-field="gradeRecommendation"]',c.gradeRecommendation);
+    setValue('[data-sec="combined"][data-field="cloRecommendation"]',c.cloRecommendation);
+    refreshGradeInflationUI(r);
+  }
+
+  function validateForSubmission(r){
+    collectReport(r);
+    return validateReport(r,{ploCodes:state.plos.map(p=>p.code)});
+  }
+
+  function bindReportEvents(r,editable,review){
+    if(editable){
+      document.querySelectorAll('input[name="reportScope"]').forEach(el=>el.addEventListener('change',()=>{collectReport(r);r.sectionMode=el.value;ensureSectionModel(r);saveState();openReport(r.id)}));
+      document.querySelectorAll('[data-sec],[data-grade-sec],[data-clo-result-sec]').forEach(el=>el.addEventListener('input',()=>{collectReport(r);refreshGradeTotalsUI(r);if(r.sectionMode==='all')refreshCombinedUI(r);else refreshGradeInflationUI(r);}));
+      if($('addClo'))$('addClo').addEventListener('click',()=>{collectReport(r);const idx=(r.clos||[]).length+1;r.clos.push({code:`2.${idx}`,domain:'S',text:'New course learning outcome',plo:state.plos[0]?.code||'',method:'',target:70});['male','female','combined'].forEach(k=>r.sectionData[k].cloResults[r.clos.at(-1).code]={actual:'',comment:''});saveState();openReport(r.id)});
+      if($('addImprovement'))$('addImprovement').addEventListener('click',()=>{collectReport(r);r.improvements.push({recommendation:'',action:'',support:''});saveState();openReport(r.id)});
+      if($('saveReport'))$('saveReport').addEventListener('click',()=>{try{collectReport(r);if(r.sectionMode==='all')enforceCombinedIntegrity(r);saveState();render();toast('Draft saved. Combined arithmetic verified.');}catch(e){console.error(e);toast('Could not save: Combined arithmetic check failed.');}});
+      if($('submitReport'))$('submitReport').addEventListener('click',()=>{const errors=validateForSubmission(r);if(errors.length){toast(`Complete before submission: ${errors.slice(0,3).join(', ')}${errors.length>3?'…':''}`);return;}if(r.sectionMode==='all')enforceCombinedIntegrity(r);syncFlatFromEffective(r);r.status='Awaiting Quality Approval';r.submittedAt=nowDate();r.revisionNote='';r.activity=r.activity||[];r.activity.push({text:'Submitted for Coordinator approval',date:nowDate()});state.audit.unshift({icon:'→',title:`${r.courseCode} submitted`,detail:`${periodLabel(r)} is awaiting Coordinator approval.`,time:'Now'});saveState();hideDrawer();render();toast('Submitted. The report is now locked and waiting for Coordinator approval.');});
+    }
+    if(review){
+      if($('approveReport'))$('approveReport').addEventListener('click',()=>{ensureSectionModel(r);if(r.sectionMode==='all')enforceCombinedIntegrity(r);syncFlatFromEffective(r);const errors=validateForSubmission(r);if(errors.length){toast(`Cannot approve: ${errors.slice(0,3).join(', ')}${errors.length>3?'…':''}`);return;}r.status='Approved';r.approvedAt=nowDate();r.approvedBy=currentUserName();r.revisionNote='';r.activity=r.activity||[];r.activity.push({text:`Approved by ${currentUserName()}; released to PLO calculation, APR, generated portfolio, and HOD dashboard`,date:nowDate()});state.audit.unshift({icon:'✓',title:`${r.courseCode} approved`,detail:`${periodLabel(r)} official CLO results released to PLO/APR/HOD.`,time:'Now'});saveState();hideDrawer();render();toast('Approved. This report now feeds the official PLO calculations and HOD dashboard.');});
+      if($('returnReport'))$('returnReport').addEventListener('click',()=>openReturnModal(r));
+    }
+    if($('downloadReport'))$('downloadReport').addEventListener('click',async()=>{const btn=$('downloadReport');btn.disabled=true;btn.textContent='Generating…';try{await downloadCourseReportDocx(r);toast('Course Report generated.');}catch(e){console.error(e);toast(e?.message||'Could not generate the Course Report.');}finally{btn.disabled=false;btn.textContent='Generate DOCX';}});
+  }
+
+  function openReturnModal(r){
+    $('modalTitle').textContent='Return Course Report for Revision';
+    $('modalBody').innerHTML=`<div class="approval-return-box"><p><strong>${esc(r.courseCode)} · ${esc(periodLabel(r))}</strong></p><p>Enter a clear revision reason. The instructor will see this note and can edit/resubmit the report.</p><textarea id="returnReason" placeholder="Example: CLO 2.1 actual attainment does not match the entered assessment result. Please verify and resubmit."></textarea><button class="btn btn-danger" id="confirmReturn" style="width:100%">Return to Instructor</button></div>`;
+    showModal();
+    $('confirmReturn').addEventListener('click',()=>{const reason=$('returnReason').value.trim();if(!reason){toast('Enter a revision reason.');return;}r.status='Returned for Revision';r.revisionNote=reason;r.activity=r.activity||[];r.activity.push({text:`Returned for revision: ${reason}`,date:nowDate()});state.audit.unshift({icon:'↩',title:`${r.courseCode} returned`,detail:`${periodLabel(r)} returned to instructor for revision.`,time:'Now'});saveState();hideModal();hideDrawer();render();toast('Returned to the instructor for revision.');});
+  }
+
+  function openNewReport(){
+    if(!canCreateReport()){toast('Only the Instructor workspace creates Course Reports.');return;}
+    const years=[...new Set([state.program.academicYear,...state.academicYears])];
+    $('modalTitle').textContent='New Course Report';
+    $('modalBody').innerHTML=`<div class="create-report-intro"><strong>1. Select the reporting period first</strong><span>The report is permanently separated by Academic Year + Semester.</span></div><div class="form-grid"><div class="field f6"><label>Academic year *</label><select id="nrYear"><option value="">Select academic year</option>${years.map(y=>`<option ${y===state.program.academicYear?'selected':''}>${esc(y)}</option>`).join('')}</select></div><div class="field f6"><label>Semester *</label><select id="nrSemester"><option value="">Select semester</option><option>S1</option><option>S2</option><option>Summer</option></select></div><div class="field f4"><label>Course code *</label><input id="nrCode" placeholder="e.g. HIM401"></div><div class="field f8"><label>Course title *</label><input id="nrName" placeholder="Course title"></div><div class="field f8"><label>Instructor</label><input id="nrInstructor" value="${esc(currentUserName())}" readonly></div><div class="field f4"><label>Teaching sections</label><input type="number" id="nrSections" value="2" min="1"></div><div class="field f12"><label>Section reporting scope *</label><div class="scope-selector">${[['male','Male','Male section only'],['female','Female','Female section only'],['combined','Combined','Combined result only'],['all','All','Enter Male + Female at once; Combined is calculated automatically']].map(([k,l,d])=>`<div class="scope-option"><input type="radio" name="newSectionScope" id="new_${k}" value="${k}" ${k==='all'?'checked':''}><label for="new_${k}"><strong>${l}</strong><span>${d}</span></label></div>`).join('')}</div></div><div class="field f12"><button class="btn btn-primary" id="createReport" style="width:100%">Create Course Report</button></div></div>`;
+    showModal();
+    $('createReport').addEventListener('click',()=>{
+      const year=$('nrYear').value,semester=$('nrSemester').value,code=$('nrCode').value.trim(),name=$('nrName').value.trim(),ins=$('nrInstructor').value.trim();
+      if(!year||!semester||!code||!name){toast('Academic year, semester, course code, and course title are required.');return;}
+      const mode=document.querySelector('input[name="newSectionScope"]:checked')?.value||'all';
+      const duplicate=state.reports.some(x=>x.courseCode.toLowerCase()===code.toLowerCase()&&x.academicYear===year&&x.semester===semester&&x.instructor===ins&&x.sectionMode===mode);
+      if(duplicate){toast('A report for this course, period, instructor, and scope already exists.');return;}
+      const sectionCount=Number($('nrSections').value);if(!Number.isInteger(sectionCount)||sectionCount<1){toast('Teaching sections must be a positive whole number.');return;}
+      const r={id:uid(),courseCode:code,courseName:name,academicYear:year,semester,instructor:ins,instructorEmail:currentUser?.email||'',coordinator:ins,sections:sectionCount,sectionMode:mode,autoCombine:true,location:'main',status:'Draft',submittedAt:'',approvedAt:'',approvedBy:'',revisionNote:'',reportDate:nowDate(),clos:[{code:'1.1',domain:'K',text:'Course learning outcome',plo:state.plos[0]?.code||'',method:'',target:70}],improvements:[],activity:[{text:`Draft created for ${semester} ${year}`,date:nowDate()}]};
+      r.sectionData={male:blankSectionFor(r),female:blankSectionFor(r),combined:blankSectionFor(r)};ensureSectionModel(r);state.reports.push(r);if(!state.academicYears.includes(year))state.academicYears.push(year);saveState();hideModal();render();openReport(r.id);
+    });
+  }
+
+  async function loadUsers(){
+    if(state.role!=='Head of Department') return;
+    userDirectory=loadLocalUsers();
+  }
+  async function addAuthorizedUser(){
+    const first=$('auFirst')?.value.trim(),last=$('auLast')?.value.trim(),department=$('auDepartment')?.value.trim(),role=$('auRole')?.value,email=$('auEmail')?.value.trim().toLowerCase();
+    if(!first||!last||!department||!email){toast('First name, last name, department, role, and email are required.');return;}
+    if(!$('auEmail')?.checkValidity()){toast('Enter a valid email address.');return;}
+    if(!['Instructor','Coordinator'].includes(role)){toast('Role must be Instructor or Coordinator.');return;}
+    const btn=$('addAuthorizedUser');if(btn){btn.disabled=true;btn.textContent='Adding…'}
+    const users=loadLocalUsers();
+    if(users.some(u=>String(u.email||'').toLowerCase()===email)){toast('This email is already authorized.');if(btn){btn.disabled=false;btn.textContent='Add user'}return;}
+    users.push({id:uid(),firstName:first,lastName:last,department,role,email,active:true,createdAt:nowDate()});
+    saveLocalUsers(users);userDirectory=users;render();toast('User added. They can now sign in directly with this email on this browser.');
+  }
+
+  function openNewPlan(){
+    $('modalTitle').textContent='New operational KPI';$('modalBody').innerHTML=`<div class="form-grid"><div class="field f12"><label>Objective</label><input id="npObjective"></div><div class="field f12"><label>KPI</label><input id="npKpi"></div><div class="field f4"><label>Target (%)</label><input type="number" id="npTarget" value="100"></div><div class="field f4"><label>Current actual (%)</label><input type="number" id="npActual" value="0"></div><div class="field f4"><label>Due date</label><input type="date" id="npDue"></div><div class="field f6"><label>Owner</label><input id="npOwner"></div><div class="field f6"><label>Evidence source</label><input id="npEvidence"></div><div class="field f12"><button class="btn btn-primary" id="createPlan" style="width:100%">Add KPI</button></div></div>`;showModal();
+    $('createPlan').addEventListener('click',()=>{if(!$('npObjective').value.trim()||!$('npKpi').value.trim()){toast('Enter objective and KPI.');return;}const target=clamp($('npTarget').value),actual=clamp($('npActual').value);state.operational.push({id:uid(),objective:$('npObjective').value.trim(),kpi:$('npKpi').value.trim(),target,actual,unit:'%',owner:$('npOwner').value.trim()||'Unassigned',due:$('npDue').value||'',status:actual>=target?'On Track':'Needs Attention',evidence:$('npEvidence').value.trim()||'Not linked'});saveState();hideModal();render();toast('Operational KPI added.');});
+  }
+
+  function bindViewEvents(){
+    if($('inflationOnlyCheck')){const applyInflationFilter=()=>{dashboardInflationOnly=$('inflationOnlyCheck').checked;document.querySelectorAll('[data-dashboard-course]').forEach(row=>{row.style.display=!dashboardInflationOnly||row.dataset.inflation==='1'?'':'none';});};$('inflationOnlyCheck').addEventListener('change',applyInflationFilter);applyInflationFilter();}
+    document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));
+    document.querySelectorAll('[data-new="report"]').forEach(b=>b.addEventListener('click',openNewReport));
+    document.querySelectorAll('[data-new="plan"]').forEach(b=>b.addEventListener('click',openNewPlan));
+    document.querySelectorAll('[data-edit-report]').forEach(b=>b.addEventListener('click',()=>openReport(b.dataset.editReport)));
+    document.querySelectorAll('[data-open-portfolio]').forEach(b=>b.addEventListener('click',()=>{currentPortfolioId=b.dataset.openPortfolio;currentView='course-portfolios';render();window.scrollTo({top:0,behavior:'smooth'});}));
+    document.querySelectorAll('[data-plo]').forEach(c=>c.addEventListener('click',()=>{activePlo=c.dataset.plo;render();}));
+    if($('reportSearch')||$('yearFilter')||$('semesterFilter')||$('statusFilter')){
+      const filter=()=>{const q=($('reportSearch')?.value||'').toLowerCase(),y=$('yearFilter')?.value||'',s=$('semesterFilter')?.value||'',st=$('statusFilter')?.value||'';document.querySelectorAll('[data-report-row]').forEach(row=>{row.style.display=(!q||row.dataset.search.includes(q))&&(!y||row.dataset.year===y)&&(!s||row.dataset.semester===s)&&(!st||row.dataset.status===st)?'':'none';});};
+      ['reportSearch','yearFilter','semesterFilter','statusFilter'].forEach(id=>$(id)?.addEventListener(id==='reportSearch'?'input':'change',filter));
+    }
+    if($('periodYear'))$('periodYear').addEventListener('change',()=>{ploYear=$('periodYear').value;activePlo=null;render();});
+    if($('periodTerm'))$('periodTerm').addEventListener('change',()=>{ploTerm=$('periodTerm').value;activePlo=null;render();});
+    if($('aprYear'))$('aprYear').addEventListener('change',()=>{ploYear=$('aprYear').value;render();});
+    if($('portfolioBack'))$('portfolioBack').addEventListener('click',()=>{currentPortfolioId=null;render();});
+    document.querySelectorAll('[data-portfolio-term]').forEach(b=>b.addEventListener('click',()=>{const g=portfolioGroupsForRole().find(x=>x.key===currentPortfolioId);if(!g)return;portfolioActiveTerms.set(g.key,b.dataset.portfolioTerm);render();}));
+    document.querySelectorAll('input[data-portfolio-upload]').forEach(input=>input.addEventListener('change',()=>{const g=portfolioGroupsForRole().find(x=>x.key===currentPortfolioId);if(!g||!input.files?.length)return;addPortfolioFiles(g,input.dataset.portfolioUpload,Array.from(input.files));render();toast(`${input.files.length} file${input.files.length===1?'':'s'} added to this portfolio session.`);}));
+    document.querySelectorAll('[data-portfolio-clear]').forEach(b=>b.addEventListener('click',()=>{const g=portfolioGroupsForRole().find(x=>x.key===currentPortfolioId);if(!g)return;clearPortfolioFiles(g,b.dataset.portfolioClear);render();toast('Selected files cleared from this portfolio section.');}));
+    const runPortfolioDownload=async(btn)=>{const g=portfolioGroupsForRole().find(x=>x.key===currentPortfolioId);if(!g)return;const buttons=[$('downloadPortfolioZip'),$('downloadPortfolioZipBottom')].filter(Boolean);buttons.forEach(x=>{x.disabled=true;x.textContent='Generating…'});try{await downloadCoursePortfolioZip(g);toast('Course Portfolio downloaded. Selected files were placed into their required sections and were not saved by Acadeloop.');}catch(e){console.error(e);toast(e?.message||'Could not generate Course Portfolio.');}finally{buttons.forEach(x=>{x.disabled=false;x.textContent='Download portfolio ZIP'});}};
+    if($('downloadPortfolioZip'))$('downloadPortfolioZip').addEventListener('click',()=>runPortfolioDownload($('downloadPortfolioZip')));
+    if($('downloadPortfolioZipBottom'))$('downloadPortfolioZipBottom').addEventListener('click',()=>runPortfolioDownload($('downloadPortfolioZipBottom')));
+    if($('exportAprCsv'))$('exportAprCsv').addEventListener('click',exportAprCsv);
+    if($('saveSetup'))$('saveSetup').addEventListener('click',()=>{state.program.institution=$('spInstitution').value.trim();state.program.college=$('spCollege').value.trim();state.program.department=$('spDepartment').value.trim();state.program.name=$('spProgram').value.trim();state.program.academicYear=$('spYear').value.trim();state.academicYears=[...new Set($('spYears').value.split(',').map(x=>x.trim()).filter(Boolean))];if(state.program.academicYear&&!state.academicYears.includes(state.program.academicYear))state.academicYears.unshift(state.program.academicYear);ploYear=state.program.academicYear;saveState();render();toast('Program setup saved.');});
+    if($('savePloTargets'))$('savePloTargets').addEventListener('click',()=>{document.querySelectorAll('[data-plo-target]').forEach(el=>state.plos[Number(el.dataset.ploTarget)].target=clamp(el.value));saveState();render();toast('PLO targets saved.');});
+    if($('addAuthorizedUser'))$('addAuthorizedUser').addEventListener('click',addAuthorizedUser);
+  }
+
+  async function go(view){if(!roleCanView(view)){toast('This page is not available for the current role.');return;}currentView=view;if(view!=='course-portfolios')currentPortfolioId=null;hideDrawer();hideModal();if(view==='users')await loadUsers();render();window.scrollTo({top:0,behavior:'smooth'});}
+  function showDrawer(){$('drawer').classList.remove('hidden');$('drawerBackdrop').classList.remove('hidden');document.body.classList.add('no-scroll')}
+  function hideDrawer(){$('drawer').classList.add('hidden');$('drawerBackdrop').classList.add('hidden');document.body.classList.remove('no-scroll');currentReportId=null}
+  function showModal(){$('modal').classList.remove('hidden');$('modalBackdrop').classList.remove('hidden');document.body.classList.add('no-scroll')}
+  function hideModal(){$('modal').classList.add('hidden');$('modalBackdrop').classList.add('hidden');document.body.classList.remove('no-scroll')}
+
+  function toCsv(rows){return rows.map(row=>row.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')).join('\r\n')}
+  function downloadText(name,text,type='text/plain'){const blob=new Blob([text],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+  function exportAprCsv(){const rows=ploRollups(ploYear,'Annual');downloadText(`APR_${safeFileName(ploYear)}.csv`,toCsv([['Program',state.program.name],['Academic Year',ploYear],['Approved Reports',approvedReports(ploYear,'Annual').length],[],['PLO','Target','S1','S2','Summer','Annual','Sources'],...rows.map(p=>[p.code,p.target,...TERMS.map(t=>{const q=ploRollups(ploYear,t).find(x=>x.code===p.code);return q?.actual==null?'':Math.round(q.actual*10)/10}),p.actual==null?'':Math.round(p.actual*10)/10,p.rows.length])]),'text/csv')}
+
+  function safePathComponent(s,fallback='item'){let v=String(s||'').replace(/[–—−]/g,'-').replace(/[\u0000-\u001f\u007f\\/:*?"<>|]+/g,'_').replace(/\s+/g,' ').trim().replace(/^\.+|\.+$/g,'');if(!v||/^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/i.test(v))v=`_${v||fallback}`;return v.slice(0,140)}
+  function safeFileName(s){return safePathComponent(s,'file').replace(/\s+/g,'_')}
+  function addSampleAnswerFolders(zip,base){
+    zip.folder(`${base}/Questions with answer key`);
+    zip.folder(`${base}/Sample of students answer/Excellent`);
+    zip.folder(`${base}/Sample of students answer/Average`);
+    zip.folder(`${base}/Sample of students answer/Poor`);
+  }
+  function addAssessmentStructure(zip,semesterBase){
+    const a=`${semesterBase}/Assessments`;
+    addSampleAnswerFolders(zip,`${a}/Assignment`);
+    ['Final Exam','Midterm Exam'].forEach(exam=>['Clinical','Practical','Theory'].forEach(type=>addSampleAnswerFolders(zip,`${a}/${exam}/${type}`)));
+    zip.folder(`${a}/Others`);
+  }
+  function safeFolderName(s){return safePathComponent(s,'folder')}
+  function coursePortfolioBasePath(g){return `${safeFolderName(g.courseCode)}`}
+  function semesterPortfolioBase(courseBase,academicYear,term){return `${courseBase}/Year ${safeFolderName(academicYear)}/${semesterFolderName(term)}`}
+  function ensureRequiredPortfolioTree(zip,g){
+    const courseBase=coursePortfolioBasePath(g);
+    zip.folder(`${courseBase}/Course Specification (CS)`);
+    zip.folder(`${courseBase}/Teaching Materials (TM)`);
+    const instructors=[...new Set(g.reports.map(r=>r.instructor).filter(Boolean))];
+    if(instructors.length){instructors.forEach(name=>{const b=`${courseBase}/Instructors/${safeFolderName(name)}`;zip.folder(`${b}/Curriculum Vitae (CV)`);zip.folder(`${b}/Teaching Philosophy (TP)`);});}
+    else{zip.folder(`${courseBase}/Instructors`);}
+    TERMS.forEach(term=>{
+      const semesterBase=semesterPortfolioBase(courseBase,g.academicYear,term);
+      addAssessmentStructure(zip,semesterBase);
+      zip.folder(`${semesterBase}/Course Report`);
+      zip.folder(`${semesterBase}/Reports and Surveys/CLOs Assessment Report`);
+      zip.folder(`${semesterBase}/Reports and Surveys/Course Evaluation Survey`);
+      zip.folder(`${semesterBase}/Reports and Surveys/Informal feedback`);
+    });
+    return courseBase;
+  }
+  function safePortfolioUploadName(name){return safePathComponent(name,'file').slice(0,180)}
+  function addPortfolioSessionFiles(zip,g,courseBase){
+    const used=new Set();
+    for(const [relativePath,files] of portfolioUploadStore(g).entries()){
+      files.forEach(file=>{let name=safePortfolioUploadName(file.name),candidate=`${courseBase}/${relativePath}/${name}`,n=2;const dot=name.lastIndexOf('.'),stem=dot>0?name.slice(0,dot):name,ext=dot>0?name.slice(dot):'';while(used.has(candidate)||zip.file(candidate)){name=`${stem} (${n++})${ext}`;candidate=`${courseBase}/${relativePath}/${name}`}used.add(candidate);zip.file(candidate,file);});
+    }
+  }
+  function zipApi(){
+    if(!window.JSZip)throw new Error('Export component is missing. Upload vendor/jszip.min.js beside index.html, then refresh Acadeloop.');
+    return window.JSZip;
+  }
+
+  async function downloadCoursePortfolioZip(g){
+    const approved=portfolioApprovedReports(g);
+    const zip=new (zipApi())(); const courseBase=ensureRequiredPortfolioTree(zip,g);addPortfolioSessionFiles(zip,g,courseBase);
+    for(const r0 of approved){
+      const r=JSON.parse(JSON.stringify(r0));ensureSectionModel(r);if(r.sectionMode==='all')enforceCombinedIntegrity(r);syncFlatFromEffective(r);
+      const semesterBase=semesterPortfolioBase(courseBase,g.academicYear,r.semester),keys=activeSectionKeys(r);
+      for(const key of keys){
+        const v=reportVariant(r,key),bytes=await generateCourseReportBytes(v);
+        const name=safeFileName(`${r.courseCode}_${r.semester}_${r.academicYear}_${sectionLabel(key)}_Course_Report`)+'.docx';
+        zip.file(`${semesterBase}/Course Report/${name}`,bytes,{binary:true});
+      }
+      const cloRows=[['Section','CLO','Domain','CLO Description','PLO','Assessment Method','Target','Actual','Comment']];
+      for(const key of keys){const v=reportVariant(r,key);(v.clos||[]).forEach(c=>cloRows.push([sectionLabel(key),c.code,c.domain,c.text,c.plo,c.method,c.target,c.actual,c.comment]));}
+      const cloName=safeFileName(`${r.courseCode}_${r.semester}_${r.academicYear}_CLOs_Assessment_Report`)+'.csv';
+      zip.file(`${semesterBase}/Reports and Surveys/CLOs Assessment Report/${cloName}`,toCsv(cloRows));
+    }
+    const root=safeFileName(`${g.courseCode}_${g.academicYear}_Course_Portfolio`);
+    const blob=await zip.generateAsync({type:'blob',mimeType:'application/zip',compression:'DEFLATE',compressionOptions:{level:6}}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`${root}.zip`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1200);
+  }
+
+  function replacePlaceholdersInParagraph(paragraph,ctx){
+    const nodes=Array.from(paragraph.getElementsByTagName('w:t'));if(!nodes.length)return;const texts=nodes.map(n=>n.textContent||'');let combined='';const starts=[];texts.forEach(t=>{starts.push(combined.length);combined+=t});const re=/\{\{\s*([A-Za-z0-9_]+)\s*\}\}/g;const matches=[];let m;while((m=re.exec(combined))!==null)matches.push({start:m.index,end:m.index+m[0].length,key:m[1]});for(let mi=matches.length-1;mi>=0;mi--){const match=matches[mi];let si=0,ei=nodes.length-1;for(let i=0;i<nodes.length;i++){const e=starts[i]+texts[i].length;if(match.start>=starts[i]&&match.start<=e){si=i;break}}for(let i=si;i<nodes.length;i++){const e=starts[i]+texts[i].length;if(match.end<=e){ei=i;break}}const sLocal=match.start-starts[si],eLocal=match.end-starts[ei];const prefix=(nodes[si].textContent||'').slice(0,sLocal),suffix=(nodes[ei].textContent||'').slice(eLocal),val=String(ctx[match.key]??'');if(si===ei)nodes[si].textContent=prefix+val+suffix;else{nodes[si].textContent=prefix+val;for(let j=si+1;j<ei;j++)nodes[j].textContent='';nodes[ei].textContent=suffix;}}
+  }
+  function fillDocumentXml(xml,ctx,location){const parser=new DOMParser();const doc=parser.parseFromString(String(xml).replace(/^\uFEFF/,''),'application/xml');const err=doc.getElementsByTagName('parsererror')[0];if(err)throw new Error('Could not parse Word template XML.');Array.from(doc.getElementsByTagName('w:p')).forEach(p=>replacePlaceholdersInParagraph(p,ctx));const boxes=Array.from(doc.getElementsByTagName('w14:checkbox'));boxes.slice(0,2).forEach((box,i)=>{const checked=(i===0&&location==='main')||(i===1&&location==='branch');const c=box.getElementsByTagName('w14:checked')[0];if(c)c.setAttribute('w14:val',checked?'1':'0');const sdt=box.parentNode?.parentNode,content=sdt?.getElementsByTagName('w:sdtContent')[0],t=content?.getElementsByTagName('w:t')[0];if(t)t.textContent=checked?'☒':'☐'});return new XMLSerializer().serializeToString(doc)}
+  const COURSE_REPORT_TEMPLATE_URL = 'templates/Course_Report_Placeholder.docx';
+  let templateBufferPromise = null;
+
+  async function getTemplateBuffer() {
+    if (!templateBufferPromise) {
+      templateBufferPromise = fetch(COURSE_REPORT_TEMPLATE_URL, { cache: 'no-store' })
+        .then((response) => {
+          if (!response.ok) throw new Error(`Course Report template request failed (${response.status}).`);
+          return response.arrayBuffer();
+        })
+        .catch((error) => {
+          templateBufferPromise = null;
+          const hint = location.protocol === 'file:'
+            ? ' Open Acadeloop through a web host (for example Acadeloop.com); browsers block this binary template when the page is opened with file://.'
+            : '';
+          throw new Error(`Could not load ${COURSE_REPORT_TEMPLATE_URL}.${hint}`, { cause: error });
+        });
+    }
+    return (await templateBufferPromise).slice(0);
+  }
+  function reportContext(r){
+    const ctx={course_name:r.courseName,course_code:r.courseCode,department_name:state.program.department,program_name:state.program.name,college_name:state.program.college,institution_name:state.program.institution,academic_year:r.academicYear,semester:`${r.semester} · ${sectionLabel(r.sectionMode||'combined')}`,course_instructor:r.instructor,course_coordinator:r.coordinator||r.instructor,number_of_section:String(r.sections||1),number_of_students_s:String(r.studentsStart||0),number_of_students_w:String(r.studentsComplete||0),report_date:r.reportDate||nowDate(),comment_on_grades:r.gradeComment||'',recommendations_on_grades:r.gradeRecommendation||'',recommendations_on_clo:r.cloRecommendation||''};
+    const denom=Number(r.studentsStart)||gradeTotal(r)||1;gradeDefs.forEach(([label,key,pkey])=>{const count=gradeCount(r,label);ctx[key]=String(count);ctx[pkey]=Math.round(count/denom*1000)/10+'%'});
+    for(const d of ['k','s','v'])for(let i=1;i<=5;i++){ctx[`${d}${i}`]='';ctx[`plo_${d}${i}`]='';ctx[`assessment_method_${d}${i}`]='';ctx[`target_${d}${i}`]='';ctx[`${d}${i}_actual`]='';ctx[`comment_on_${d}${i}`]=''}
+    const groups={K:[],S:[],V:[]};(r.clos||[]).forEach(c=>(groups[c.domain]||groups.K).push(c));for(const D of ['K','S','V'])groups[D].slice(0,5).forEach((c,i)=>{const d=D.toLowerCase(),n=i+1;ctx[`${d}${n}`]=c.text||'';ctx[`plo_${d}${n}`]=c.plo||'';ctx[`assessment_method_${d}${n}`]=c.method||'';ctx[`target_${d}${n}`]=c.target===''?'':`${c.target}%`;ctx[`${d}${n}_actual`]=c.actual===''?'':`${c.actual}%`;ctx[`comment_on_${d}${n}`]=c.comment||''});
+    for(let i=1;i<=6;i++){const imp=(r.improvements||[])[i-1]||{};ctx[`improvement_${i}`]=imp.recommendation||'';ctx[`improvement_action_${i}`]=imp.action||'';ctx[`improvement_support_${i}`]=imp.support||''}return ctx;
+  }
+  async function generateCourseReportBytes(r){const tpl=await getTemplateBuffer(),zip=await zipApi().loadAsync(tpl),xml=await zip.file('word/document.xml').async('string'),filled=fillDocumentXml(xml,reportContext(r),r.location||'main');zip.file('word/document.xml',filled);return await zip.generateAsync({type:'uint8array',compression:'DEFLATE'})}
+  async function downloadCourseReportDocx(r){
+    ensureSectionModel(r);if(r.sectionMode==='all'){enforceCombinedIntegrity(r);syncFlatFromEffective(r);const zip=new (zipApi())();for(const key of ['male','female','combined']){const v=reportVariant(r,key),bytes=await generateCourseReportBytes(v);zip.file(safeFileName(`${r.courseCode}_${r.semester}_${r.academicYear}_${sectionLabel(key)}_Course_Report`)+'.docx',bytes,{binary:true});}const blob=await zip.generateAsync({type:'blob',mimeType:'application/zip'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=safeFileName(`${r.courseCode}_${r.semester}_${r.academicYear}_All_Section_Course_Reports`)+'.zip';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);return;}
+    const v=reportVariant(r,effectiveSectionKey(r)),bytes=await generateCourseReportBytes(v),blob=new Blob([bytes],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=safeFileName(`${r.courseCode}_${r.semester}_${r.academicYear}_${sectionLabel(effectiveSectionKey(r))}_Course_Report`)+'.docx';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }
+
+  function setAuthStatus(message,type=''){
+    const el=$('authStatus');if(!el)return;el.textContent=message||'';el.className=`auth-status ${type}`.trim();
+  }
+  function showLoginStep(){
+    $('authEmailStep')?.classList.remove('hidden');
+    setAuthStatus('');
+  }
+  async function hydrateSharedState(){
+    state=normalizeState(loadState());
+    state.role=currentUser.role;ploYear=state.program.academicYear;ploTerm='Annual';
+  }
+  async function onAuthenticated(user){
+    currentUser=user;state.role=user.role;
+    await hydrateSharedState();
+    if(state.role==='Head of Department')await loadUsers();
+    currentView='dashboard';currentPortfolioId=null;activePlo=null;
+    $('authScreen')?.classList.add('hidden');$('appShell')?.classList.remove('hidden');
+    syncChrome();render();window.__ACADELOOP_READY__=true;
+  }
+  async function signIn(){
+    const login=$('loginUser')?.value.trim();if(!login){setAuthStatus('Enter a test username such as TestHOD, TestI, or TestQ.','error');return;}
+    const btn=$('signInBtn');btn.disabled=true;btn.textContent='Signing in…';setAuthStatus('');
+    try{
+      const user=localUserByLogin(login);
+      if(!user)throw new Error('Unknown test user. Use TestHOD, TestI, TestQ, TestI2, or an email added by the HOD.');
+      setAuthToken(user.username||user.email);await onAuthenticated(user);
+    }
+    catch(e){setAuthStatus(e.message||'Unable to sign in.','error');}
+    finally{btn.disabled=false;btn.textContent='Sign in';}
+  }
+  async function signOut(){
+    setAuthToken('');currentUser=null;userDirectory=[];$('appShell')?.classList.add('hidden');$('authScreen')?.classList.remove('hidden');showLoginStep();if($('loginUser'))$('loginUser').value='';
+  }
+  async function initAuth(){
+    loadLocalUsers();
+    $('signInBtn')?.addEventListener('click',signIn);$('signOutBtn')?.addEventListener('click',signOut);
+    $('loginUser')?.addEventListener('keydown',e=>{if(e.key==='Enter')signIn()});
+    document.querySelectorAll('[data-test-login]').forEach(btn=>btn.addEventListener('click',()=>{if($('loginUser'))$('loginUser').value=btn.dataset.testLogin||'';signIn();}));
+    const savedLogin=authToken();
+    if(savedLogin){const user=localUserByLogin(savedLogin);if(user){await onAuthenticated(user);return;}setAuthToken('');}
+    showLoginStep();
+    setAuthStatus('Preset test users are ready: TestHOD, TestI, TestQ, TestI2.','ok');
+  }
+
+  document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.view)));
+  $('quickAdd')?.addEventListener('click',openNewReport); $('drawerClose')?.addEventListener('click',hideDrawer); $('drawerBackdrop')?.addEventListener('click',hideDrawer); $('modalClose')?.addEventListener('click',hideModal); $('modalBackdrop')?.addEventListener('click',hideModal); $('menuBtn')?.addEventListener('click',()=>$('sidebar').classList.toggle('open'));
+  window.addEventListener('keydown',e=>{if(e.key==='Escape'){hideDrawer();hideModal();}});
+  initAuth();
+})();
+
+  
+
+</script></body>
+</html>

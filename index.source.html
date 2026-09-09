@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="Acadeloop academic program quality management" name="description"/>
+<meta content="noindex,nofollow" name="robots"/>
+<title>Acadeloop — Academic Program Quality</title>
+<link href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2216%22 fill=%22%2318171b%22/%3E%3Cpath d=%22M17 48 29 16h7l12 32h-8l-2.4-7H27.2L25 48h-8Zm12.4-14h6L32.3 25l-2.9 9Z%22 fill=%22white%22/%3E%3C/svg%3E" rel="icon"/>
+<link href="src/styles.css" rel="stylesheet"/></head>
+<body>
+<section class="auth-screen" id="authScreen">
+<div class="auth-shell">
+<div class="auth-brand"><div class="brand-mark">A</div><div><strong>Acadeloop</strong><span>Academic Program Quality</span></div></div>
+<div class="auth-card">
+<span class="eyebrow">Testing access</span>
+<h1 id="authTitle">Sign in to Acadeloop</h1>
+<p id="authMessage">Choose a preset test user or type the test username. This test build is designed to be served from Acadeloop.com or another web host. Data stays in this browser only.</p>
+<div id="authEmailStep">
+<label class="auth-field"><span>Test user</span><input autocomplete="off" id="loginUser" placeholder="TestHOD" type="text"/></label>
+<button class="btn btn-primary auth-submit" id="signInBtn" type="button">Sign in</button>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
+<button class="btn btn-ghost" data-test-login="TestHOD" type="button">TestHOD · HOD</button>
+<button class="btn btn-ghost" data-test-login="TestI" type="button">TestI · Instructor</button>
+<button class="btn btn-ghost" data-test-login="TestQ" type="button">TestQ · Coordinator</button>
+<button class="btn btn-ghost" data-test-login="TestI2" type="button">TestI2 · Instructor</button>
+</div>
+<div class="auth-note" style="margin-top:12px;border:1px solid #dbeafe;background:#eff6ff;color:#1d4ed8;border-radius:10px;padding:10px 12px">TEST MODE — preset users are already created. Do not use real institutional data in this build. HOD can add additional test users in this browser.</div>
+</div>
+<div class="auth-status" id="authStatus"></div>
+<div class="auth-note"><strong>Preset accounts:</strong> TestHOD, TestI, TestQ, TestI2. No registration is available.</div>
+</div>
+</div>
+</section>
+<div class="app-shell hidden" id="appShell">
+<aside class="sidebar" id="sidebar">
+<div class="brand">
+<div class="brand-mark">A</div>
+<div><strong>Acadeloop</strong><span>Program Quality</span></div>
+</div>
+<nav id="nav">
+<button class="nav-item active" data-view="dashboard" type="button"><span class="nav-icon">⌂</span>Overview</button>
+<button class="nav-item" data-view="course-reports" type="button"><span class="nav-icon">▦</span>Course Reports <span class="nav-badge" id="navCourseCount">0</span></button>
+<button class="nav-item" data-view="course-portfolios" type="button"><span class="nav-icon">▣</span>Course Portfolios <span class="nav-badge" id="navPortfolioCount">0</span></button>
+<button class="nav-item" data-view="plo" type="button"><span class="nav-icon">◎</span>PLO Attainment</button>
+<button class="nav-item" data-view="apr" type="button"><span class="nav-icon">◫</span>Annual Program Report</button>
+<button class="nav-item" data-view="operational" type="button"><span class="nav-icon">✓</span>Operational Plan</button>
+<button class="nav-item" data-view="automations" type="button"><span class="nav-icon">↯</span>Automations</button>
+<div class="nav-separator"></div>
+<button class="nav-item" data-view="users" type="button"><span class="nav-icon">♙</span>Users</button>
+<button class="nav-item" data-view="setup" type="button"><span class="nav-icon">⚙</span>Program Setup</button>
+</nav>
+<div class="sidebar-foot">
+<div class="mini-card">
+<span class="eyebrow">Academic year</span>
+<strong id="sideAcademicYear">2026–2027</strong>
+<span id="sideProgram">Program</span>
+</div>
+</div>
+</aside>
+<main class="main">
+<header class="topbar">
+<button aria-label="Open navigation menu" class="icon-btn mobile-only" id="menuBtn" type="button">☰</button>
+<div class="breadcrumb"><span id="pageKicker">Program workspace</span><strong id="pageTitle">Overview</strong></div>
+<div class="top-actions">
+<span class="role-context" id="roleContext"><span>Workspace</span><b>Loading</b></span>
+<button class="btn btn-ghost" id="quickAdd" type="button">＋ New</button>
+<div class="user-chip"><div class="avatar" id="avatarLabel" title="Current user">A</div><div><strong id="currentUserName">User</strong><span id="currentUserRole">Role</span></div></div>
+<button aria-label="Sign out" class="icon-btn" id="signOutBtn" title="Sign out" type="button">↪</button>
+</div>
+</header>
+<section class="content" id="content"><div class="card"><strong>Loading Acadeloop…</strong><p style="color:#71717a;margin-bottom:0">The application is starting in your browser.</p></div></section>
+</main>
+</div>
+<div class="drawer-backdrop hidden" id="drawerBackdrop"></div>
+<aside class="drawer hidden" id="drawer">
+<div class="drawer-head">
+<div><span class="eyebrow" id="drawerEyebrow">Course report</span><h2 id="drawerTitle">Edit report</h2></div>
+<button aria-label="Close course report" class="icon-btn" id="drawerClose" type="button">×</button>
+</div>
+<div class="drawer-body" id="drawerBody"></div>
+<div class="drawer-foot" id="drawerFoot"></div>
+</aside>
+<div class="modal-backdrop hidden" id="modalBackdrop"></div>
+<div class="modal hidden" id="modal">
+<div class="modal-head"><div><span class="eyebrow">Create</span><h2 id="modalTitle">New item</h2></div><button aria-label="Close dialog" class="icon-btn" id="modalClose" type="button">×</button></div>
+<div class="modal-body" id="modalBody"></div>
+</div>
+<div class="toast" id="toast"></div>
+<noscript><div style="position:fixed;inset:0;background:#fff;z-index:99999;padding:40px;font:16px Segoe UI,Arial,sans-serif"><h1>JavaScript is disabled</h1><p>Acadeloop needs JavaScript enabled in the browser.</p></div></noscript>
+<script src="src/vendor/jszip.min.js"></script>
+<script src="src/core.js"></script>
+<script src="src/seed.js"></script>
+<script src="src/app.js"></script></body>
+</html>
