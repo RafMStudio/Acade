@@ -5,9 +5,14 @@
   "description": "Acadeloop academic program quality management web application.",
   "scripts": {
     "build": "node scripts/build.js",
+    "deploy": "wrangler deploy",
+    "preview": "wrangler dev",
     "test:core": "node --test tests/core.test.js",
     "check": "node scripts/check-project.js",
     "test:browser": "node scripts/browser-smoke.js",
     "test": "npm run build && npm run test:core && npm run check && npm run test:browser"
+  },
+  "devDependencies": {
+    "wrangler": "4.129.1"
   }
 }
