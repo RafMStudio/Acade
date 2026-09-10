@@ -16,14 +16,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
       - name: Apply prepared v1.2.1 source patch
         shell: bash
         run: |
-          git show HEAD^:.github/workflows/apply-systemadmin-routing-fix.yml \
+          git show dedc597be92547325bb2f706f07c718d7063dbb9:.github/workflows/apply-systemadmin-routing-fix.yml \
             | sed -n '/^H4sIC/,/^PATCH_B64$/p' \
             | sed '$d' > /tmp/systemadmin.patch.gz.b64
           test -s /tmp/systemadmin.patch.gz.b64
@@ -41,7 +41,8 @@ jobs:
           git config user.name 'OpenAI'
           git config user.email 'noreply@openai.com'
           git rm .github/workflows/apply-systemadmin-routing-fix.yml
-          git add CHANGELOG.md SUPABASE_INTEGRATION.md TEST_RESULTS.md package.json scripts/browser-smoke.js scripts/check-project.js src/app.js src/backend.js index.html dist/index.html
+          git add CHANGELOG.md SUPABASE_INTEGRATION.md TEST_RESULTS.md package.json scripts/browser-smoke.js scripts/check-project.js src/app.js src/backend.js index.html
+          git add -f dist/index.html
           git diff --cached --check
           git commit -m 'Fix SystemAdmin routing'
           git push origin HEAD:main
