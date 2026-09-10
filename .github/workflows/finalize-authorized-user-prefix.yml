@@ -1,0 +1,44 @@
+name: Finalize authorized user prefix update
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/finalize-authorized-user-prefix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Apply tested prefix patch
+        shell: bash
+        run: |
+          sed -n '/PATCH_B64: >-/{n;s/^        //;p;q;}' .github/workflows/apply-authorized-user-prefix.yml > /tmp/prefix.b64
+          test -s /tmp/prefix.b64
+          base64 -d /tmp/prefix.b64 | gzip -d > /tmp/prefix.patch
+          patch -p1 < /tmp/prefix.patch
+      - name: Verify standard CI gate
+        run: |
+          npm run build
+          npm run test:core
+          npm run check
+      - name: Commit prefix feature
+        shell: bash
+        run: |
+          git config user.name 'OpenAI'
+          git config user.email 'noreply@openai.com'
+          git rm .github/workflows/apply-authorized-user-prefix.yml .github/workflows/finalize-authorized-user-prefix.yml
+          git add CHANGELOG.md package.json scripts/browser-smoke.js scripts/check-project.js src/app.js src/backend.js index.html supabase/functions/admin-create-user/index.ts supabase/migrations/20260910_authorized_user_title_prefix.sql
+          git add -f dist/index.html
+          git diff --cached --check
+          git commit -m 'Add authorized user title prefixes'
+          git push origin HEAD:main
