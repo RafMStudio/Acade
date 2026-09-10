@@ -7,9 +7,6 @@
     "not_found_handling": "single-page-application"
   },
   "routes": [
-    {
-      "pattern": "acadeloop.com",
-      "custom_domain": true
-    }
+    { "pattern": "acadeloop.com", "custom_domain": true }
   ]
 }

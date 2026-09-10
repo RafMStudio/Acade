@@ -8,6 +8,7 @@
   const nowDate = () => { const d=new Date(), pad=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; };
   const clamp = (n,min=0,max=100) => Math.max(min,Math.min(max,Number(n)||0));
   const Core = window.AcadeloopCore;
+  const Backend = window.AcadeloopBackend;
   if(!Core) throw new Error('Acadeloop core failed to load.');
   const {
     TERMS, LETTER_GRADE_LABELS, GRADE_DEFS: gradeDefs,
@@ -38,6 +39,11 @@
 
   const seed = window.ACADELOOP_SEED;
 
+  const backendEnabled = !!Backend?.enabled;
+  const dbRoleToUi = role => role === 'HOD' ? 'Head of Department' : role;
+  const uiRoleToDb = role => role === 'Head of Department' ? 'HOD' : role;
+  const clone = value => JSON.parse(JSON.stringify(value));
+  let backendProgramSettingsId = null;
 
   let currentUser = null;
   let userDirectory = [];
@@ -99,12 +105,61 @@
   let ploTerm = 'Annual';
 
   function loadState(){
+    if(backendEnabled) return clone(seed);
     try{const raw=storageGet(STORAGE_KEY); if(raw) return JSON.parse(raw);}catch(e){}
-    return JSON.parse(JSON.stringify(seed));
+    return clone(seed);
   }
   function saveState(){
-    storageSet(STORAGE_KEY,JSON.stringify(state));
+    // Production data is persisted explicitly to Supabase. Browser storage is test-only.
+    if(!backendEnabled) storageSet(STORAGE_KEY,JSON.stringify(state));
     syncChrome();
+  }
+
+  function reportDbRow(r){
+    ensureSectionModel(r);
+    if(r.sectionMode==='all') enforceCombinedIntegrity(r);
+    syncFlatFromEffective(r);
+    const data=clone(r);
+    // The database stores report DATA only. Generated DOCX/ZIP files and temporary portfolio files are never persisted.
+    return {
+      id:r.id, legacy_id:r.legacyId||null, course_code:r.courseCode, course_title:r.courseName,
+      academic_year:r.academicYear, semester:r.semester, section_mode:r.sectionMode,
+      instructor_id:r.instructorId||currentUser?.id, status:r.status, data
+    };
+  }
+  function reportFromDb(row){
+    const r={...(row.data||{})};
+    r.id=row.id;r.legacyId=row.legacy_id||r.legacyId||'';r.courseCode=row.course_code;r.courseName=row.course_title;
+    r.academicYear=row.academic_year;r.semester=row.semester;r.sectionMode=row.section_mode;r.instructorId=row.instructor_id;
+    r.status=row.status;r.submittedAt=row.submitted_at?String(row.submitted_at).slice(0,10):(r.submittedAt||'');
+    r.approvedAt=row.approved_at?String(row.approved_at).slice(0,10):(r.approvedAt||'');
+    r.revisionNote=row.return_reason||'';
+    ensureSectionModel(r);if(r.sectionMode==='all')enforceCombinedIntegrity(r);syncFlatFromEffective(r);
+    return r;
+  }
+  async function persistCourseReport(r){
+    if(!backendEnabled)return r;
+    const rows=await Backend.insert('course_reports',reportDbRow(r),{onConflict:'id',upsert:true});
+    if(rows?.[0])Object.assign(r,reportFromDb(rows[0]));
+    return r;
+  }
+  async function persistProgramSetup(){
+    if(!backendEnabled)return;
+    const row={
+      id:backendProgramSettingsId||uid(), program_name:state.program.name||'Academic Program', department:state.program.department||'',
+      academic_year:state.program.academicYear||'', data:{...clone(state.program),academicYears:clone(state.academicYears)}, is_active:true
+    };
+    const rows=await Backend.insert('program_settings',row,{onConflict:'id',upsert:true});
+    if(rows?.[0])backendProgramSettingsId=rows[0].id;
+  }
+  async function persistPlos(){
+    if(!backendEnabled)return;
+    for(const p of state.plos){await Backend.insert('plos',{code:p.code,name:p.name,target:Number(p.target),active:true,data:{}},{onConflict:'code',upsert:true});}
+  }
+  async function persistOperational(){
+    if(!backendEnabled)return;
+    const year=state.program.academicYear;
+    await Backend.insert('operational_plans',{academic_year:year,data:{items:clone(state.operational)},updated_by:currentUser?.id||null},{onConflict:'academic_year',upsert:true});
   }
   function normalizeState(s){
     s = s && typeof s === 'object' ? s : JSON.parse(JSON.stringify(seed));
@@ -400,10 +455,11 @@
 
   function renderUsers(){
     const rows=userDirectory.map(u=>`<tr><td><strong>${esc(u.firstName)} ${esc(u.lastName)}</strong><div class="tiny">${esc(u.email)}</div></td><td>${esc(u.department||'—')}</td><td><span class="user-table-role">${esc(u.role)}</span></td><td><span class="user-table-role user-status-active">${u.active===false?'Inactive':'Active'}</span></td><td>${esc(u.createdAt?String(u.createdAt).slice(0,10):'—')}</td></tr>`).join('');
-    return roleHero()+pageHead('Access control','Users','Only the Head of Department can add users. There is no registration page. In this offline testing build, preset users sign in by test username and HOD-added users sign in by email.')+`
-      <div class="user-directory-note"><div class="automation-icon">↗</div><div><strong>Offline testing access</strong><span>Adding a user authorizes that email address in this browser. Preset accounts use test usernames. No password, code, or registration is used in this testing build.</span></div></div>
+    const actions=backendEnabled?'<button class="btn btn-ghost" id="backupAllData">Backup & Export Data (.xlsx)</button>':'';
+    return roleHero()+pageHead('Access control','Users','Only the Head of Department can add users. There is no public registration. Users sign in with a one-time code sent to their authorized email address.',actions)+`
+      <div class="user-directory-note"><div class="automation-icon">↗</div><div><strong>Controlled access</strong><span>HOD-created users are stored in Supabase Auth. Course Report DOCX files are never stored; only the underlying report data is saved and backed up.</span></div></div>
       <div class="user-admin-grid"><div class="table-card"><table class="data-table"><thead><tr><th>User</th><th>Department</th><th>Role</th><th>Status</th><th>Added</th></tr></thead><tbody>${rows||'<tr><td colspan="5" class="empty">No authorized users have been added yet.</td></tr>'}</tbody></table></div>
-      <div class="card user-add-card"><h3>Add authorized user</h3><p>The role can only be Instructor or Coordinator. Preset test accounts are TestHOD, TestI, TestQ, and TestI2.</p><div class="form-grid"><div class="field f6"><label>First name *</label><input id="auFirst" autocomplete="off"></div><div class="field f6"><label>Last name *</label><input id="auLast" autocomplete="off"></div><div class="field f12"><label>Department *</label><input id="auDepartment" value="${esc(state.program.department)}"></div><div class="field f12"><label>Role *</label><select id="auRole"><option>Instructor</option><option>Coordinator</option></select></div><div class="field f12"><label>Email *</label><input type="email" id="auEmail" placeholder="name@university.edu"></div><div class="field f12"><button class="btn btn-primary" id="addAuthorizedUser" style="width:100%">Add user</button></div></div></div></div>`;
+      <div class="card user-add-card"><h3>Add authorized user</h3><p>The role can only be Instructor or Coordinator. The new user signs in with an email OTP; no password is created.</p><div class="form-grid"><div class="field f6"><label>First name *</label><input id="auFirst" autocomplete="off"></div><div class="field f6"><label>Last name *</label><input id="auLast" autocomplete="off"></div><div class="field f12"><label>Department *</label><input id="auDepartment" value="${esc(state.program.department)}"></div><div class="field f12"><label>Role *</label><select id="auRole"><option>Instructor</option><option>Coordinator</option></select></div><div class="field f12"><label>Email *</label><input type="email" id="auEmail" placeholder="name@university.edu"></div><div class="field f12"><button class="btn btn-primary" id="addAuthorizedUser" style="width:100%">Add user</button></div></div></div></div>`;
   }
 
   function renderSetup(){return roleHero()+pageHead('Administration','Program Setup','Configure program identity, academic years, and PLO targets. Academic year and semester are mandatory on every Course Report.')+`
@@ -518,11 +574,11 @@
       document.querySelectorAll('[data-sec],[data-grade-sec],[data-clo-result-sec]').forEach(el=>el.addEventListener('input',()=>{collectReport(r);refreshGradeTotalsUI(r);if(r.sectionMode==='all')refreshCombinedUI(r);else refreshGradeInflationUI(r);}));
       if($('addClo'))$('addClo').addEventListener('click',()=>{collectReport(r);const idx=(r.clos||[]).length+1;r.clos.push({code:`2.${idx}`,domain:'S',text:'New course learning outcome',plo:state.plos[0]?.code||'',method:'',target:70});['male','female','combined'].forEach(k=>r.sectionData[k].cloResults[r.clos.at(-1).code]={actual:'',comment:''});saveState();openReport(r.id)});
       if($('addImprovement'))$('addImprovement').addEventListener('click',()=>{collectReport(r);r.improvements.push({recommendation:'',action:'',support:''});saveState();openReport(r.id)});
-      if($('saveReport'))$('saveReport').addEventListener('click',()=>{try{collectReport(r);if(r.sectionMode==='all')enforceCombinedIntegrity(r);saveState();render();toast('Draft saved. Combined arithmetic verified.');}catch(e){console.error(e);toast('Could not save: Combined arithmetic check failed.');}});
-      if($('submitReport'))$('submitReport').addEventListener('click',()=>{const errors=validateForSubmission(r);if(errors.length){toast(`Complete before submission: ${errors.slice(0,3).join(', ')}${errors.length>3?'…':''}`);return;}if(r.sectionMode==='all')enforceCombinedIntegrity(r);syncFlatFromEffective(r);r.status='Awaiting Quality Approval';r.submittedAt=nowDate();r.revisionNote='';r.activity=r.activity||[];r.activity.push({text:'Submitted for Coordinator approval',date:nowDate()});state.audit.unshift({icon:'→',title:`${r.courseCode} submitted`,detail:`${periodLabel(r)} is awaiting Coordinator approval.`,time:'Now'});saveState();hideDrawer();render();toast('Submitted. The report is now locked and waiting for Coordinator approval.');});
+      if($('saveReport'))$('saveReport').addEventListener('click',async()=>{const btn=$('saveReport');if(btn){btn.disabled=true;btn.textContent='Saving…'}try{collectReport(r);if(r.sectionMode==='all')enforceCombinedIntegrity(r);await persistCourseReport(r);saveState();render();toast('Draft saved to Supabase. Combined arithmetic verified.');}catch(e){console.error(e);toast(e?.message||'Could not save the draft.');}finally{if(btn){btn.disabled=false;btn.textContent='Save draft'}}});
+      if($('submitReport'))$('submitReport').addEventListener('click',async()=>{const errors=validateForSubmission(r);if(errors.length){toast(`Complete before submission: ${errors.slice(0,3).join(', ')}${errors.length>3?'…':''}`);return;}const btn=$('submitReport');if(btn){btn.disabled=true;btn.textContent='Submitting…'}try{if(r.sectionMode==='all')enforceCombinedIntegrity(r);syncFlatFromEffective(r);if(backendEnabled){await persistCourseReport(r);const updated=await Backend.rpc('submit_course_report',{p_report_id:r.id});Object.assign(r,reportFromDb(updated));}else{r.status='Awaiting Quality Approval';r.submittedAt=nowDate();r.revisionNote='';r.activity=r.activity||[];r.activity.push({text:'Submitted for Coordinator approval',date:nowDate()});state.audit.unshift({icon:'→',title:`${r.courseCode} submitted`,detail:`${periodLabel(r)} is awaiting Coordinator approval.`,time:'Now'});}saveState();hideDrawer();render();toast('Submitted. The report is locked and waiting for Coordinator approval.');}catch(e){toast(e?.message||'Could not submit the Course Report.');}finally{if(btn){btn.disabled=false;btn.textContent='Submit for Quality Approval'}}});
     }
     if(review){
-      if($('approveReport'))$('approveReport').addEventListener('click',()=>{ensureSectionModel(r);if(r.sectionMode==='all')enforceCombinedIntegrity(r);syncFlatFromEffective(r);const errors=validateForSubmission(r);if(errors.length){toast(`Cannot approve: ${errors.slice(0,3).join(', ')}${errors.length>3?'…':''}`);return;}r.status='Approved';r.approvedAt=nowDate();r.approvedBy=currentUserName();r.revisionNote='';r.activity=r.activity||[];r.activity.push({text:`Approved by ${currentUserName()}; released to PLO calculation, APR, generated portfolio, and HOD dashboard`,date:nowDate()});state.audit.unshift({icon:'✓',title:`${r.courseCode} approved`,detail:`${periodLabel(r)} official CLO results released to PLO/APR/HOD.`,time:'Now'});saveState();hideDrawer();render();toast('Approved. This report now feeds the official PLO calculations and HOD dashboard.');});
+      if($('approveReport'))$('approveReport').addEventListener('click',async()=>{ensureSectionModel(r);if(r.sectionMode==='all')enforceCombinedIntegrity(r);syncFlatFromEffective(r);const errors=validateForSubmission(r);if(errors.length){toast(`Cannot approve: ${errors.slice(0,3).join(', ')}${errors.length>3?'…':''}`);return;}const btn=$('approveReport');if(btn){btn.disabled=true;btn.textContent='Approving…'}try{if(backendEnabled){const updated=await Backend.rpc('review_course_report',{p_report_id:r.id,p_decision:'approve',p_reason:null});Object.assign(r,reportFromDb(updated));await hydrateSharedState();}else{r.status='Approved';r.approvedAt=nowDate();r.approvedBy=currentUserName();r.revisionNote='';r.activity=r.activity||[];r.activity.push({text:`Approved by ${currentUserName()}; released to PLO calculation, APR, generated portfolio, and HOD dashboard`,date:nowDate()});state.audit.unshift({icon:'✓',title:`${r.courseCode} approved`,detail:`${periodLabel(r)} official CLO results released to PLO/APR/HOD.`,time:'Now'});}saveState();hideDrawer();render();toast('Approved. This report now feeds the official PLO calculations and HOD dashboard.');}catch(e){toast(e?.message||'Could not approve the Course Report.');}finally{if(btn){btn.disabled=false;btn.textContent='Approve Course Report'}}});
       if($('returnReport'))$('returnReport').addEventListener('click',()=>openReturnModal(r));
     }
     if($('downloadReport'))$('downloadReport').addEventListener('click',async()=>{const btn=$('downloadReport');btn.disabled=true;btn.textContent='Generating…';try{await downloadCourseReportDocx(r);toast('Course Report generated.');}catch(e){console.error(e);toast(e?.message||'Could not generate the Course Report.');}finally{btn.disabled=false;btn.textContent='Generate DOCX';}});
@@ -532,7 +588,7 @@
     $('modalTitle').textContent='Return Course Report for Revision';
     $('modalBody').innerHTML=`<div class="approval-return-box"><p><strong>${esc(r.courseCode)} · ${esc(periodLabel(r))}</strong></p><p>Enter a clear revision reason. The instructor will see this note and can edit/resubmit the report.</p><textarea id="returnReason" placeholder="Example: CLO 2.1 actual attainment does not match the entered assessment result. Please verify and resubmit."></textarea><button class="btn btn-danger" id="confirmReturn" style="width:100%">Return to Instructor</button></div>`;
     showModal();
-    $('confirmReturn').addEventListener('click',()=>{const reason=$('returnReason').value.trim();if(!reason){toast('Enter a revision reason.');return;}r.status='Returned for Revision';r.revisionNote=reason;r.activity=r.activity||[];r.activity.push({text:`Returned for revision: ${reason}`,date:nowDate()});state.audit.unshift({icon:'↩',title:`${r.courseCode} returned`,detail:`${periodLabel(r)} returned to instructor for revision.`,time:'Now'});saveState();hideModal();hideDrawer();render();toast('Returned to the instructor for revision.');});
+    $('confirmReturn').addEventListener('click',async()=>{const reason=$('returnReason').value.trim();if(!reason){toast('Enter a revision reason.');return;}const btn=$('confirmReturn');btn.disabled=true;btn.textContent='Returning…';try{if(backendEnabled){const updated=await Backend.rpc('review_course_report',{p_report_id:r.id,p_decision:'return',p_reason:reason});Object.assign(r,reportFromDb(updated));await hydrateSharedState();}else{r.status='Returned for Revision';r.revisionNote=reason;r.activity=r.activity||[];r.activity.push({text:`Returned for revision: ${reason}`,date:nowDate()});state.audit.unshift({icon:'↩',title:`${r.courseCode} returned`,detail:`${periodLabel(r)} returned to instructor for revision.`,time:'Now'});}saveState();hideModal();hideDrawer();render();toast('Returned to the instructor for revision.');}catch(e){toast(e?.message||'Could not return the Course Report.');}finally{btn.disabled=false;btn.textContent='Return to Instructor'}});
   }
 
   function openNewReport(){
@@ -541,7 +597,7 @@
     $('modalTitle').textContent='New Course Report';
     $('modalBody').innerHTML=`<div class="create-report-intro"><strong>1. Select the reporting period first</strong><span>The report is permanently separated by Academic Year + Semester.</span></div><div class="form-grid"><div class="field f6"><label>Academic year *</label><select id="nrYear"><option value="">Select academic year</option>${years.map(y=>`<option ${y===state.program.academicYear?'selected':''}>${esc(y)}</option>`).join('')}</select></div><div class="field f6"><label>Semester *</label><select id="nrSemester"><option value="">Select semester</option><option>S1</option><option>S2</option><option>Summer</option></select></div><div class="field f4"><label>Course code *</label><input id="nrCode" placeholder="e.g. HIM401"></div><div class="field f8"><label>Course title *</label><input id="nrName" placeholder="Course title"></div><div class="field f8"><label>Instructor</label><input id="nrInstructor" value="${esc(currentUserName())}" readonly></div><div class="field f4"><label>Teaching sections</label><input type="number" id="nrSections" value="2" min="1"></div><div class="field f12"><label>Section reporting scope *</label><div class="scope-selector">${[['male','Male','Male section only'],['female','Female','Female section only'],['combined','Combined','Combined result only'],['all','All','Enter Male + Female at once; Combined is calculated automatically']].map(([k,l,d])=>`<div class="scope-option"><input type="radio" name="newSectionScope" id="new_${k}" value="${k}" ${k==='all'?'checked':''}><label for="new_${k}"><strong>${l}</strong><span>${d}</span></label></div>`).join('')}</div></div><div class="field f12"><button class="btn btn-primary" id="createReport" style="width:100%">Create Course Report</button></div></div>`;
     showModal();
-    $('createReport').addEventListener('click',()=>{
+    $('createReport').addEventListener('click',async()=>{
       const year=$('nrYear').value,semester=$('nrSemester').value,code=$('nrCode').value.trim(),name=$('nrName').value.trim(),ins=$('nrInstructor').value.trim();
       if(!year||!semester||!code||!name){toast('Academic year, semester, course code, and course title are required.');return;}
       const mode=document.querySelector('input[name="newSectionScope"]:checked')?.value||'all';
@@ -549,13 +605,15 @@
       if(duplicate){toast('A report for this course, period, instructor, and scope already exists.');return;}
       const sectionCount=Number($('nrSections').value);if(!Number.isInteger(sectionCount)||sectionCount<1){toast('Teaching sections must be a positive whole number.');return;}
       const r={id:uid(),courseCode:code,courseName:name,academicYear:year,semester,instructor:ins,instructorEmail:currentUser?.email||'',coordinator:ins,sections:sectionCount,sectionMode:mode,autoCombine:true,location:'main',status:'Draft',submittedAt:'',approvedAt:'',approvedBy:'',revisionNote:'',reportDate:nowDate(),clos:[{code:'1.1',domain:'K',text:'Course learning outcome',plo:state.plos[0]?.code||'',method:'',target:70}],improvements:[],activity:[{text:`Draft created for ${semester} ${year}`,date:nowDate()}]};
-      r.sectionData={male:blankSectionFor(r),female:blankSectionFor(r),combined:blankSectionFor(r)};ensureSectionModel(r);state.reports.push(r);if(!state.academicYears.includes(year))state.academicYears.push(year);saveState();hideModal();render();openReport(r.id);
+      r.instructorId=currentUser?.id||'';r.sectionData={male:blankSectionFor(r),female:blankSectionFor(r),combined:blankSectionFor(r)};ensureSectionModel(r);state.reports.push(r);if(!state.academicYears.includes(year))state.academicYears.push(year);try{await persistCourseReport(r);saveState();hideModal();render();openReport(r.id);}catch(e){state.reports=state.reports.filter(x=>x!==r);toast(e?.message||'Could not create the Course Report.');}
     });
   }
 
   async function loadUsers(){
     if(state.role!=='Head of Department') return;
-    userDirectory=loadLocalUsers();
+    if(!backendEnabled){userDirectory=loadLocalUsers();return;}
+    const rows=await Backend.select('profiles','select=id,email,first_name,last_name,department,role,active,created_at&order=created_at.asc');
+    userDirectory=(rows||[]).map(u=>({id:u.id,email:u.email,firstName:u.first_name,lastName:u.last_name,department:u.department,role:dbRoleToUi(u.role),active:u.active,createdAt:u.created_at}));
   }
   async function addAuthorizedUser(){
     const first=$('auFirst')?.value.trim(),last=$('auLast')?.value.trim(),department=$('auDepartment')?.value.trim(),role=$('auRole')?.value,email=$('auEmail')?.value.trim().toLowerCase();
@@ -563,15 +621,24 @@
     if(!$('auEmail')?.checkValidity()){toast('Enter a valid email address.');return;}
     if(!['Instructor','Coordinator'].includes(role)){toast('Role must be Instructor or Coordinator.');return;}
     const btn=$('addAuthorizedUser');if(btn){btn.disabled=true;btn.textContent='Adding…'}
-    const users=loadLocalUsers();
-    if(users.some(u=>String(u.email||'').toLowerCase()===email)){toast('This email is already authorized.');if(btn){btn.disabled=false;btn.textContent='Add user'}return;}
-    users.push({id:uid(),firstName:first,lastName:last,department,role,email,active:true,createdAt:nowDate()});
-    saveLocalUsers(users);userDirectory=users;render();toast('User added. They can now sign in directly with this email on this browser.');
+    try{
+      if(!backendEnabled){const users=loadLocalUsers();if(users.some(u=>String(u.email||'').toLowerCase()===email))throw new Error('This email is already authorized.');users.push({id:uid(),firstName:first,lastName:last,department,role,email,active:true,createdAt:nowDate()});saveLocalUsers(users);userDirectory=users;}
+      else{await Backend.invoke('admin-create-user',{first_name:first,last_name:last,department,role,email});await loadUsers();}
+      render();toast('User added. They can sign in with the one-time code sent to this email when requested.');
+    }catch(e){toast(e?.message||'Could not add user.');}
+    finally{if(btn){btn.disabled=false;btn.textContent='Add user'}}
+  }
+  async function backupAllData(){
+    if(!backendEnabled)return;
+    const btn=$('backupAllData');if(btn){btn.disabled=true;btn.textContent='Preparing backup…'}
+    try{const blob=await Backend.invoke('export-backup-xlsx',{},'blob');const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`Acadeloop_Backup_${nowDate()}.xlsx`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('Full Excel backup downloaded.');}
+    catch(e){toast(e?.message||'Could not export backup.');}
+    finally{if(btn){btn.disabled=false;btn.textContent='Backup & Export Data (.xlsx)'}}
   }
 
   function openNewPlan(){
     $('modalTitle').textContent='New operational KPI';$('modalBody').innerHTML=`<div class="form-grid"><div class="field f12"><label>Objective</label><input id="npObjective"></div><div class="field f12"><label>KPI</label><input id="npKpi"></div><div class="field f4"><label>Target (%)</label><input type="number" id="npTarget" value="100"></div><div class="field f4"><label>Current actual (%)</label><input type="number" id="npActual" value="0"></div><div class="field f4"><label>Due date</label><input type="date" id="npDue"></div><div class="field f6"><label>Owner</label><input id="npOwner"></div><div class="field f6"><label>Evidence source</label><input id="npEvidence"></div><div class="field f12"><button class="btn btn-primary" id="createPlan" style="width:100%">Add KPI</button></div></div>`;showModal();
-    $('createPlan').addEventListener('click',()=>{if(!$('npObjective').value.trim()||!$('npKpi').value.trim()){toast('Enter objective and KPI.');return;}const target=clamp($('npTarget').value),actual=clamp($('npActual').value);state.operational.push({id:uid(),objective:$('npObjective').value.trim(),kpi:$('npKpi').value.trim(),target,actual,unit:'%',owner:$('npOwner').value.trim()||'Unassigned',due:$('npDue').value||'',status:actual>=target?'On Track':'Needs Attention',evidence:$('npEvidence').value.trim()||'Not linked'});saveState();hideModal();render();toast('Operational KPI added.');});
+    $('createPlan').addEventListener('click',async()=>{if(!$('npObjective').value.trim()||!$('npKpi').value.trim()){toast('Enter objective and KPI.');return;}const target=clamp($('npTarget').value),actual=clamp($('npActual').value);const item={id:uid(),objective:$('npObjective').value.trim(),kpi:$('npKpi').value.trim(),target,actual,unit:'%',owner:$('npOwner').value.trim()||'Unassigned',due:$('npDue').value||'',status:actual>=target?'On Track':'Needs Attention',evidence:$('npEvidence').value.trim()||'Not linked'};state.operational.push(item);try{await persistOperational();saveState();hideModal();render();toast('Operational KPI added.');}catch(e){state.operational=state.operational.filter(x=>x!==item);toast(e?.message||'Could not save the KPI.');}});
   }
 
   function bindViewEvents(){
@@ -597,9 +664,10 @@
     if($('downloadPortfolioZip'))$('downloadPortfolioZip').addEventListener('click',()=>runPortfolioDownload($('downloadPortfolioZip')));
     if($('downloadPortfolioZipBottom'))$('downloadPortfolioZipBottom').addEventListener('click',()=>runPortfolioDownload($('downloadPortfolioZipBottom')));
     if($('exportAprCsv'))$('exportAprCsv').addEventListener('click',exportAprCsv);
-    if($('saveSetup'))$('saveSetup').addEventListener('click',()=>{state.program.institution=$('spInstitution').value.trim();state.program.college=$('spCollege').value.trim();state.program.department=$('spDepartment').value.trim();state.program.name=$('spProgram').value.trim();state.program.academicYear=$('spYear').value.trim();state.academicYears=[...new Set($('spYears').value.split(',').map(x=>x.trim()).filter(Boolean))];if(state.program.academicYear&&!state.academicYears.includes(state.program.academicYear))state.academicYears.unshift(state.program.academicYear);ploYear=state.program.academicYear;saveState();render();toast('Program setup saved.');});
-    if($('savePloTargets'))$('savePloTargets').addEventListener('click',()=>{document.querySelectorAll('[data-plo-target]').forEach(el=>state.plos[Number(el.dataset.ploTarget)].target=clamp(el.value));saveState();render();toast('PLO targets saved.');});
+    if($('saveSetup'))$('saveSetup').addEventListener('click',async()=>{state.program.institution=$('spInstitution').value.trim();state.program.college=$('spCollege').value.trim();state.program.department=$('spDepartment').value.trim();state.program.name=$('spProgram').value.trim();state.program.academicYear=$('spYear').value.trim();state.academicYears=[...new Set($('spYears').value.split(',').map(x=>x.trim()).filter(Boolean))];if(state.program.academicYear&&!state.academicYears.includes(state.program.academicYear))state.academicYears.unshift(state.program.academicYear);ploYear=state.program.academicYear;try{await persistProgramSetup();saveState();render();toast('Program setup saved.');}catch(e){toast(e?.message||'Could not save program setup.');}});
+    if($('savePloTargets'))$('savePloTargets').addEventListener('click',async()=>{document.querySelectorAll('[data-plo-target]').forEach(el=>state.plos[Number(el.dataset.ploTarget)].target=clamp(el.value));try{await persistPlos();saveState();render();toast('PLO targets saved.');}catch(e){toast(e?.message||'Could not save PLO targets.');}});
     if($('addAuthorizedUser'))$('addAuthorizedUser').addEventListener('click',addAuthorizedUser);
+    if($('backupAllData'))$('backupAllData').addEventListener('click',backupAllData);
   }
 
   async function go(view){if(!roleCanView(view)){toast('This page is not available for the current role.');return;}currentView=view;if(view!=='course-portfolios')currentPortfolioId=null;hideDrawer();hideModal();if(view==='users')await loadUsers();render();window.scrollTo({top:0,behavior:'smooth'});}
@@ -719,12 +787,28 @@
     const el=$('authStatus');if(!el)return;el.textContent=message||'';el.className=`auth-status ${type}`.trim();
   }
   function showLoginStep(){
-    $('authEmailStep')?.classList.remove('hidden');
-    setAuthStatus('');
+    $('authEmailStep')?.classList.remove('hidden');$('authCodeStep')?.classList.add('hidden');setAuthStatus('');
+  }
+  function showCodeStep(email){
+    $('authEmailStep')?.classList.add('hidden');$('authCodeStep')?.classList.remove('hidden');
+    if($('otpEmailLabel'))$('otpEmailLabel').textContent=email;
+    if($('loginCode'))$('loginCode').value='';
   }
   async function hydrateSharedState(){
-    state=normalizeState(loadState());
-    state.role=currentUser.role;ploYear=state.program.academicYear;ploTerm='Annual';
+    if(!backendEnabled){state=normalizeState(loadState());state.role=currentUser.role;ploYear=state.program.academicYear;ploTerm='Annual';return;}
+    const base=clone(seed);base.reports=[];base.operational=[];base.audit=[];
+    const [settingsRows,ploRows,operationalRows,reportRows]=await Promise.all([
+      Backend.select('program_settings','is_active=eq.true&select=*&order=updated_at.desc&limit=1'),
+      Backend.select('plos','active=eq.true&select=*&order=code.asc'),
+      Backend.select('operational_plans','select=*&order=updated_at.desc&limit=1'),
+      Backend.select('course_reports','select=*&order=updated_at.desc')
+    ]);
+    if(settingsRows?.[0]){const row=settingsRows[0];backendProgramSettingsId=row.id;base.program={...base.program,...(row.data||{}),name:row.program_name||row.data?.name||base.program.name,department:row.department||row.data?.department||base.program.department,academicYear:row.academic_year||row.data?.academicYear||base.program.academicYear};base.academicYears=Array.isArray(row.data?.academicYears)?row.data.academicYears:[base.program.academicYear];}
+    if(ploRows?.length)base.plos=ploRows.map(p=>({code:p.code,name:p.name,target:Number(p.target)}));
+    if(operationalRows?.[0]?.data?.items)base.operational=operationalRows[0].data.items;
+    base.reports=(reportRows||[]).map(reportFromDb);
+    if(currentUser.role==='Head of Department'){try{const auditRows=await Backend.select('audit_log','select=*&order=created_at.desc&limit=50');base.audit=(auditRows||[]).map(a=>({icon:'•',title:a.action,detail:`${a.entity_type}${a.entity_id?` · ${a.entity_id}`:''}`,time:String(a.created_at||'').slice(0,16).replace('T',' ')}));}catch{}}
+    state=normalizeState(base);state.role=currentUser.role;ploYear=state.program.academicYear;ploTerm='Annual';
   }
   async function onAuthenticated(user){
     currentUser=user;state.role=user.role;
@@ -734,29 +818,45 @@
     $('authScreen')?.classList.add('hidden');$('appShell')?.classList.remove('hidden');
     syncChrome();render();window.__ACADELOOP_READY__=true;
   }
+  async function sendOtp(){
+    const email=$('loginUser')?.value.trim().toLowerCase();if(!email){setAuthStatus('Enter your authorized email address.','error');return;}
+    const btn=$('signInBtn');btn.disabled=true;btn.textContent='Sending code…';setAuthStatus('');
+    try{await Backend.requestOtp(email);sessionStorage.setItem('acadeloop_pending_email',email);showCodeStep(email);setAuthStatus('A one-time sign-in code was sent to your email.','ok');}
+    catch(e){setAuthStatus(e?.message?.includes('Signups not allowed')||e?.status===400?'This email is not authorized for Acadeloop.':(e?.message||'Unable to send the code.'),'error');}
+    finally{btn.disabled=false;btn.textContent='Send one-time code';}
+  }
+  async function verifyLoginCode(){
+    const email=sessionStorage.getItem('acadeloop_pending_email')||$('loginUser')?.value.trim().toLowerCase();const code=$('loginCode')?.value.trim();
+    if(!email||!code){setAuthStatus('Enter the six-digit code from your email.','error');return;}
+    const btn=$('verifyOtpBtn');btn.disabled=true;btn.textContent='Verifying…';
+    try{await Backend.verifyOtp(email,code);const p=await Backend.profile();if(!p||p.active===false)throw new Error('Your Acadeloop account is not active.');sessionStorage.removeItem('acadeloop_pending_email');await onAuthenticated({id:p.id,email:p.email,firstName:p.first_name,lastName:p.last_name,department:p.department,role:dbRoleToUi(p.role),active:p.active});}
+    catch(e){await Backend.signOut();setAuthStatus(e?.message||'The code is invalid or expired.','error');}
+    finally{btn.disabled=false;btn.textContent='Verify & sign in';}
+  }
   async function signIn(){
     const login=$('loginUser')?.value.trim();if(!login){setAuthStatus('Enter a test username such as TestHOD, TestI, or TestQ.','error');return;}
     const btn=$('signInBtn');btn.disabled=true;btn.textContent='Signing in…';setAuthStatus('');
-    try{
-      const user=localUserByLogin(login);
-      if(!user)throw new Error('Unknown test user. Use TestHOD, TestI, TestQ, TestI2, or an email added by the HOD.');
-      setAuthToken(user.username||user.email);await onAuthenticated(user);
-    }
+    try{const user=localUserByLogin(login);if(!user)throw new Error('Unknown test user. Use TestHOD, TestI, TestQ, TestI2, or an email added by the HOD.');setAuthToken(user.username||user.email);await onAuthenticated(user);}
     catch(e){setAuthStatus(e.message||'Unable to sign in.','error');}
     finally{btn.disabled=false;btn.textContent='Sign in';}
   }
   async function signOut(){
-    setAuthToken('');currentUser=null;userDirectory=[];$('appShell')?.classList.add('hidden');$('authScreen')?.classList.remove('hidden');showLoginStep();if($('loginUser'))$('loginUser').value='';
+    if(backendEnabled)await Backend.signOut();else setAuthToken('');currentUser=null;userDirectory=[];$('appShell')?.classList.add('hidden');$('authScreen')?.classList.remove('hidden');showLoginStep();if($('loginUser'))$('loginUser').value='';
   }
   async function initAuth(){
-    loadLocalUsers();
-    $('signInBtn')?.addEventListener('click',signIn);$('signOutBtn')?.addEventListener('click',signOut);
-    $('loginUser')?.addEventListener('keydown',e=>{if(e.key==='Enter')signIn()});
+    $('signOutBtn')?.addEventListener('click',signOut);
+    if(backendEnabled){
+      $('authTestPanel')?.classList.add('hidden');$('authProductionNote')?.classList.remove('hidden');
+      $('signInBtn')?.addEventListener('click',sendOtp);$('verifyOtpBtn')?.addEventListener('click',verifyLoginCode);$('backToEmail')?.addEventListener('click',showLoginStep);
+      $('loginUser')?.addEventListener('keydown',e=>{if(e.key==='Enter')sendOtp()});$('loginCode')?.addEventListener('keydown',e=>{if(e.key==='Enter')verifyLoginCode()});
+      try{const p=await Backend.profile();if(p?.active){await onAuthenticated({id:p.id,email:p.email,firstName:p.first_name,lastName:p.last_name,department:p.department,role:dbRoleToUi(p.role),active:p.active});return;}}catch(e){console.warn('Session restore failed',e);}
+      showLoginStep();setAuthStatus('Enter the email address authorized by your Head of Department.','');return;
+    }
+    loadLocalUsers();$('authTestPanel')?.classList.remove('hidden');$('authProductionNote')?.classList.add('hidden');
+    $('signInBtn')?.addEventListener('click',signIn);$('loginUser')?.addEventListener('keydown',e=>{if(e.key==='Enter')signIn()});
     document.querySelectorAll('[data-test-login]').forEach(btn=>btn.addEventListener('click',()=>{if($('loginUser'))$('loginUser').value=btn.dataset.testLogin||'';signIn();}));
-    const savedLogin=authToken();
-    if(savedLogin){const user=localUserByLogin(savedLogin);if(user){await onAuthenticated(user);return;}setAuthToken('');}
-    showLoginStep();
-    setAuthStatus('Preset test users are ready: TestHOD, TestI, TestQ, TestI2.','ok');
+    const savedLogin=authToken();if(savedLogin){const user=localUserByLogin(savedLogin);if(user){await onAuthenticated(user);return;}setAuthToken('');}
+    showLoginStep();setAuthStatus('Preset test users are available only in local/test mode.','ok');
   }
 
   document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.view)));

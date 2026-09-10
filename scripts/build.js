@@ -18,7 +18,7 @@ function buildHtml() {
     '<script src="src/vendor/jszip.min.js"></script>',
     '<script src="vendor/jszip.min.js"></script>'
   );
-  for (const file of ['src/core.js', 'src/seed.js', 'src/app.js']) {
+  for (const file of ['src/core.js', 'src/seed.js', 'src/backend.js', 'src/app.js']) {
     html = html.replace(
       `<script src="${file}"></script>`,
       `<script data-source="${file}">\n${escapeScript(read(file))}\n</script>`
@@ -42,7 +42,7 @@ const copy = (from, to = from) => {
 };
 
 copy('robots.txt');
-copy('src/vendor/jszip.min.js', 'vendor/jszip.min.js');
+copy('vendor/jszip.min.js');
 copy('templates/Course_Report_Placeholder.docx');
 
 console.log('Built resilient deployment: dist/index.html has inline Acadeloop CSS/app code; vendor + DOCX stay separate.');

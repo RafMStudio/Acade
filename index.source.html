@@ -13,22 +13,29 @@
 <div class="auth-shell">
 <div class="auth-brand"><div class="brand-mark">A</div><div><strong>Acadeloop</strong><span>Academic Program Quality</span></div></div>
 <div class="auth-card">
-<span class="eyebrow">Testing access</span>
+<span class="eyebrow">Secure access</span>
 <h1 id="authTitle">Sign in to Acadeloop</h1>
-<p id="authMessage">Choose a preset test user or type the test username. This test build is designed to be served from Acadeloop.com or another web host. Data stays in this browser only.</p>
+<p id="authMessage">Use the email address authorized by your Head of Department. Acadeloop will send a one-time sign-in code. There is no public registration.</p>
 <div id="authEmailStep">
-<label class="auth-field"><span>Test user</span><input autocomplete="off" id="loginUser" placeholder="TestHOD" type="text"/></label>
-<button class="btn btn-primary auth-submit" id="signInBtn" type="button">Sign in</button>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">
+<label class="auth-field"><span>Email address</span><input autocomplete="email" id="loginUser" placeholder="name@university.edu" type="email"/></label>
+<button class="btn btn-primary auth-submit" id="signInBtn" type="button">Send one-time code</button>
+</div>
+<div class="hidden" id="authCodeStep">
+<label class="auth-field"><span>One-time code sent to <strong id="otpEmailLabel"></strong></span><input autocomplete="one-time-code" id="loginCode" inputmode="numeric" maxlength="6" placeholder="123456" type="text"/></label>
+<button class="btn btn-primary auth-submit" id="verifyOtpBtn" type="button">Verify &amp; sign in</button>
+<button class="btn btn-ghost auth-submit" id="backToEmail" type="button">Use a different email</button>
+</div>
+<div class="auth-status" id="authStatus"></div>
+<div class="auth-note" id="authProductionNote"><strong>Authorized users only.</strong> Accounts are created by the HOD. Course Report documents are generated on demand; Acadeloop stores the structured data, not DOCX files.</div>
+<div class="hidden" id="authTestPanel" style="margin-top:12px">
+<div class="auth-note" style="margin-bottom:10px">LOCAL TEST MODE — preset accounts are available only when the project is opened locally or by the automated test runner.</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
 <button class="btn btn-ghost" data-test-login="TestHOD" type="button">TestHOD · HOD</button>
 <button class="btn btn-ghost" data-test-login="TestI" type="button">TestI · Instructor</button>
 <button class="btn btn-ghost" data-test-login="TestQ" type="button">TestQ · Coordinator</button>
 <button class="btn btn-ghost" data-test-login="TestI2" type="button">TestI2 · Instructor</button>
 </div>
-<div class="auth-note" style="margin-top:12px;border:1px solid #dbeafe;background:#eff6ff;color:#1d4ed8;border-radius:10px;padding:10px 12px">TEST MODE — preset users are already created. Do not use real institutional data in this build. HOD can add additional test users in this browser.</div>
 </div>
-<div class="auth-status" id="authStatus"></div>
-<div class="auth-note"><strong>Preset accounts:</strong> TestHOD, TestI, TestQ, TestI2. No registration is available.</div>
 </div>
 </div>
 </section>
@@ -91,5 +98,6 @@
 <script src="src/vendor/jszip.min.js"></script>
 <script src="src/core.js"></script>
 <script src="src/seed.js"></script>
+<script src="src/backend.js"></script>
 <script src="src/app.js"></script></body>
 </html>

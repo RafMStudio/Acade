@@ -17,3 +17,11 @@
 - Rebranded QualiFlow to Acadeloop.
 - Removed embedded DOCX Base64 data.
 - Added readable source structure, external Word template, tests, and Namecheap guidance.
+
+## 1.1.0 — Supabase production integration
+- Supabase email OTP production auth; preset test users only in local/test mode.
+- Course Report structured data persisted to Supabase; generated DOCX remains on-demand only.
+- HOD user creation via protected Edge Function.
+- HOD full Excel backup export via protected Edge Function.
+- RLS-backed Instructor → Coordinator → HOD workflow.
+- Cloudflare Worker deployment config retained for acadeloop.com.

@@ -9,7 +9,7 @@ const { spawnSync } = require('node:child_process');
 const root = path.join(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 const sourceFiles = [
-  'src/core.js', 'src/seed.js', 'src/app.js',
+  'src/core.js', 'src/seed.js', 'src/backend.js', 'src/app.js',
   'scripts/build.js', 'scripts/check-project.js', 'scripts/browser-smoke.js',
   'tests/core.test.js'
 ];
@@ -32,11 +32,11 @@ for (const button of sourceIndex.matchAll(/<button\b[^>]*>/g)) {
   assert.match(button[0], /\btype="button"/, `Static button missing type="button": ${button[0]}`);
 }
 
-for (const marker of ['src/styles.css', 'src/vendor/jszip.min.js', 'src/core.js', 'src/seed.js', 'src/app.js']) {
+for (const marker of ['src/styles.css', 'src/vendor/jszip.min.js', 'src/core.js', 'src/seed.js', 'src/backend.js', 'src/app.js']) {
   assert.ok(sourceIndex.includes(marker), `index.source.html is missing ${marker}`);
 }
 assert.ok(index.includes('id="acadeloop-styles"'), 'Deployment index must inline Acadeloop CSS');
-for (const file of ['src/core.js', 'src/seed.js', 'src/app.js']) {
+for (const file of ['src/core.js', 'src/seed.js', 'src/backend.js', 'src/app.js']) {
   assert.ok(index.includes(`data-source="${file}"`), `Deployment index must inline ${file}`);
   assert.ok(!index.includes(`<script src="${file}"></script>`), `Deployment index must not depend on ${file} at runtime`);
 }
@@ -46,7 +46,7 @@ assert.ok(!index.includes('template-data.js'), 'index.html must not load an embe
 assert.ok(!fs.existsSync(path.join(root, 'src/template-data.js')), 'Embedded template-data.js must not exist');
 assert.ok(fs.existsSync(path.join(root, 'templates/Course_Report_Placeholder.docx')), 'External Course Report template is missing');
 
-for (const dead of ['showAuthCodeStep', 'authCodeStep', 'loginCode', 'requestLoginCode', 'Academic Coordinator', 'Required Course Portfolio structure']) {
+for (const dead of ['Academic Coordinator', 'Required Course Portfolio structure']) {
   assert.ok(!app.includes(dead) && !index.includes(dead), `Dead/stale feature remains: ${dead}`);
 }
 for (const coreFunction of ['expectedCombinedSnapshot', 'combinedIntegrityAudit', 'gradeInflationForSection', 'calculatePloRollups', 'validateReport']) {
@@ -66,11 +66,18 @@ assert.ok(core.includes('AcadeloopCore') && !core.includes('QualiFlowCore'), 'Co
 assert.ok(seedSource.includes('ACADELOOP_SEED') && !seedSource.includes('QUALIFLOW_SEED'), 'Seed namespace is not fully rebranded');
 
 // Source readability guard: binary/base64 payloads belong in binary files, never JS/HTML source.
-for (const file of ['index.html', 'index.source.html', 'src/app.js', 'src/core.js', 'src/seed.js']) {
+for (const file of ['index.html', 'index.source.html', 'src/app.js', 'src/core.js', 'src/seed.js', 'src/backend.js']) {
   const text = read(file);
   assert.ok(!/data:(?:application|image)\/[a-z0-9.+-]+;base64,[A-Za-z0-9+/]{500,}/i.test(text), `${file} contains a large Base64 data URI`);
   assert.ok(!/[A-Za-z0-9+/]{50000,}={0,2}/.test(text), `${file} appears to contain an embedded binary/Base64 blob`);
 }
+
+assert.ok(read('src/backend.js').includes('sb_publishable_'), 'Supabase publishable key is missing');
+assert.ok(read('src/backend.js').includes('/auth/v1/otp'), 'Email OTP request flow is missing');
+assert.ok(app.includes("admin-create-user"), 'HOD Supabase user creation integration is missing');
+assert.ok(app.includes("export-backup-xlsx"), 'Excel backup integration is missing');
+assert.ok(app.includes('persistCourseReport'), 'Supabase Course Report data persistence is missing');
+assert.ok(!app.includes('COURSE_REPORT_TEMPLATE_BASE64'), 'Generated DOCX must not be stored as Base64');
 
 const seedContext = { window: {} };
 vm.runInNewContext(seedSource, seedContext, { filename: 'src/seed.js' });
