@@ -1,5 +1,13 @@
 # Changelog
 
+### 1.2.4 — Academic Programs master list
+- Academic Programs is now the master source for Department and Academic Program assignments.
+- Added required Program Type with Diploma and Bachelor options.
+- Saved departments and programs immediately populate the Add User dropdowns.
+- Add User now uses strict Department and Academic Program dropdowns instead of free-text entry.
+- Academic Program choices are filtered by the selected Department and include the program type.
+
+
 ### 1.2.3 — User prefix and admin entry controls
 - Replaced the authorized-user prefix `Mrs.` with `Ms.`; allowed prefixes are now Mr., Ms., and Dr.
 - System Administrator can type the academic program code/name directly when assigning a user, with existing open programs offered as suggestions.

@@ -1,6 +1,6 @@
 {
   "name": "acadeloop-academic-quality",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "private": true,
   "description": "Acadeloop academic program quality management web application.",
   "scripts": {

@@ -1,6 +1,6 @@
 window.ACADELOOP_SEED = {
     role:'Head of Department',
-    program:{institution:'Example University',college:'College of Applied Health Sciences',department:'Health Information Management',name:'Bachelor of Health Information Management',academicYear:'2026–2027'},
+    program:{institution:'Example University',college:'College of Applied Health Sciences',department:'Health Information Management',name:'Bachelor of Health Information Management',programType:'Bachelor',academicYear:'2026–2027'},
     academicYears:['2026–2027','2025–2026'],
     plos:[
       {code:'K1',name:'Explain foundational concepts and principles in health information management.',target:70},

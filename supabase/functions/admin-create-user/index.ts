@@ -25,7 +25,7 @@ Deno.serve(async (req:Request) => {
   const titlePrefix=String(body.title_prefix||body.titlePrefix||"").trim();
   const firstName=String(body.first_name||body.firstName||"").trim();
   const lastName=String(body.last_name||body.lastName||"").trim();
-  const department=String(body.department||"").trim();
+  const requestedDepartment=String(body.department||"").trim();
   const role=String(body.role||"").trim();
   const programId=String(body.program_id||body.programId||"").trim()||null;
   if(!email||!/^\S+@\S+\.\S+$/.test(email)) return reply(400,{error:"A valid email is required"});
@@ -35,8 +35,11 @@ Deno.serve(async (req:Request) => {
   if(caller.role==='HOD'&&role==='HOD') return reply(403,{error:"Only System Administrator can appoint an HOD"});
   if(!programId) return reply(400,{error:"An academic program is required"});
 
-  const {data:program}=await supabase.from("academic_programs").select("id,status,department").eq("id",programId).maybeSingle();
+  const {data:program}=await supabase.from("academic_programs").select("id,status,department,program_type").eq("id",programId).maybeSingle();
   if(!program) return reply(404,{error:"Academic program not found"});
+  if(program.status!=="Open") return reply(400,{error:"Academic program is closed"});
+  const department=String(program.department||"").trim();
+  if(requestedDepartment&&requestedDepartment!==department) return reply(400,{error:"Department does not match the selected academic program"});
   if(caller.role==='HOD'){
     const {data:membership}=await supabase.from("program_memberships").select("id").eq("program_id",programId).eq("user_id",caller.id).eq("role","HOD").eq("active",true).maybeSingle();
     if(!membership) return reply(403,{error:"You may only add users to a program you head"});

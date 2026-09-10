@@ -20,14 +20,13 @@
   } = Core;
   const STORAGE_KEY = 'acadeloop_program_quality_v100';
   const TITLE_PREFIXES = ['Mr.','Ms.','Dr.'];
+  const PROGRAM_TYPES = ['Diploma','Bachelor'];
   const normalizeTitlePrefix = value => TITLE_PREFIXES.includes(String(value||'').trim()) ? String(value).trim() : '';
+  const normalizeProgramType = value => PROGRAM_TYPES.includes(String(value||'').trim()) ? String(value).trim() : '';
   const displayUserName = user => [normalizeTitlePrefix(user?.titlePrefix), user?.firstName, user?.lastName].filter(Boolean).join(' ').trim() || user?.email || 'User';
-  const programInputLabel = program => program ? `${program.code} · ${program.name}` : '';
-  const findProgramFromInput = value => {
-    const key=String(value||'').trim().toLowerCase();
-    if(!key) return null;
-    return programDirectory.find(program=>[program.id,program.code,program.name,programInputLabel(program)].some(candidate=>String(candidate||'').trim().toLowerCase()===key))||null;
-  };
+  const programTypeLabel = program => normalizeProgramType(program?.program_type||program?.programType||program?.data?.programType) || 'Bachelor';
+  const programDirectoryLabel = program => program ? `${program.name} (${program.code})` : '';
+  const uniqueDepartments = programs => [...new Set((programs||[]).map(program=>String(program?.department||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
   let dashboardInflationOnly = false;
 
 
@@ -499,19 +498,20 @@
     const rows=userDirectory.map(u=>`<tr><td><strong>${esc(displayUserName(u))}</strong><div class="tiny">${esc(u.email)}</div></td><td>${esc(u.programName||u.department||'System')}</td><td><span class="user-table-role">${esc(u.role)}</span></td><td><span class="user-table-role user-status-active">${u.active===false?'Inactive':'Active'}</span></td><td>${esc(u.createdAt?String(u.createdAt).slice(0,10):'—')}</td><td>${u.role==='System Administrator'?'—':`<button class="btn btn-ghost" data-user-status="${u.id}" data-user-active="${u.active===false?'1':'0'}" data-user-program="${esc(u.programId||'')}">${u.active===false?'Reactivate':'Deactivate'}</button>`}</td></tr>`).join('');
     const actions=backendEnabled?`<button class="btn btn-ghost" id="backupAllData">${isAdmin?'Backup Entire System':'Backup Program'} (.xlsx)</button>`:'';
     const openPrograms=programDirectory.filter(p=>p.status==='Open');
-    const programOptions=openPrograms.map(p=>`<option value="${esc(programInputLabel(p))}">${esc(p.department||'')}</option>`).join('');
-    const departmentOptions=[...new Set(openPrograms.map(p=>String(p.department||'').trim()).filter(Boolean))].map(department=>`<option value="${esc(department)}"></option>`).join('');
+    const departmentOptions=uniqueDepartments(openPrograms).map(department=>`<option value="${esc(department)}">${esc(department)}</option>`).join('');
     const roleOptions=isAdmin?'<option>HOD</option><option>Coordinator</option><option>Instructor</option>':'<option>Instructor</option><option>Coordinator</option>';
-    return roleHero()+pageHead('Access control','Users',isAdmin?'Manage authorized users across every academic program. Public registration is disabled.':'Manage users assigned to this academic program. Public registration is disabled.',actions)+`
-      <div class="user-directory-note"><div class="automation-icon">↗</div><div><strong>Controlled access</strong><span>Users authenticate by email. Course Report DOCX files are generated on demand and never stored; the structured report data is backed up.</span></div></div>
-      <div class="user-admin-grid"><div class="table-card"><table class="data-table"><thead><tr><th>User</th><th>Program / Department</th><th>Role</th><th>Status</th><th>Added</th><th>Action</th></tr></thead><tbody>${rows||'<tr><td colspan="6" class="empty">No authorized users have been added yet.</td></tr>'}</tbody></table></div>
-      <div class="card user-add-card"><h3>Add authorized user</h3><p>${isAdmin?'System Administrator can appoint HODs, Coordinators, and Instructors.':'HOD can add Coordinators and Instructors to this program.'}</p><div class="form-grid"><div class="field f4"><label>Prefix *</label><select id="auPrefix"><option value="">Select prefix</option>${TITLE_PREFIXES.map(prefix=>`<option value="${esc(prefix)}">${esc(prefix)}</option>`).join('')}</select></div><div class="field f4"><label>First name *</label><input id="auFirst" autocomplete="off"></div><div class="field f4"><label>Last name *</label><input id="auLast" autocomplete="off"></div>${isAdmin?`<div class="field f12"><label>Academic program *</label><input id="auProgram" list="auProgramList" placeholder="Type program code or name" autocomplete="off"><datalist id="auProgramList">${programOptions}</datalist><span class="tiny">Type an existing open program code or name. You can still create new programs from Academic Programs.</span></div>`:''}<div class="field f12"><label>Department *</label><input id="auDepartment" ${isAdmin?`list="auDepartmentList" placeholder="Type department name" value=""`:`value="${esc(state.program.department||'')}"`} autocomplete="off">${isAdmin?`<datalist id="auDepartmentList">${departmentOptions}</datalist>`:''}</div><div class="field f12"><label>Role *</label><select id="auRole">${roleOptions}</select></div><div class="field f12"><label>Email *</label><input type="email" id="auEmail" placeholder="name@university.edu"></div><div class="field f12"><button class="btn btn-primary" id="addAuthorizedUser" style="width:100%">Add / assign user</button></div></div></div></div>`;
+    const activeProgram=programDirectory.find(p=>p.id===activeProgramId);
+    const hodDepartment=activeProgram?.department||state.program.department||'';
+    const hodProgramLabel=activeProgram?`${programDirectoryLabel(activeProgram)} · ${programTypeLabel(activeProgram)}`:state.program.name||'Current academic program';
+    const assignmentFields=isAdmin?`<div class="field f12"><label>Department *</label><select id="auDepartment" ${openPrograms.length?'':'disabled'}><option value="">${openPrograms.length?'Select department':'Create an academic program first'}</option>${departmentOptions}</select></div><div class="field f12"><label>Academic program *</label><select id="auProgram" disabled><option value="">Select department first</option></select><span class="tiny">Programs and departments come from Academic Programs. Add or edit them there first.</span></div>`:`<div class="field f12"><label>Department *</label><select id="auDepartment" disabled><option value="${esc(hodDepartment)}">${esc(hodDepartment)}</option></select></div><div class="field f12"><label>Academic program *</label><select id="auProgram" disabled><option value="${esc(activeProgramId||'')}">${esc(hodProgramLabel)}</option></select></div>`;
+    return roleHero()+pageHead('Access control','Users',isAdmin?'Manage authorized users across every academic program. Public registration is disabled.':'Manage users assigned to this academic program. Public registration is disabled.',actions)+`<div class="user-directory-note"><div class="automation-icon">↗</div><div><strong>Controlled access</strong><span>Users authenticate by email. Department and academic program assignments are selected from the Academic Programs master list.</span></div></div><div class="user-admin-grid"><div class="table-card"><table class="data-table"><thead><tr><th>User</th><th>Program / Department</th><th>Role</th><th>Status</th><th>Added</th><th>Action</th></tr></thead><tbody>${rows||'<tr><td colspan="6" class="empty">No authorized users have been added yet.</td></tr>'}</tbody></table></div><div class="card user-add-card"><h3>Add authorized user</h3><p>${isAdmin?'Select the department and academic program from the master Academic Programs list, then appoint an HOD, Coordinator, or Instructor.':'HOD can add Coordinators and Instructors to this program.'}</p><div class="form-grid"><div class="field f4"><label>Prefix *</label><select id="auPrefix"><option value="">Select prefix</option>${TITLE_PREFIXES.map(prefix=>`<option value="${esc(prefix)}">${esc(prefix)}</option>`).join('')}</select></div><div class="field f4"><label>First name *</label><input id="auFirst" autocomplete="off"></div><div class="field f4"><label>Last name *</label><input id="auLast" autocomplete="off"></div>${assignmentFields}<div class="field f12"><label>Role *</label><select id="auRole">${roleOptions}</select></div><div class="field f12"><label>Email *</label><input type="email" id="auEmail" placeholder="name@university.edu"></div><div class="field f12"><button class="btn btn-primary" id="addAuthorizedUser" style="width:100%">Add / assign user</button></div></div></div></div>`;
   }
   function renderProgramsAdmin(){
-    const rows=programDirectory.map(p=>`<tr><td><strong>${esc(p.code)}</strong><div class="tiny">${esc(p.name)}</div></td><td>${esc(p.institution||'—')}</td><td>${esc(p.college||'—')}</td><td>${esc(p.department||'—')}</td><td>${esc(p.current_academic_year)}</td><td>${statusPill(p.status)}</td><td><button class="btn btn-ghost" data-program-toggle="${p.id}" data-program-status="${p.status}">${p.status==='Open'?'Close':'Open'}</button></td></tr>`).join('');
-    return roleHero()+pageHead('System administration','Academic Programs','Create program workspaces and control whether each program is open or closed.')+`
-      <div class="user-admin-grid"><div class="table-card"><table class="data-table"><thead><tr><th>Program</th><th>Institution</th><th>College</th><th>Department</th><th>Year</th><th>Status</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan="7" class="empty">No academic programs yet.</td></tr>'}</tbody></table></div>
-      <div class="card user-add-card"><h3>Open academic program</h3><p>Create an isolated quality workspace. Assign its HOD from the Users page.</p><div class="form-grid"><div class="field f4"><label>Program code *</label><input id="apCode" placeholder="BHIM"></div><div class="field f8"><label>Program name *</label><input id="apName" placeholder="Bachelor of Health Information Management"></div><div class="field f12"><label>Institution</label><input id="apInstitution"></div><div class="field f12"><label>College</label><input id="apCollege"></div><div class="field f12"><label>Department *</label><input id="apDepartment"></div><div class="field f12"><label>Current academic year *</label><input id="apYear" value="2026–2027"></div><div class="field f12"><button class="btn btn-primary" id="createAcademicProgram" style="width:100%">Open academic program</button></div></div></div></div>`;
+    const departments=uniqueDepartments(programDirectory);
+    const departmentSuggestions=departments.map(department=>`<option value="${esc(department)}"></option>`).join('');
+    const programSuggestions=[...new Set(programDirectory.map(p=>String(p.name||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b)).map(name=>`<option value="${esc(name)}"></option>`).join('');
+    const rows=programDirectory.map(p=>`<tr><td><strong>${esc(p.code)}</strong><div class="tiny">${esc(p.name)}</div></td><td><span class="tag blue">${esc(programTypeLabel(p))}</span></td><td>${esc(p.department||'—')}</td><td>${esc(p.institution||'—')}</td><td>${esc(p.college||'—')}</td><td>${esc(p.current_academic_year)}</td><td>${statusPill(p.status)}</td><td><button class="btn btn-ghost" data-program-toggle="${p.id}" data-program-status="${p.status}">${p.status==='Open'?'Close':'Open'}</button></td></tr>`).join('');
+    return roleHero()+pageHead('System administration','Academic Programs','This is the master list for departments and academic programs. Saved values automatically become available in the Add User dropdowns.')+`<div class="user-admin-grid"><div class="table-card"><table class="data-table"><thead><tr><th>Academic program</th><th>Type</th><th>Department</th><th>Institution</th><th>College</th><th>Year</th><th>Status</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan="8" class="empty">No academic programs yet. Add the first program to populate the user assignment dropdowns.</td></tr>'}</tbody></table></div><div class="card user-add-card"><h3>Add academic program</h3><p>Enter the department and program once here. Existing departments and program names appear as suggestions, and saved records become dropdown options when adding users.</p><div class="form-grid"><div class="field f12"><label>Department *</label><input id="apDepartment" list="apDepartmentList" placeholder="e.g. Health Information Management" autocomplete="off"><datalist id="apDepartmentList">${departmentSuggestions}</datalist><span class="tiny">Type a new department or reuse one already saved.</span></div><div class="field f8"><label>Academic program *</label><input id="apName" list="apProgramNameList" placeholder="e.g. Health Information and Technology Management" autocomplete="off"><datalist id="apProgramNameList">${programSuggestions}</datalist></div><div class="field f4"><label>Program type *</label><select id="apProgramType"><option value="">Select type</option>${PROGRAM_TYPES.map(type=>`<option value="${esc(type)}">${esc(type)}</option>`).join('')}</select></div><div class="field f4"><label>Program code *</label><input id="apCode" placeholder="BHIM" autocomplete="off"></div><div class="field f8"><label>Current academic year *</label><input id="apYear" value="2026–2027" autocomplete="off"></div><div class="field f12"><label>Institution</label><input id="apInstitution" autocomplete="off"></div><div class="field f12"><label>College</label><input id="apCollege" autocomplete="off"></div><div class="field f12"><button class="btn btn-primary" id="createAcademicProgram" style="width:100%">Add academic program</button></div></div></div></div>`;
   }
   function renderSetup(){
     if(state.role==='System Administrator') return renderProgramsAdmin();
@@ -680,14 +680,17 @@
     if(state.role==='Head of Department'&&activeProgramId)userDirectory=userDirectory.filter(u=>u.id===currentUser.id||memberships.some(m=>m.user_id===u.id&&m.program_id===activeProgramId));
   }
   async function addAuthorizedUser(){
-    const titlePrefix=normalizeTitlePrefix($('auPrefix')?.value),first=$('auFirst')?.value.trim(),last=$('auLast')?.value.trim(),department=$('auDepartment')?.value.trim(),role=$('auRole')?.value,email=$('auEmail')?.value.trim().toLowerCase();
-    const typedProgram=state.role==='System Administrator'?$('auProgram')?.value.trim():'';
-    const matchedProgram=state.role==='System Administrator'?findProgramFromInput(typedProgram):null;
-    const programId=state.role==='System Administrator'?matchedProgram?.id:activeProgramId;
+    const isAdmin=state.role==='System Administrator';
+    const titlePrefix=normalizeTitlePrefix($('auPrefix')?.value),first=$('auFirst')?.value.trim(),last=$('auLast')?.value.trim(),role=$('auRole')?.value,email=$('auEmail')?.value.trim().toLowerCase();
+    const selectedDepartment=isAdmin?$('auDepartment')?.value.trim():(state.program.department||'').trim();
+    const programId=isAdmin?$('auProgram')?.value:activeProgramId;
+    const matchedProgram=programDirectory.find(p=>p.id===programId);
+    const department=(matchedProgram?.department||selectedDepartment||'').trim();
     if(!titlePrefix||!first||!last||!department||!email||(backendEnabled&&!programId)){toast('Prefix, first name, last name, department, role, email, and academic program are required.');return;}
-    if(state.role==='System Administrator'&&backendEnabled&&!matchedProgram){toast('Enter an existing open academic program by code or name, or create it first from Academic Programs.');return;}
+    if(isAdmin&&backendEnabled&&(!matchedProgram||matchedProgram.status!=='Open')){toast('Select an open academic program from the Academic Programs list.');return;}
+    if(isAdmin&&matchedProgram&&selectedDepartment!==matchedProgram.department){toast('The selected academic program does not belong to that department.');return;}
     if(!$('auEmail')?.checkValidity()){toast('Enter a valid email address.');return;}
-    const allowed=state.role==='System Administrator'?['HOD','Coordinator','Instructor']:['Instructor','Coordinator'];if(!allowed.includes(role)){toast('That role is not permitted here.');return;}
+    const allowed=isAdmin?['HOD','Coordinator','Instructor']:['Instructor','Coordinator'];if(!allowed.includes(role)){toast('That role is not permitted here.');return;}
     const btn=$('addAuthorizedUser');if(btn){btn.disabled=true;btn.textContent='Adding…'}
     try{
       if(!backendEnabled){const users=loadLocalUsers();if(users.some(u=>String(u.email||'').toLowerCase()===email))throw new Error('This email is already authorized.');users.push({id:uid(),titlePrefix,firstName:first,lastName:last,department,role,email,active:true,createdAt:nowDate()});saveLocalUsers(users);userDirectory=users;}
@@ -700,10 +703,12 @@
     try{await Backend.invoke('admin-manage-user',{action:'status',user_id:userId,active,program_id:programId||activeProgramId});await loadUsers();render();toast(active?'User reactivated.':'User deactivated.');}catch(e){toast(e?.message||'Could not update user.');}
   }
   async function createAcademicProgram(){
-    const code=$('apCode')?.value.trim().toUpperCase(),name=$('apName')?.value.trim(),institution=$('apInstitution')?.value.trim()||'',college=$('apCollege')?.value.trim()||'',department=$('apDepartment')?.value.trim(),year=$('apYear')?.value.trim();
-    if(!code||!name||!department||!year){toast('Program code, name, department, and academic year are required.');return;}
-    const btn=$('createAcademicProgram');btn.disabled=true;btn.textContent='Opening…';
-    try{await Backend.insert('academic_programs',{code,name,institution,college,department,status:'Open',current_academic_year:year,data:{academicYears:[year]},created_by:currentUser.id});await loadPrograms();render();toast('Academic program opened. Assign its HOD from Users.');}catch(e){toast(e?.message||'Could not create academic program.');}finally{if($('createAcademicProgram')){$('createAcademicProgram').disabled=false;$('createAcademicProgram').textContent='Open academic program';}}
+    const code=$('apCode')?.value.trim().toUpperCase(),name=$('apName')?.value.trim(),programType=normalizeProgramType($('apProgramType')?.value),institution=$('apInstitution')?.value.trim()||'',college=$('apCollege')?.value.trim()||'',department=$('apDepartment')?.value.trim(),year=$('apYear')?.value.trim();
+    if(!code||!name||!programType||!department||!year){toast('Department, academic program, program type, program code, and academic year are required.');return;}
+    if(programDirectory.some(p=>String(p.code||'').trim().toLowerCase()===code.toLowerCase())){toast('That program code already exists.');return;}
+    if(programDirectory.some(p=>String(p.name||'').trim().toLowerCase()===name.toLowerCase()&&String(p.department||'').trim().toLowerCase()===department.toLowerCase())){toast('That academic program already exists in this department.');return;}
+    const btn=$('createAcademicProgram');btn.disabled=true;btn.textContent='Adding…';
+    try{await Backend.insert('academic_programs',{code,name,program_type:programType,institution,college,department,status:'Open',current_academic_year:year,data:{academicYears:[year],programType},created_by:currentUser.id});await loadPrograms();render();toast('Academic program added. Its department and program are now available in the Users dropdowns.');}catch(e){toast(e?.message||'Could not create academic program.');}finally{if($('createAcademicProgram')){$('createAcademicProgram').disabled=false;$('createAcademicProgram').textContent='Add academic program';}}
   }
   async function toggleAcademicProgram(id,status){
     const next=status==='Open'?'Closed':'Open';try{await Backend.patch('academic_programs',`id=eq.${encodeURIComponent(id)}`,{status:next});await loadPrograms();render();toast(`Academic program ${next.toLowerCase()}.`);}catch(e){toast(e?.message||'Could not update program.');}
@@ -747,10 +752,15 @@
     if($('exportAprCsv'))$('exportAprCsv').addEventListener('click',exportAprCsv);
     if($('saveSetup'))$('saveSetup').addEventListener('click',async()=>{state.program.institution=$('spInstitution').value.trim();state.program.college=$('spCollege').value.trim();state.program.department=$('spDepartment').value.trim();state.program.name=$('spProgram').value.trim();state.program.academicYear=$('spYear').value.trim();state.academicYears=[...new Set($('spYears').value.split(',').map(x=>x.trim()).filter(Boolean))];if(state.program.academicYear&&!state.academicYears.includes(state.program.academicYear))state.academicYears.unshift(state.program.academicYear);ploYear=state.program.academicYear;try{await persistProgramSetup();saveState();render();toast('Program setup saved.');}catch(e){toast(e?.message||'Could not save program setup.');}});
     if($('savePloTargets'))$('savePloTargets').addEventListener('click',async()=>{document.querySelectorAll('[data-plo-target]').forEach(el=>state.plos[Number(el.dataset.ploTarget)].target=clamp(el.value));try{await persistPlos();saveState();render();toast('PLO targets saved.');}catch(e){toast(e?.message||'Could not save PLO targets.');}});
-    if($('auProgram')){
-      const syncDepartmentFromProgram=()=>{const program=findProgramFromInput($('auProgram').value);if(program&&$('auDepartment')&&!$('auDepartment').value.trim())$('auDepartment').value=program.department||'';};
-      $('auProgram').addEventListener('change',syncDepartmentFromProgram);
-      $('auProgram').addEventListener('blur',syncDepartmentFromProgram);
+    if(state.role==='System Administrator'&&$('auDepartment')&&$('auProgram')){
+      const refreshProgramOptions=()=>{
+        const department=$('auDepartment').value;
+        const programs=programDirectory.filter(p=>p.status==='Open'&&p.department===department);
+        $('auProgram').innerHTML=`<option value="">${department?(programs.length?'Select academic program':'No open programs in this department'):'Select department first'}</option>${programs.map(p=>`<option value="${esc(p.id)}">${esc(programDirectoryLabel(p))} · ${esc(programTypeLabel(p))}</option>`).join('')}`;
+        $('auProgram').disabled=!department||programs.length===0;
+      };
+      $('auDepartment').addEventListener('change',refreshProgramOptions);
+      refreshProgramOptions();
     }
     if($('addAuthorizedUser'))$('addAuthorizedUser').addEventListener('click',addAuthorizedUser);
     if($('backupAllData'))$('backupAllData').addEventListener('click',backupAllData);
@@ -903,7 +913,7 @@
       Backend.select('operational_plans',`program_id=eq.${pid}&select=*&order=updated_at.desc&limit=1`),
       Backend.select('course_reports',`program_id=eq.${pid}&select=*&order=updated_at.desc`)
     ]);
-    const pg=programRows?.[0];if(pg){base.program={...base.program,name:pg.name,department:pg.department,college:pg.college,institution:pg.institution,academicYear:pg.current_academic_year};base.academicYears=Array.isArray(pg.data?.academicYears)?pg.data.academicYears:[pg.current_academic_year];}
+    const pg=programRows?.[0];if(pg){base.program={...base.program,name:pg.name,programType:programTypeLabel(pg),department:pg.department,college:pg.college,institution:pg.institution,academicYear:pg.current_academic_year};base.academicYears=Array.isArray(pg.data?.academicYears)?pg.data.academicYears:[pg.current_academic_year];}
     if(settingsRows?.[0]){const row=settingsRows[0];backendProgramSettingsId=row.id;base.program={...base.program,...(row.data||{}),name:row.program_name||row.data?.name||base.program.name,department:row.department||row.data?.department||base.program.department,academicYear:row.academic_year||row.data?.academicYear||base.program.academicYear};base.academicYears=Array.isArray(row.data?.academicYears)?row.data.academicYears:base.academicYears;}
     if(ploRows?.length)base.plos=ploRows.map(p=>({code:p.code,name:p.name,target:Number(p.target)}));
     if(operationalRows?.[0]?.data?.items)base.operational=operationalRows[0].data.items;

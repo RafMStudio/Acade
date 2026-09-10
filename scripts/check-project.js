@@ -79,8 +79,10 @@ assert.ok(app.includes("state.role=role;"), 'Authenticated role must overwrite s
 assert.ok(app.includes("'System Administrator':"), 'System Administrator workspace configuration is missing');
 assert.ok(app.includes("admin-create-user"), 'HOD Supabase user creation integration is missing');
 assert.ok(app.includes("const TITLE_PREFIXES = ['Mr.','Ms.','Dr.']"), 'Authorized-user title prefixes are missing');
-assert.ok(app.includes('id="auProgram" list="auProgramList"'), 'SystemAdmin academic program entry must be writable');
-assert.ok(app.includes('id="auDepartment"'), 'Authorized-user department entry is missing');
+assert.ok(app.includes('<select id="auDepartment"') && app.includes('<select id="auProgram"'), 'Department and academic program must be dropdowns');
+assert.ok(app.includes("const PROGRAM_TYPES = ['Diploma','Bachelor']"), 'Academic program type options are missing');
+assert.ok(app.includes('id="apProgramType"'), 'Program type selector is missing');
+assert.ok(app.includes('program_type:programType'), 'Program type is not persisted');
 assert.ok(app.includes('id="auPrefix"'), 'Authorized-user prefix selector is missing');
 assert.ok(app.includes('title_prefix:titlePrefix'), 'Authorized-user prefix is not sent to Supabase');
 assert.ok(read('src/backend.js').includes('title_prefix'), 'Profile title prefix is not loaded from Supabase');
