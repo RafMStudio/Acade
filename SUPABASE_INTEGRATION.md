@@ -28,3 +28,12 @@ The Supabase Management connector used during implementation does not expose hos
 2. Authentication → Email Templates → Magic Link → include `{{ .Token }}` so the email contains the six-digit OTP.
 
 No service-role key belongs in this repository or in browser JavaScript.
+
+
+## System administration
+
+`rafedmoha@gmail.com` is the bootstrap System Administrator. `SystemAdmin` is a global role and is not tied to one program. Academic program roles are stored in `program_memberships`: HOD, Coordinator, and Instructor.
+
+The System Administrator can open/close academic programs, assign HODs and other users, deactivate/reactivate users, and export the entire database to XLSX. HOD exports are limited to their program.
+
+Course Report DOCX output is generated on demand from structured `course_reports.data` and is never persisted.

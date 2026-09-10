@@ -23,6 +23,10 @@
 
 
   const ROLE_CONFIG = {
+    'System Administrator': {
+      views:['dashboard','users','setup'], label:'System administration', avatar:'SA',
+      dashboard:'Acadeloop Administration', description:'Manage academic programs, appoint HODs, control users, and back up the complete Acadeloop system.'
+    },
     'Instructor': {
       views:['dashboard','course-reports','course-portfolios'], label:'Instructor workspace', avatar:'IN',
       dashboard:'My Course Quality', description:'Create course reports by reporting period and section, then submit them for coordinator approval.'
@@ -40,10 +44,21 @@
   const seed = window.ACADELOOP_SEED;
 
   const backendEnabled = !!Backend?.enabled;
-  const dbRoleToUi = role => role === 'HOD' ? 'Head of Department' : role;
-  const uiRoleToDb = role => role === 'Head of Department' ? 'HOD' : role;
+  function canonicalUiRole(role){
+    const value=String(role||'').trim();
+    if(value==='SystemAdmin'||value==='System Administrator') return 'System Administrator';
+    if(value==='HOD'||value==='Head of Department') return 'Head of Department';
+    if(value==='Coordinator') return 'Coordinator';
+    if(value==='Instructor') return 'Instructor';
+    return '';
+  }
+  const dbRoleToUi = role => canonicalUiRole(role);
+  const uiRoleToDb = role => canonicalUiRole(role)==='Head of Department' ? 'HOD' : canonicalUiRole(role)==='System Administrator' ? 'SystemAdmin' : canonicalUiRole(role);
   const clone = value => JSON.parse(JSON.stringify(value));
   let backendProgramSettingsId = null;
+  let activeProgramId = null;
+  let programDirectory = [];
+  let membershipDirectory = [];
 
   let currentUser = null;
   let userDirectory = [];
@@ -67,6 +82,8 @@
   function defaultTestUsers(){
     const department=state?.program?.department||seed.program.department;
     return [
+      // Hidden local-only regression account. Production authentication never uses preset users.
+      {id:'test-system-admin',username:'TestSA',firstName:'System',lastName:'Admin',department,role:'SystemAdmin',email:'system.admin@acadeloop.test',active:true,createdAt:nowDate(),preset:true,testOnly:true},
       {id:'test-hod',username:'TestHOD',firstName:'Test',lastName:'HOD',department,role:'Head of Department',email:'testhod@acadeloop.test',active:true,createdAt:nowDate(),preset:true},
       {id:'test-i',username:'TestI',firstName:'Test',lastName:'Instructor',department,role:'Instructor',email:'testi@acadeloop.test',active:true,createdAt:nowDate(),preset:true},
       {id:'test-q',username:'TestQ',firstName:'Test',lastName:'Quality',department,role:'Coordinator',email:'testq@acadeloop.test',active:true,createdAt:nowDate(),preset:true},
@@ -122,14 +139,14 @@
     const data=clone(r);
     // The database stores report DATA only. Generated DOCX/ZIP files and temporary portfolio files are never persisted.
     return {
-      id:r.id, legacy_id:r.legacyId||null, course_code:r.courseCode, course_title:r.courseName,
+      id:r.id, legacy_id:r.legacyId||null, program_id:activeProgramId, course_code:r.courseCode, course_title:r.courseName,
       academic_year:r.academicYear, semester:r.semester, section_mode:r.sectionMode,
       instructor_id:r.instructorId||currentUser?.id, status:r.status, data
     };
   }
   function reportFromDb(row){
     const r={...(row.data||{})};
-    r.id=row.id;r.legacyId=row.legacy_id||r.legacyId||'';r.courseCode=row.course_code;r.courseName=row.course_title;
+    r.id=row.id;r.legacyId=row.legacy_id||r.legacyId||'';r.programId=row.program_id||r.programId||null;r.courseCode=row.course_code;r.courseName=row.course_title;
     r.academicYear=row.academic_year;r.semester=row.semester;r.sectionMode=row.section_mode;r.instructorId=row.instructor_id;
     r.status=row.status;r.submittedAt=row.submitted_at?String(row.submitted_at).slice(0,10):(r.submittedAt||'');
     r.approvedAt=row.approved_at?String(row.approved_at).slice(0,10):(r.approvedAt||'');
@@ -146,7 +163,7 @@
   async function persistProgramSetup(){
     if(!backendEnabled)return;
     const row={
-      id:backendProgramSettingsId||uid(), program_name:state.program.name||'Academic Program', department:state.program.department||'',
+      id:backendProgramSettingsId||uid(), program_id:activeProgramId, program_name:state.program.name||'Academic Program', department:state.program.department||'',
       academic_year:state.program.academicYear||'', data:{...clone(state.program),academicYears:clone(state.academicYears)}, is_active:true
     };
     const rows=await Backend.insert('program_settings',row,{onConflict:'id',upsert:true});
@@ -154,12 +171,12 @@
   }
   async function persistPlos(){
     if(!backendEnabled)return;
-    for(const p of state.plos){await Backend.insert('plos',{code:p.code,name:p.name,target:Number(p.target),active:true,data:{}},{onConflict:'code',upsert:true});}
+    for(const p of state.plos){await Backend.insert('plos',{program_id:activeProgramId,code:p.code,name:p.name,target:Number(p.target),active:true,data:{}},{onConflict:'program_id,code',upsert:true});}
   }
   async function persistOperational(){
     if(!backendEnabled)return;
     const year=state.program.academicYear;
-    await Backend.insert('operational_plans',{academic_year:year,data:{items:clone(state.operational)},updated_by:currentUser?.id||null},{onConflict:'academic_year',upsert:true});
+    await Backend.insert('operational_plans',{program_id:activeProgramId,academic_year:year,data:{items:clone(state.operational)},updated_by:currentUser?.id||null},{onConflict:'program_id,academic_year',upsert:true});
   }
   function normalizeState(s){
     s = s && typeof s === 'object' ? s : JSON.parse(JSON.stringify(seed));
@@ -171,7 +188,7 @@
     s.operational = Array.isArray(s.operational) ? s.operational : [];
     s.automations = Array.isArray(s.automations) ? s.automations : [];
     s.audit = Array.isArray(s.audit) ? s.audit : [];
-    if(!ROLE_CONFIG[s.role]) s.role='Head of Department';
+    s.role = canonicalUiRole(s.role) || canonicalUiRole(seed?.role) || 'Instructor';
     s.reports.forEach(r=>{
       r.academicYear = r.academicYear || s.program.academicYear;
       if(r.semester==='First') r.semester='S1';
@@ -191,7 +208,8 @@
     return s;
   }
 
-  function roleConfig(){return ROLE_CONFIG[state.role] || ROLE_CONFIG.Instructor}
+  const UNKNOWN_ROLE_CONFIG = {views:['dashboard'],label:'Account access',avatar:'?',dashboard:'Account access unavailable',description:'This account does not have a supported Acadeloop role.'};
+  function roleConfig(){return ROLE_CONFIG[canonicalUiRole(state.role)] || UNKNOWN_ROLE_CONFIG}
   function roleCanView(view){return roleConfig().views.includes(view)}
   function canCreateReport(){return state.role==='Instructor'}
   function isInstructorOwner(r){
@@ -204,6 +222,7 @@
     const all=state.reports||[];
     if(state.role==='Instructor') return all.filter(isInstructorOwner);
     if(state.role==='Head of Department') return all.filter(r=>r.status==='Approved');
+    if(state.role==='System Administrator') return [];
     return all;
   }
   function approvedReports(year=null,term='Annual'){
@@ -307,6 +326,7 @@
   }
 
   function renderDashboard(){
+    if(state.role==='System Administrator') return renderSystemAdminDashboard();
     const rs=reportsForRole();
     if(state.role==='Instructor'){
       const open=rs.filter(r=>r.status==='Draft'||r.status==='Returned for Revision').length;
@@ -453,17 +473,41 @@
   }
   function renderAutomations(){return roleHero()+pageHead('Workflow engine','Automations','Core controls that prevent unapproved data from entering official program quality results.')+`<div class="grid grid-2">${state.automations.map(a=>`<div class="card automation-card"><div class="automation-icon">${esc(a.icon)}</div><div><strong>${esc(a.name)}</strong><p>${esc(a.description)}</p></div><span class="tag blue">Active</span></div>`).join('')}</div>`}
 
+  function renderSystemAdminDashboard(){
+    const open=programDirectory.filter(p=>p.status==='Open').length;
+    const activeUsers=userDirectory.filter(u=>u.active!==false).length;
+    const hods=userDirectory.filter(u=>u.role==='Head of Department').length;
+    return roleHero()+pageHead('Platform control','Acadeloop Administration','System-wide control for academic programs and authorized users.',backendEnabled?'<button class="btn btn-ghost" id="backupAllData">Backup Entire System (.xlsx)</button>':'')+`
+      <div class="grid grid-4"><div class="card metric"><div class="label">Academic programs</div><div class="value">${programDirectory.length}</div><div class="sub">${open} currently open</div></div><div class="card metric"><div class="label">Authorized users</div><div class="value">${activeUsers}</div><div class="sub">Across all programs</div></div><div class="card metric"><div class="label">Heads of Department</div><div class="value">${hods}</div><div class="sub">Program leadership assignments</div></div><div class="card metric"><div class="label">System backup</div><div class="value">XLSX</div><div class="sub">All structured data; no generated DOCX stored</div></div></div>
+      <div class="section"><div class="section-title"><div><h2>Academic programs</h2><p>Open and closed program workspaces managed by the System Administrator.</p></div><button class="btn btn-primary" data-go="setup">Manage programs</button></div>${programTableHtml()}</div>`;
+  }
+  function programTableHtml(){
+    const rows=programDirectory.map(p=>`<tr><td><strong>${esc(p.code)}</strong><div class="tiny">${esc(p.name)}</div></td><td>${esc(p.department||'—')}</td><td>${esc(p.current_academic_year||'—')}</td><td>${statusPill(p.status)}</td><td>${esc(String(p.created_at||'').slice(0,10)||'—')}</td></tr>`).join('');
+    return `<div class="table-card"><table class="data-table"><thead><tr><th>Program</th><th>Department</th><th>Academic year</th><th>Status</th><th>Created</th></tr></thead><tbody>${rows||'<tr><td colspan="5" class="empty">No academic programs have been created yet.</td></tr>'}</tbody></table></div>`;
+  }
   function renderUsers(){
-    const rows=userDirectory.map(u=>`<tr><td><strong>${esc(u.firstName)} ${esc(u.lastName)}</strong><div class="tiny">${esc(u.email)}</div></td><td>${esc(u.department||'—')}</td><td><span class="user-table-role">${esc(u.role)}</span></td><td><span class="user-table-role user-status-active">${u.active===false?'Inactive':'Active'}</span></td><td>${esc(u.createdAt?String(u.createdAt).slice(0,10):'—')}</td></tr>`).join('');
-    const actions=backendEnabled?'<button class="btn btn-ghost" id="backupAllData">Backup & Export Data (.xlsx)</button>':'';
-    return roleHero()+pageHead('Access control','Users','Only the Head of Department can add users. There is no public registration. Users sign in with a one-time code sent to their authorized email address.',actions)+`
-      <div class="user-directory-note"><div class="automation-icon">↗</div><div><strong>Controlled access</strong><span>HOD-created users are stored in Supabase Auth. Course Report DOCX files are never stored; only the underlying report data is saved and backed up.</span></div></div>
-      <div class="user-admin-grid"><div class="table-card"><table class="data-table"><thead><tr><th>User</th><th>Department</th><th>Role</th><th>Status</th><th>Added</th></tr></thead><tbody>${rows||'<tr><td colspan="5" class="empty">No authorized users have been added yet.</td></tr>'}</tbody></table></div>
-      <div class="card user-add-card"><h3>Add authorized user</h3><p>The role can only be Instructor or Coordinator. The new user signs in with an email OTP; no password is created.</p><div class="form-grid"><div class="field f6"><label>First name *</label><input id="auFirst" autocomplete="off"></div><div class="field f6"><label>Last name *</label><input id="auLast" autocomplete="off"></div><div class="field f12"><label>Department *</label><input id="auDepartment" value="${esc(state.program.department)}"></div><div class="field f12"><label>Role *</label><select id="auRole"><option>Instructor</option><option>Coordinator</option></select></div><div class="field f12"><label>Email *</label><input type="email" id="auEmail" placeholder="name@university.edu"></div><div class="field f12"><button class="btn btn-primary" id="addAuthorizedUser" style="width:100%">Add user</button></div></div></div></div>`;
+    const isAdmin=state.role==='System Administrator';
+    const rows=userDirectory.map(u=>`<tr><td><strong>${esc(u.firstName)} ${esc(u.lastName)}</strong><div class="tiny">${esc(u.email)}</div></td><td>${esc(u.programName||u.department||'System')}</td><td><span class="user-table-role">${esc(u.role)}</span></td><td><span class="user-table-role user-status-active">${u.active===false?'Inactive':'Active'}</span></td><td>${esc(u.createdAt?String(u.createdAt).slice(0,10):'—')}</td><td>${u.role==='System Administrator'?'—':`<button class="btn btn-ghost" data-user-status="${u.id}" data-user-active="${u.active===false?'1':'0'}" data-user-program="${esc(u.programId||'')}">${u.active===false?'Reactivate':'Deactivate'}</button>`}</td></tr>`).join('');
+    const actions=backendEnabled?`<button class="btn btn-ghost" id="backupAllData">${isAdmin?'Backup Entire System':'Backup Program'} (.xlsx)</button>`:'';
+    const programOptions=programDirectory.filter(p=>p.status==='Open').map(p=>`<option value="${p.id}" ${p.id===activeProgramId?'selected':''}>${esc(p.code)} · ${esc(p.name)}</option>`).join('');
+    const roleOptions=isAdmin?'<option>HOD</option><option>Coordinator</option><option>Instructor</option>':'<option>Instructor</option><option>Coordinator</option>';
+    return roleHero()+pageHead('Access control','Users',isAdmin?'Manage authorized users across every academic program. Public registration is disabled.':'Manage users assigned to this academic program. Public registration is disabled.',actions)+`
+      <div class="user-directory-note"><div class="automation-icon">↗</div><div><strong>Controlled access</strong><span>Users authenticate by email. Course Report DOCX files are generated on demand and never stored; the structured report data is backed up.</span></div></div>
+      <div class="user-admin-grid"><div class="table-card"><table class="data-table"><thead><tr><th>User</th><th>Program / Department</th><th>Role</th><th>Status</th><th>Added</th><th>Action</th></tr></thead><tbody>${rows||'<tr><td colspan="6" class="empty">No authorized users have been added yet.</td></tr>'}</tbody></table></div>
+      <div class="card user-add-card"><h3>Add authorized user</h3><p>${isAdmin?'System Administrator can appoint HODs, Coordinators, and Instructors.':'HOD can add Coordinators and Instructors to this program.'}</p><div class="form-grid"><div class="field f6"><label>First name *</label><input id="auFirst" autocomplete="off"></div><div class="field f6"><label>Last name *</label><input id="auLast" autocomplete="off"></div>${isAdmin?`<div class="field f12"><label>Academic program *</label><select id="auProgram"><option value="">Select program</option>${programOptions}</select></div>`:''}<div class="field f12"><label>Department *</label><input id="auDepartment" value="${esc(state.program.department||'')}"></div><div class="field f12"><label>Role *</label><select id="auRole">${roleOptions}</select></div><div class="field f12"><label>Email *</label><input type="email" id="auEmail" placeholder="name@university.edu"></div><div class="field f12"><button class="btn btn-primary" id="addAuthorizedUser" style="width:100%">Add / assign user</button></div></div></div></div>`;
+  }
+  function renderProgramsAdmin(){
+    const rows=programDirectory.map(p=>`<tr><td><strong>${esc(p.code)}</strong><div class="tiny">${esc(p.name)}</div></td><td>${esc(p.institution||'—')}</td><td>${esc(p.college||'—')}</td><td>${esc(p.department||'—')}</td><td>${esc(p.current_academic_year)}</td><td>${statusPill(p.status)}</td><td><button class="btn btn-ghost" data-program-toggle="${p.id}" data-program-status="${p.status}">${p.status==='Open'?'Close':'Open'}</button></td></tr>`).join('');
+    return roleHero()+pageHead('System administration','Academic Programs','Create program workspaces and control whether each program is open or closed.')+`
+      <div class="user-admin-grid"><div class="table-card"><table class="data-table"><thead><tr><th>Program</th><th>Institution</th><th>College</th><th>Department</th><th>Year</th><th>Status</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan="7" class="empty">No academic programs yet.</td></tr>'}</tbody></table></div>
+      <div class="card user-add-card"><h3>Open academic program</h3><p>Create an isolated quality workspace. Assign its HOD from the Users page.</p><div class="form-grid"><div class="field f4"><label>Program code *</label><input id="apCode" placeholder="BHIM"></div><div class="field f8"><label>Program name *</label><input id="apName" placeholder="Bachelor of Health Information Management"></div><div class="field f12"><label>Institution</label><input id="apInstitution"></div><div class="field f12"><label>College</label><input id="apCollege"></div><div class="field f12"><label>Department *</label><input id="apDepartment"></div><div class="field f12"><label>Current academic year *</label><input id="apYear" value="2026–2027"></div><div class="field f12"><button class="btn btn-primary" id="createAcademicProgram" style="width:100%">Open academic program</button></div></div></div></div>`;
+  }
+  function renderSetup(){
+    if(state.role==='System Administrator') return renderProgramsAdmin();
+    return roleHero()+pageHead('Administration','Program Setup','Configure program identity, academic years, and PLO targets. Academic year and semester are mandatory on every Course Report.')+`
+    <div class="grid grid-2"><div class="card"><div class="form-grid"><div class="field f12"><label>Institution</label><input id="spInstitution" value="${esc(state.program.institution)}"></div><div class="field f12"><label>College</label><input id="spCollege" value="${esc(state.program.college)}"></div><div class="field f12"><label>Department</label><input id="spDepartment" value="${esc(state.program.department)}"></div><div class="field f12"><label>Program</label><input id="spProgram" value="${esc(state.program.name)}"></div><div class="field f6"><label>Current academic year</label><input id="spYear" value="${esc(state.program.academicYear)}"></div><div class="field f6"><label>Available years</label><input id="spYears" value="${esc(state.academicYears.join(', '))}"></div><div class="field f12"><button class="btn btn-primary" id="saveSetup">Save program setup</button></div></div></div><div class="card"><h3 style="margin-top:0">PLO targets</h3>${state.plos.map((p,i)=>`<div class="setup-plo-row"><strong>${esc(p.code)}</strong><span>${esc(p.name)}</span><input type="number" min="0" max="100" value="${p.target}" data-plo-target="${i}"></div>`).join('')}<button class="btn btn-ghost" id="savePloTargets" style="margin-top:12px">Save targets</button></div></div>`;
   }
 
-  function renderSetup(){return roleHero()+pageHead('Administration','Program Setup','Configure program identity, academic years, and PLO targets. Academic year and semester are mandatory on every Course Report.')+`
-    <div class="grid grid-2"><div class="card"><div class="form-grid"><div class="field f12"><label>Institution</label><input id="spInstitution" value="${esc(state.program.institution)}"></div><div class="field f12"><label>College</label><input id="spCollege" value="${esc(state.program.college)}"></div><div class="field f12"><label>Department</label><input id="spDepartment" value="${esc(state.program.department)}"></div><div class="field f12"><label>Program</label><input id="spProgram" value="${esc(state.program.name)}"></div><div class="field f6"><label>Current academic year</label><input id="spYear" value="${esc(state.program.academicYear)}"></div><div class="field f6"><label>Available years</label><input id="spYears" value="${esc(state.academicYears.join(', '))}"></div><div class="field f12"><button class="btn btn-primary" id="saveSetup">Save program setup</button></div></div></div><div class="card"><h3 style="margin-top:0">PLO targets</h3>${state.plos.map((p,i)=>`<div class="setup-plo-row"><strong>${esc(p.code)}</strong><span>${esc(p.name)}</span><input type="number" min="0" max="100" value="${p.target}" data-plo-target="${i}"></div>`).join('')}<button class="btn btn-ghost" id="savePloTargets" style="margin-top:12px">Save targets</button></div></div>`}
 
   function openReport(id){
     const r=state.reports.find(x=>x.id===id); if(!r)return; ensureSectionModel(r); currentReportId=id;
@@ -609,32 +653,55 @@
     });
   }
 
+  async function loadPrograms(){
+    if(!backendEnabled){programDirectory=[];return;}
+    try{programDirectory=await Backend.select('academic_programs','select=*&order=created_at.asc')||[];}catch{programDirectory=[];}
+  }
   async function loadUsers(){
-    if(state.role!=='Head of Department') return;
+    if(!['Head of Department','System Administrator'].includes(state.role)) return;
     if(!backendEnabled){userDirectory=loadLocalUsers();return;}
-    const rows=await Backend.select('profiles','select=id,email,first_name,last_name,department,role,active,created_at&order=created_at.asc');
-    userDirectory=(rows||[]).map(u=>({id:u.id,email:u.email,firstName:u.first_name,lastName:u.last_name,department:u.department,role:dbRoleToUi(u.role),active:u.active,createdAt:u.created_at}));
+    await loadPrograms();
+    const rows=await Backend.select('profiles','select=id,email,first_name,last_name,department,role,active,default_program_id,created_at&order=created_at.asc');
+    let memberships=[];try{memberships=await Backend.select('program_memberships','select=program_id,user_id,role,active')||[];}catch{}
+    membershipDirectory=memberships;
+    const byProgram=new Map(programDirectory.map(p=>[p.id,p]));
+    userDirectory=(rows||[]).map(u=>{const m=memberships.find(x=>x.user_id===u.id&&(state.role==='System Administrator'||x.program_id===activeProgramId));const pg=byProgram.get(m?.program_id||u.default_program_id);return{id:u.id,email:u.email,firstName:u.first_name,lastName:u.last_name,department:u.department,role:dbRoleToUi(u.role),active:u.active&&m?.active!==false,createdAt:u.created_at,programId:m?.program_id||u.default_program_id||'',programName:pg?`${pg.code} · ${pg.name}`:''};});
+    if(state.role==='Head of Department'&&activeProgramId)userDirectory=userDirectory.filter(u=>u.id===currentUser.id||memberships.some(m=>m.user_id===u.id&&m.program_id===activeProgramId));
   }
   async function addAuthorizedUser(){
     const first=$('auFirst')?.value.trim(),last=$('auLast')?.value.trim(),department=$('auDepartment')?.value.trim(),role=$('auRole')?.value,email=$('auEmail')?.value.trim().toLowerCase();
-    if(!first||!last||!department||!email){toast('First name, last name, department, role, and email are required.');return;}
+    const programId=state.role==='System Administrator'?$('auProgram')?.value:activeProgramId;
+    if(!first||!last||!department||!email||(backendEnabled&&!programId)){toast('First name, last name, department, role, email, and academic program are required.');return;}
     if(!$('auEmail')?.checkValidity()){toast('Enter a valid email address.');return;}
-    if(!['Instructor','Coordinator'].includes(role)){toast('Role must be Instructor or Coordinator.');return;}
+    const allowed=state.role==='System Administrator'?['HOD','Coordinator','Instructor']:['Instructor','Coordinator'];if(!allowed.includes(role)){toast('That role is not permitted here.');return;}
     const btn=$('addAuthorizedUser');if(btn){btn.disabled=true;btn.textContent='Adding…'}
     try{
       if(!backendEnabled){const users=loadLocalUsers();if(users.some(u=>String(u.email||'').toLowerCase()===email))throw new Error('This email is already authorized.');users.push({id:uid(),firstName:first,lastName:last,department,role,email,active:true,createdAt:nowDate()});saveLocalUsers(users);userDirectory=users;}
-      else{await Backend.invoke('admin-create-user',{first_name:first,last_name:last,department,role,email});await loadUsers();}
-      render();toast('User added. They can sign in with the one-time code sent to this email when requested.');
+      else{await Backend.invoke('admin-create-user',{first_name:first,last_name:last,department,role,email,program_id:programId});await loadUsers();}
+      render();toast('User added and assigned. They can sign in from their authorized email.');
     }catch(e){toast(e?.message||'Could not add user.');}
-    finally{if(btn){btn.disabled=false;btn.textContent='Add user'}}
+    finally{if(btn){btn.disabled=false;btn.textContent='Add / assign user'}}
+  }
+  async function setUserStatus(userId,active,programId){
+    try{await Backend.invoke('admin-manage-user',{action:'status',user_id:userId,active,program_id:programId||activeProgramId});await loadUsers();render();toast(active?'User reactivated.':'User deactivated.');}catch(e){toast(e?.message||'Could not update user.');}
+  }
+  async function createAcademicProgram(){
+    const code=$('apCode')?.value.trim().toUpperCase(),name=$('apName')?.value.trim(),institution=$('apInstitution')?.value.trim()||'',college=$('apCollege')?.value.trim()||'',department=$('apDepartment')?.value.trim(),year=$('apYear')?.value.trim();
+    if(!code||!name||!department||!year){toast('Program code, name, department, and academic year are required.');return;}
+    const btn=$('createAcademicProgram');btn.disabled=true;btn.textContent='Opening…';
+    try{await Backend.insert('academic_programs',{code,name,institution,college,department,status:'Open',current_academic_year:year,data:{academicYears:[year]},created_by:currentUser.id});await loadPrograms();render();toast('Academic program opened. Assign its HOD from Users.');}catch(e){toast(e?.message||'Could not create academic program.');}finally{if($('createAcademicProgram')){$('createAcademicProgram').disabled=false;$('createAcademicProgram').textContent='Open academic program';}}
+  }
+  async function toggleAcademicProgram(id,status){
+    const next=status==='Open'?'Closed':'Open';try{await Backend.patch('academic_programs',`id=eq.${encodeURIComponent(id)}`,{status:next});await loadPrograms();render();toast(`Academic program ${next.toLowerCase()}.`);}catch(e){toast(e?.message||'Could not update program.');}
   }
   async function backupAllData(){
     if(!backendEnabled)return;
     const btn=$('backupAllData');if(btn){btn.disabled=true;btn.textContent='Preparing backup…'}
-    try{const blob=await Backend.invoke('export-backup-xlsx',{},'blob');const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`Acadeloop_Backup_${nowDate()}.xlsx`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('Full Excel backup downloaded.');}
+    try{const body=state.role==='System Administrator'?{}:{program_id:activeProgramId};const blob=await Backend.invoke('export-backup-xlsx',body,'blob');const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`Acadeloop_Backup_${nowDate()}.xlsx`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('Excel backup downloaded.');}
     catch(e){toast(e?.message||'Could not export backup.');}
-    finally{if(btn){btn.disabled=false;btn.textContent='Backup & Export Data (.xlsx)'}}
+    finally{if(btn){btn.disabled=false;btn.textContent=state.role==='System Administrator'?'Backup Entire System (.xlsx)':'Backup Program (.xlsx)'}}
   }
+
 
   function openNewPlan(){
     $('modalTitle').textContent='New operational KPI';$('modalBody').innerHTML=`<div class="form-grid"><div class="field f12"><label>Objective</label><input id="npObjective"></div><div class="field f12"><label>KPI</label><input id="npKpi"></div><div class="field f4"><label>Target (%)</label><input type="number" id="npTarget" value="100"></div><div class="field f4"><label>Current actual (%)</label><input type="number" id="npActual" value="0"></div><div class="field f4"><label>Due date</label><input type="date" id="npDue"></div><div class="field f6"><label>Owner</label><input id="npOwner"></div><div class="field f6"><label>Evidence source</label><input id="npEvidence"></div><div class="field f12"><button class="btn btn-primary" id="createPlan" style="width:100%">Add KPI</button></div></div>`;showModal();
@@ -668,6 +735,9 @@
     if($('savePloTargets'))$('savePloTargets').addEventListener('click',async()=>{document.querySelectorAll('[data-plo-target]').forEach(el=>state.plos[Number(el.dataset.ploTarget)].target=clamp(el.value));try{await persistPlos();saveState();render();toast('PLO targets saved.');}catch(e){toast(e?.message||'Could not save PLO targets.');}});
     if($('addAuthorizedUser'))$('addAuthorizedUser').addEventListener('click',addAuthorizedUser);
     if($('backupAllData'))$('backupAllData').addEventListener('click',backupAllData);
+    if($('createAcademicProgram'))$('createAcademicProgram').addEventListener('click',createAcademicProgram);
+    document.querySelectorAll('[data-program-toggle]').forEach(b=>b.addEventListener('click',()=>toggleAcademicProgram(b.dataset.programToggle,b.dataset.programStatus)));
+    document.querySelectorAll('[data-user-status]').forEach(b=>b.addEventListener('click',()=>setUserStatus(b.dataset.userStatus,b.dataset.userActive==='1',b.dataset.userProgram)));
   }
 
   async function go(view){if(!roleCanView(view)){toast('This page is not available for the current role.');return;}currentView=view;if(view!=='course-portfolios')currentPortfolioId=null;hideDrawer();hideModal();if(view==='users')await loadUsers();render();window.scrollTo({top:0,behavior:'smooth'});}
@@ -796,24 +866,41 @@
   }
   async function hydrateSharedState(){
     if(!backendEnabled){state=normalizeState(loadState());state.role=currentUser.role;ploYear=state.program.academicYear;ploTerm='Annual';return;}
+    await loadPrograms();
+    if(currentUser.role==='System Administrator'){
+      activeProgramId=null;backendProgramSettingsId=null;const base=clone(seed);base.reports=[];base.operational=[];base.audit=[];state=normalizeState(base);state.role=currentUser.role;ploYear=state.program.academicYear;ploTerm='Annual';return;
+    }
+    activeProgramId=currentUser.defaultProgramId||null;
+    if(!activeProgramId){
+      const memberships=await Backend.select('program_memberships',`user_id=eq.${encodeURIComponent(currentUser.id)}&active=eq.true&select=program_id,role&limit=1`);activeProgramId=memberships?.[0]?.program_id||null;
+    }
+    if(!activeProgramId) throw new Error('Your account is not assigned to an academic program. Contact the System Administrator.');
     const base=clone(seed);base.reports=[];base.operational=[];base.audit=[];
-    const [settingsRows,ploRows,operationalRows,reportRows]=await Promise.all([
-      Backend.select('program_settings','is_active=eq.true&select=*&order=updated_at.desc&limit=1'),
-      Backend.select('plos','active=eq.true&select=*&order=code.asc'),
-      Backend.select('operational_plans','select=*&order=updated_at.desc&limit=1'),
-      Backend.select('course_reports','select=*&order=updated_at.desc')
+    const pid=encodeURIComponent(activeProgramId);
+    const [programRows,settingsRows,ploRows,operationalRows,reportRows]=await Promise.all([
+      Backend.select('academic_programs',`id=eq.${pid}&select=*&limit=1`),
+      Backend.select('program_settings',`program_id=eq.${pid}&is_active=eq.true&select=*&order=updated_at.desc&limit=1`),
+      Backend.select('plos',`program_id=eq.${pid}&active=eq.true&select=*&order=code.asc`),
+      Backend.select('operational_plans',`program_id=eq.${pid}&select=*&order=updated_at.desc&limit=1`),
+      Backend.select('course_reports',`program_id=eq.${pid}&select=*&order=updated_at.desc`)
     ]);
-    if(settingsRows?.[0]){const row=settingsRows[0];backendProgramSettingsId=row.id;base.program={...base.program,...(row.data||{}),name:row.program_name||row.data?.name||base.program.name,department:row.department||row.data?.department||base.program.department,academicYear:row.academic_year||row.data?.academicYear||base.program.academicYear};base.academicYears=Array.isArray(row.data?.academicYears)?row.data.academicYears:[base.program.academicYear];}
+    const pg=programRows?.[0];if(pg){base.program={...base.program,name:pg.name,department:pg.department,college:pg.college,institution:pg.institution,academicYear:pg.current_academic_year};base.academicYears=Array.isArray(pg.data?.academicYears)?pg.data.academicYears:[pg.current_academic_year];}
+    if(settingsRows?.[0]){const row=settingsRows[0];backendProgramSettingsId=row.id;base.program={...base.program,...(row.data||{}),name:row.program_name||row.data?.name||base.program.name,department:row.department||row.data?.department||base.program.department,academicYear:row.academic_year||row.data?.academicYear||base.program.academicYear};base.academicYears=Array.isArray(row.data?.academicYears)?row.data.academicYears:base.academicYears;}
     if(ploRows?.length)base.plos=ploRows.map(p=>({code:p.code,name:p.name,target:Number(p.target)}));
     if(operationalRows?.[0]?.data?.items)base.operational=operationalRows[0].data.items;
     base.reports=(reportRows||[]).map(reportFromDb);
-    if(currentUser.role==='Head of Department'){try{const auditRows=await Backend.select('audit_log','select=*&order=created_at.desc&limit=50');base.audit=(auditRows||[]).map(a=>({icon:'•',title:a.action,detail:`${a.entity_type}${a.entity_id?` · ${a.entity_id}`:''}`,time:String(a.created_at||'').slice(0,16).replace('T',' ')}));}catch{}}
+    if(currentUser.role==='Head of Department'){try{const auditRows=await Backend.select('audit_log',`details->>program_id=eq.${pid}&select=*&order=created_at.desc&limit=50`);base.audit=(auditRows||[]).map(a=>({icon:'•',title:a.action,detail:`${a.entity_type}${a.entity_id?` · ${a.entity_id}`:''}`,time:String(a.created_at||'').slice(0,16).replace('T',' ')}));}catch{}}
     state=normalizeState(base);state.role=currentUser.role;ploYear=state.program.academicYear;ploTerm='Annual';
   }
+
   async function onAuthenticated(user){
-    currentUser=user;state.role=user.role;
+    const role=canonicalUiRole(user?.role);
+    if(!role) throw new Error('Your Acadeloop account has an unsupported role. Contact the System Administrator.');
+    currentUser={...user,role};state.role=role;
     await hydrateSharedState();
-    if(state.role==='Head of Department')await loadUsers();
+    // Never let stale seed/browser state replace the authenticated Supabase role.
+    state.role=role;
+    if(['Head of Department','System Administrator'].includes(state.role))await loadUsers();
     currentView='dashboard';currentPortfolioId=null;activePlo=null;
     $('authScreen')?.classList.add('hidden');$('appShell')?.classList.remove('hidden');
     syncChrome();render();window.__ACADELOOP_READY__=true;
@@ -829,7 +916,7 @@
     const email=sessionStorage.getItem('acadeloop_pending_email')||$('loginUser')?.value.trim().toLowerCase();const code=$('loginCode')?.value.trim();
     if(!email||!code){setAuthStatus('Enter the six-digit code from your email.','error');return;}
     const btn=$('verifyOtpBtn');btn.disabled=true;btn.textContent='Verifying…';
-    try{await Backend.verifyOtp(email,code);const p=await Backend.profile();if(!p||p.active===false)throw new Error('Your Acadeloop account is not active.');sessionStorage.removeItem('acadeloop_pending_email');await onAuthenticated({id:p.id,email:p.email,firstName:p.first_name,lastName:p.last_name,department:p.department,role:dbRoleToUi(p.role),active:p.active});}
+    try{await Backend.verifyOtp(email,code);const p=await Backend.profile();if(!p||p.active===false)throw new Error('Your Acadeloop account is not active.');sessionStorage.removeItem('acadeloop_pending_email');await onAuthenticated({id:p.id,email:p.email,firstName:p.first_name,lastName:p.last_name,department:p.department,role:dbRoleToUi(p.role),active:p.active,defaultProgramId:p.default_program_id||null});}
     catch(e){await Backend.signOut();setAuthStatus(e?.message||'The code is invalid or expired.','error');}
     finally{btn.disabled=false;btn.textContent='Verify & sign in';}
   }
@@ -849,8 +936,8 @@
       $('authTestPanel')?.classList.add('hidden');$('authProductionNote')?.classList.remove('hidden');
       $('signInBtn')?.addEventListener('click',sendOtp);$('verifyOtpBtn')?.addEventListener('click',verifyLoginCode);$('backToEmail')?.addEventListener('click',showLoginStep);
       $('loginUser')?.addEventListener('keydown',e=>{if(e.key==='Enter')sendOtp()});$('loginCode')?.addEventListener('keydown',e=>{if(e.key==='Enter')verifyLoginCode()});
-      try{const p=await Backend.profile();if(p?.active){await onAuthenticated({id:p.id,email:p.email,firstName:p.first_name,lastName:p.last_name,department:p.department,role:dbRoleToUi(p.role),active:p.active});return;}}catch(e){console.warn('Session restore failed',e);}
-      showLoginStep();setAuthStatus('Enter the email address authorized by your Head of Department.','');return;
+      try{const p=await Backend.profile();if(p?.active){await onAuthenticated({id:p.id,email:p.email,firstName:p.first_name,lastName:p.last_name,department:p.department,role:dbRoleToUi(p.role),active:p.active,defaultProgramId:p.default_program_id||null});return;}}catch(e){console.warn('Session restore failed',e);}
+      showLoginStep();setAuthStatus('Enter your authorized Acadeloop email address. You may receive a six-digit code or a secure sign-in link.','');return;
     }
     loadLocalUsers();$('authTestPanel')?.classList.remove('hidden');$('authProductionNote')?.classList.add('hidden');
     $('signInBtn')?.addEventListener('click',signIn);$('loginUser')?.addEventListener('keydown',e=>{if(e.key==='Enter')signIn()});

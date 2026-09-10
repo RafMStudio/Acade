@@ -152,6 +152,16 @@ async function main() {
   await expect('preset test users', "document.querySelectorAll('[data-test-login]').length", 4);
   await expect('template fetch mock works', "fetch('templates/Course_Report_Placeholder.docx').then(r=>r.ok)", true);
 
+  // Regression: the database stores the global administrator role as `SystemAdmin`.
+  // Even if that raw value reaches the UI, it must never fall back to Instructor.
+  await evaluate(`(()=>{document.getElementById('loginUser').value='TestSA';document.getElementById('signInBtn').click();return true})()`);
+  await sleep(200);
+  await expect('SystemAdmin role canonicalized', "document.getElementById('currentUserRole').textContent", 'System Administrator');
+  await expect('SystemAdmin workspace selected', "document.getElementById('roleContext').innerText.includes('System administration')", true);
+  await expect('SystemAdmin cannot see instructor report creation nav', "document.querySelector('[data-view=course-reports]').classList.contains('role-hidden')", true);
+  await evaluate("document.getElementById('signOutBtn').click()");
+  await sleep(100);
+
   await evaluate(`(()=>{window.__downloadCapture=null;window.__downloadCapturePromise=Promise.resolve();HTMLAnchorElement.prototype.click=function(){const href=this.href,name=this.download;window.__downloadCapturePromise=(async()=>{const buf=await fetch(href).then(r=>r.arrayBuffer());const result={name,size:buf.byteLength,entries:[],docxPlaceholders:[]};if(name.endsWith('.zip')){const z=await JSZip.loadAsync(buf);result.entries=Object.keys(z.files);for(const entry of result.entries.filter(x=>x.endsWith('.docx'))){const file=z.file(entry);if(!file)continue;const inner=await JSZip.loadAsync(await file.async('arraybuffer'));const xml=await inner.file('word/document.xml').async('string');result.docxPlaceholders.push({entry,unreplaced:xml.includes('{{')});}}else if(name.endsWith('.docx')){const inner=await JSZip.loadAsync(buf);const xml=await inner.file('word/document.xml').async('string');result.docxPlaceholders.push({entry:name,unreplaced:xml.includes('{{')});}window.__downloadCapture=result;return result;})().catch(error=>{window.__downloadCapture={name,error:String(error)};return window.__downloadCapture});};return true})()`);
 
   await evaluate("document.querySelector('[data-test-login=TestI]').click()");

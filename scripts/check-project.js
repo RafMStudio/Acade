@@ -74,6 +74,9 @@ for (const file of ['index.html', 'index.source.html', 'src/app.js', 'src/core.j
 
 assert.ok(read('src/backend.js').includes('sb_publishable_'), 'Supabase publishable key is missing');
 assert.ok(read('src/backend.js').includes('/auth/v1/otp'), 'Email OTP request flow is missing');
+assert.ok(app.includes("value==='SystemAdmin'||value==='System Administrator'"), 'SystemAdmin role canonicalization is missing');
+assert.ok(app.includes("state.role=role;"), 'Authenticated role must overwrite stale workspace state');
+assert.ok(app.includes("'System Administrator':"), 'System Administrator workspace configuration is missing');
 assert.ok(app.includes("admin-create-user"), 'HOD Supabase user creation integration is missing');
 assert.ok(app.includes("export-backup-xlsx"), 'Excel backup integration is missing');
 assert.ok(app.includes('persistCourseReport'), 'Supabase Course Report data persistence is missing');

@@ -1,11 +1,14 @@
-# Acadeloop 1.0.1 test results
+# Acadeloop 1.2.1 test results
 
-Verification date: 2026-09-09
+Verification date: 2026-09-10
 
-Command:
+Commands executed:
 
 ```bash
-npm test
+npm run build
+npm run test:core
+npm run check
+npm run test:browser
 ```
 
 Result:
@@ -15,13 +18,14 @@ Build                                      PASS
 Core academic/business-rule tests          23 / 23 PASS
 Static/source readability checks           PASS
 Branding and seed integrity checks         PASS
+SystemAdmin role-routing regression        PASS
 Deployment bundle styling regression       PASS
 Inline app boot without vendor asset       PASS
 Chromium full workflow smoke test           PASS
 Uncaught browser runtime exceptions        0
 ```
 
-The deployment regression specifically recreates the condition behind the user's raw/un-styled screenshot: the auxiliary vendor file is removed and the browser is given only the deployment HTML. The test confirms that Acadeloop CSS is still applied, the hidden app shell remains hidden before sign-in, and the app can sign in and render an Instructor workspace.
+The SystemAdmin regression verifies that the raw database role `SystemAdmin` is canonicalized to the UI role `System Administrator`, opens the System Administration workspace, and does not expose Instructor Course Report navigation.
 
 The full suite also covers:
 

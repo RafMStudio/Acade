@@ -7,6 +7,17 @@
   const TEST_HOSTS = new Set(['', 'localhost', '127.0.0.1']);
   const testMode = location.protocol === 'file:' || location.protocol === 'about:' || TEST_HOSTS.has(location.hostname) || window.__ACADELOOP_TEST_MODE__ === true;
 
+  function captureAuthRedirectSession() {
+    if (testMode || !location.hash) return;
+    const hash = new URLSearchParams(location.hash.replace(/^#/, ''));
+    const access_token = hash.get('access_token');
+    const refresh_token = hash.get('refresh_token');
+    if (!access_token || !refresh_token) return;
+    const expires_in = Number(hash.get('expires_in') || 3600);
+    writeSession({ access_token, refresh_token, token_type: hash.get('token_type') || 'bearer', expires_in, expires_at: Math.floor(Date.now()/1000) + expires_in });
+    history.replaceState(null, document.title, location.pathname + location.search);
+  }
+
   function jsonHeaders(token, extra={}) {
     return {
       apikey: SUPABASE_KEY,
@@ -25,6 +36,8 @@
       else localStorage.removeItem(SESSION_KEY);
     } catch {}
   }
+
+  captureAuthRedirectSession();
 
   async function parseError(response) {
     let payload = null;
@@ -127,7 +140,7 @@
   async function profile() {
     const user = await currentAuthUser();
     if (!user?.id) return null;
-    const rows = await select('profiles', `id=eq.${q(user.id)}&select=id,email,first_name,last_name,department,role,active,created_at`);
+    const rows = await select('profiles', `id=eq.${q(user.id)}&select=id,email,first_name,last_name,department,role,active,default_program_id,created_at`);
     return rows?.[0] || null;
   }
   async function invoke(name, body, responseType='json') {

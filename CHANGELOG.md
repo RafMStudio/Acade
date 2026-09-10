@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.2.1
+- Fixed SystemAdmin authentication routing so the database role `SystemAdmin` always opens the System Administration workspace instead of ever falling back to Instructor.
+- Canonicalized HOD/SystemAdmin UI roles and made the authenticated Supabase role overwrite stale seed/browser workspace state.
+- Added regression checks for raw `SystemAdmin` role handling.
+
+## 1.2.0 — System administration & multi-program architecture
+- Added global `SystemAdmin` role above HOD.
+- Bootstrapped `rafedmoha@gmail.com` as the first System Administrator.
+- Added isolated academic program workspaces with Open/Closed status.
+- Added program memberships for HOD, Coordinator, and Instructor.
+- System Administrator can create programs, appoint HODs, manage users, and export a whole-system Excel backup.
+- HOD remains scoped to its assigned program and can manage its Coordinator/Instructor users.
+- Course Reports remain data-only in Supabase; generated DOCX files are never stored.
+- Added safe email-auth redirect session handling so default Supabase magic-link email works as a fallback to six-digit OTP.
+- Updated backup export to include Academic Programs and Program Memberships and to support system-wide or program-scoped backups.
+
 ## 1.0.1 — resilient deployment bundle
 
 - Fixed the raw/un-styled deployment failure shown when external `src/` assets were missing.
