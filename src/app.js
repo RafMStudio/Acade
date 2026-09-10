@@ -19,6 +19,9 @@
     validateReport
   } = Core;
   const STORAGE_KEY = 'acadeloop_program_quality_v100';
+  const TITLE_PREFIXES = ['Mr.','Mrs.','Dr.'];
+  const normalizeTitlePrefix = value => TITLE_PREFIXES.includes(String(value||'').trim()) ? String(value).trim() : '';
+  const displayUserName = user => [normalizeTitlePrefix(user?.titlePrefix), user?.firstName, user?.lastName].filter(Boolean).join(' ').trim() || user?.email || 'User';
   let dashboardInflationOnly = false;
 
 
@@ -487,14 +490,14 @@
   }
   function renderUsers(){
     const isAdmin=state.role==='System Administrator';
-    const rows=userDirectory.map(u=>`<tr><td><strong>${esc(u.firstName)} ${esc(u.lastName)}</strong><div class="tiny">${esc(u.email)}</div></td><td>${esc(u.programName||u.department||'System')}</td><td><span class="user-table-role">${esc(u.role)}</span></td><td><span class="user-table-role user-status-active">${u.active===false?'Inactive':'Active'}</span></td><td>${esc(u.createdAt?String(u.createdAt).slice(0,10):'—')}</td><td>${u.role==='System Administrator'?'—':`<button class="btn btn-ghost" data-user-status="${u.id}" data-user-active="${u.active===false?'1':'0'}" data-user-program="${esc(u.programId||'')}">${u.active===false?'Reactivate':'Deactivate'}</button>`}</td></tr>`).join('');
+    const rows=userDirectory.map(u=>`<tr><td><strong>${esc(displayUserName(u))}</strong><div class="tiny">${esc(u.email)}</div></td><td>${esc(u.programName||u.department||'System')}</td><td><span class="user-table-role">${esc(u.role)}</span></td><td><span class="user-table-role user-status-active">${u.active===false?'Inactive':'Active'}</span></td><td>${esc(u.createdAt?String(u.createdAt).slice(0,10):'—')}</td><td>${u.role==='System Administrator'?'—':`<button class="btn btn-ghost" data-user-status="${u.id}" data-user-active="${u.active===false?'1':'0'}" data-user-program="${esc(u.programId||'')}">${u.active===false?'Reactivate':'Deactivate'}</button>`}</td></tr>`).join('');
     const actions=backendEnabled?`<button class="btn btn-ghost" id="backupAllData">${isAdmin?'Backup Entire System':'Backup Program'} (.xlsx)</button>`:'';
     const programOptions=programDirectory.filter(p=>p.status==='Open').map(p=>`<option value="${p.id}" ${p.id===activeProgramId?'selected':''}>${esc(p.code)} · ${esc(p.name)}</option>`).join('');
     const roleOptions=isAdmin?'<option>HOD</option><option>Coordinator</option><option>Instructor</option>':'<option>Instructor</option><option>Coordinator</option>';
     return roleHero()+pageHead('Access control','Users',isAdmin?'Manage authorized users across every academic program. Public registration is disabled.':'Manage users assigned to this academic program. Public registration is disabled.',actions)+`
       <div class="user-directory-note"><div class="automation-icon">↗</div><div><strong>Controlled access</strong><span>Users authenticate by email. Course Report DOCX files are generated on demand and never stored; the structured report data is backed up.</span></div></div>
       <div class="user-admin-grid"><div class="table-card"><table class="data-table"><thead><tr><th>User</th><th>Program / Department</th><th>Role</th><th>Status</th><th>Added</th><th>Action</th></tr></thead><tbody>${rows||'<tr><td colspan="6" class="empty">No authorized users have been added yet.</td></tr>'}</tbody></table></div>
-      <div class="card user-add-card"><h3>Add authorized user</h3><p>${isAdmin?'System Administrator can appoint HODs, Coordinators, and Instructors.':'HOD can add Coordinators and Instructors to this program.'}</p><div class="form-grid"><div class="field f6"><label>First name *</label><input id="auFirst" autocomplete="off"></div><div class="field f6"><label>Last name *</label><input id="auLast" autocomplete="off"></div>${isAdmin?`<div class="field f12"><label>Academic program *</label><select id="auProgram"><option value="">Select program</option>${programOptions}</select></div>`:''}<div class="field f12"><label>Department *</label><input id="auDepartment" value="${esc(state.program.department||'')}"></div><div class="field f12"><label>Role *</label><select id="auRole">${roleOptions}</select></div><div class="field f12"><label>Email *</label><input type="email" id="auEmail" placeholder="name@university.edu"></div><div class="field f12"><button class="btn btn-primary" id="addAuthorizedUser" style="width:100%">Add / assign user</button></div></div></div></div>`;
+      <div class="card user-add-card"><h3>Add authorized user</h3><p>${isAdmin?'System Administrator can appoint HODs, Coordinators, and Instructors.':'HOD can add Coordinators and Instructors to this program.'}</p><div class="form-grid"><div class="field f4"><label>Prefix *</label><select id="auPrefix"><option value="">Select prefix</option>${TITLE_PREFIXES.map(prefix=>`<option value="${esc(prefix)}">${esc(prefix)}</option>`).join('')}</select></div><div class="field f4"><label>First name *</label><input id="auFirst" autocomplete="off"></div><div class="field f4"><label>Last name *</label><input id="auLast" autocomplete="off"></div>${isAdmin?`<div class="field f12"><label>Academic program *</label><select id="auProgram"><option value="">Select program</option>${programOptions}</select></div>`:''}<div class="field f12"><label>Department *</label><input id="auDepartment" value="${esc(state.program.department||'')}"></div><div class="field f12"><label>Role *</label><select id="auRole">${roleOptions}</select></div><div class="field f12"><label>Email *</label><input type="email" id="auEmail" placeholder="name@university.edu"></div><div class="field f12"><button class="btn btn-primary" id="addAuthorizedUser" style="width:100%">Add / assign user</button></div></div></div></div>`;
   }
   function renderProgramsAdmin(){
     const rows=programDirectory.map(p=>`<tr><td><strong>${esc(p.code)}</strong><div class="tiny">${esc(p.name)}</div></td><td>${esc(p.institution||'—')}</td><td>${esc(p.college||'—')}</td><td>${esc(p.department||'—')}</td><td>${esc(p.current_academic_year)}</td><td>${statusPill(p.status)}</td><td><button class="btn btn-ghost" data-program-toggle="${p.id}" data-program-status="${p.status}">${p.status==='Open'?'Close':'Open'}</button></td></tr>`).join('');
@@ -661,23 +664,23 @@
     if(!['Head of Department','System Administrator'].includes(state.role)) return;
     if(!backendEnabled){userDirectory=loadLocalUsers();return;}
     await loadPrograms();
-    const rows=await Backend.select('profiles','select=id,email,first_name,last_name,department,role,active,default_program_id,created_at&order=created_at.asc');
+    const rows=await Backend.select('profiles','select=id,email,title_prefix,first_name,last_name,department,role,active,default_program_id,created_at&order=created_at.asc');
     let memberships=[];try{memberships=await Backend.select('program_memberships','select=program_id,user_id,role,active')||[];}catch{}
     membershipDirectory=memberships;
     const byProgram=new Map(programDirectory.map(p=>[p.id,p]));
-    userDirectory=(rows||[]).map(u=>{const m=memberships.find(x=>x.user_id===u.id&&(state.role==='System Administrator'||x.program_id===activeProgramId));const pg=byProgram.get(m?.program_id||u.default_program_id);return{id:u.id,email:u.email,firstName:u.first_name,lastName:u.last_name,department:u.department,role:dbRoleToUi(u.role),active:u.active&&m?.active!==false,createdAt:u.created_at,programId:m?.program_id||u.default_program_id||'',programName:pg?`${pg.code} · ${pg.name}`:''};});
+    userDirectory=(rows||[]).map(u=>{const m=memberships.find(x=>x.user_id===u.id&&(state.role==='System Administrator'||x.program_id===activeProgramId));const pg=byProgram.get(m?.program_id||u.default_program_id);return{id:u.id,email:u.email,titlePrefix:normalizeTitlePrefix(u.title_prefix),firstName:u.first_name,lastName:u.last_name,department:u.department,role:dbRoleToUi(u.role),active:u.active&&m?.active!==false,createdAt:u.created_at,programId:m?.program_id||u.default_program_id||'',programName:pg?`${pg.code} · ${pg.name}`:''};});
     if(state.role==='Head of Department'&&activeProgramId)userDirectory=userDirectory.filter(u=>u.id===currentUser.id||memberships.some(m=>m.user_id===u.id&&m.program_id===activeProgramId));
   }
   async function addAuthorizedUser(){
-    const first=$('auFirst')?.value.trim(),last=$('auLast')?.value.trim(),department=$('auDepartment')?.value.trim(),role=$('auRole')?.value,email=$('auEmail')?.value.trim().toLowerCase();
+    const titlePrefix=normalizeTitlePrefix($('auPrefix')?.value),first=$('auFirst')?.value.trim(),last=$('auLast')?.value.trim(),department=$('auDepartment')?.value.trim(),role=$('auRole')?.value,email=$('auEmail')?.value.trim().toLowerCase();
     const programId=state.role==='System Administrator'?$('auProgram')?.value:activeProgramId;
-    if(!first||!last||!department||!email||(backendEnabled&&!programId)){toast('First name, last name, department, role, email, and academic program are required.');return;}
+    if(!titlePrefix||!first||!last||!department||!email||(backendEnabled&&!programId)){toast('Prefix, first name, last name, department, role, email, and academic program are required.');return;}
     if(!$('auEmail')?.checkValidity()){toast('Enter a valid email address.');return;}
     const allowed=state.role==='System Administrator'?['HOD','Coordinator','Instructor']:['Instructor','Coordinator'];if(!allowed.includes(role)){toast('That role is not permitted here.');return;}
     const btn=$('addAuthorizedUser');if(btn){btn.disabled=true;btn.textContent='Adding…'}
     try{
-      if(!backendEnabled){const users=loadLocalUsers();if(users.some(u=>String(u.email||'').toLowerCase()===email))throw new Error('This email is already authorized.');users.push({id:uid(),firstName:first,lastName:last,department,role,email,active:true,createdAt:nowDate()});saveLocalUsers(users);userDirectory=users;}
-      else{await Backend.invoke('admin-create-user',{first_name:first,last_name:last,department,role,email,program_id:programId});await loadUsers();}
+      if(!backendEnabled){const users=loadLocalUsers();if(users.some(u=>String(u.email||'').toLowerCase()===email))throw new Error('This email is already authorized.');users.push({id:uid(),titlePrefix,firstName:first,lastName:last,department,role,email,active:true,createdAt:nowDate()});saveLocalUsers(users);userDirectory=users;}
+      else{await Backend.invoke('admin-create-user',{title_prefix:titlePrefix,first_name:first,last_name:last,department,role,email,program_id:programId});await loadUsers();}
       render();toast('User added and assigned. They can sign in from their authorized email.');
     }catch(e){toast(e?.message||'Could not add user.');}
     finally{if(btn){btn.disabled=false;btn.textContent='Add / assign user'}}
@@ -916,7 +919,7 @@
     const email=sessionStorage.getItem('acadeloop_pending_email')||$('loginUser')?.value.trim().toLowerCase();const code=$('loginCode')?.value.trim();
     if(!email||!code){setAuthStatus('Enter the six-digit code from your email.','error');return;}
     const btn=$('verifyOtpBtn');btn.disabled=true;btn.textContent='Verifying…';
-    try{await Backend.verifyOtp(email,code);const p=await Backend.profile();if(!p||p.active===false)throw new Error('Your Acadeloop account is not active.');sessionStorage.removeItem('acadeloop_pending_email');await onAuthenticated({id:p.id,email:p.email,firstName:p.first_name,lastName:p.last_name,department:p.department,role:dbRoleToUi(p.role),active:p.active,defaultProgramId:p.default_program_id||null});}
+    try{await Backend.verifyOtp(email,code);const p=await Backend.profile();if(!p||p.active===false)throw new Error('Your Acadeloop account is not active.');sessionStorage.removeItem('acadeloop_pending_email');await onAuthenticated({id:p.id,email:p.email,titlePrefix:normalizeTitlePrefix(p.title_prefix),firstName:p.first_name,lastName:p.last_name,department:p.department,role:dbRoleToUi(p.role),active:p.active,defaultProgramId:p.default_program_id||null});}
     catch(e){await Backend.signOut();setAuthStatus(e?.message||'The code is invalid or expired.','error');}
     finally{btn.disabled=false;btn.textContent='Verify & sign in';}
   }
@@ -936,7 +939,7 @@
       $('authTestPanel')?.classList.add('hidden');$('authProductionNote')?.classList.remove('hidden');
       $('signInBtn')?.addEventListener('click',sendOtp);$('verifyOtpBtn')?.addEventListener('click',verifyLoginCode);$('backToEmail')?.addEventListener('click',showLoginStep);
       $('loginUser')?.addEventListener('keydown',e=>{if(e.key==='Enter')sendOtp()});$('loginCode')?.addEventListener('keydown',e=>{if(e.key==='Enter')verifyLoginCode()});
-      try{const p=await Backend.profile();if(p?.active){await onAuthenticated({id:p.id,email:p.email,firstName:p.first_name,lastName:p.last_name,department:p.department,role:dbRoleToUi(p.role),active:p.active,defaultProgramId:p.default_program_id||null});return;}}catch(e){console.warn('Session restore failed',e);}
+      try{const p=await Backend.profile();if(p?.active){await onAuthenticated({id:p.id,email:p.email,titlePrefix:normalizeTitlePrefix(p.title_prefix),firstName:p.first_name,lastName:p.last_name,department:p.department,role:dbRoleToUi(p.role),active:p.active,defaultProgramId:p.default_program_id||null});return;}}catch(e){console.warn('Session restore failed',e);}
       showLoginStep();setAuthStatus('Enter your authorized Acadeloop email address. You may receive a six-digit code or a secure sign-in link.','');return;
     }
     loadLocalUsers();$('authTestPanel')?.classList.remove('hidden');$('authProductionNote')?.classList.add('hidden');

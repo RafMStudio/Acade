@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.2
+- Added a required professional prefix selector (Mr., Mrs., Dr.) when adding or assigning authorized users.
+- Persisted the prefix in Supabase profiles and display it in the authorized-user directory.
+
 ## 1.2.1
 - Fixed SystemAdmin authentication routing so the database role `SystemAdmin` always opens the System Administration workspace instead of ever falling back to Instructor.
 - Canonicalized HOD/SystemAdmin UI roles and made the authenticated Supabase role overwrite stale seed/browser workspace state.

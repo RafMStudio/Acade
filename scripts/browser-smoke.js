@@ -223,9 +223,9 @@ async function main() {
   await expect('HOD users page access', "!document.querySelector('[data-view=users]').classList.contains('role-hidden')", true);
   await evaluate("document.querySelector('[data-view=users]').click()");
   await sleep(100);
-  await evaluate(`(()=>{document.getElementById('auFirst').value='QA';document.getElementById('auLast').value='Tester';document.getElementById('auDepartment').value='Health Information Management';document.getElementById('auRole').value='Instructor';document.getElementById('auEmail').value='qa.tester@example.edu';document.getElementById('addAuthorizedUser').click();return true})()`);
+  await evaluate(`(()=>{document.getElementById('auPrefix').value='Dr.';document.getElementById('auFirst').value='QA';document.getElementById('auLast').value='Tester';document.getElementById('auDepartment').value='Health Information Management';document.getElementById('auRole').value='Instructor';document.getElementById('auEmail').value='qa.tester@example.edu';document.getElementById('addAuthorizedUser').click();return true})()`);
   await sleep(150);
-  await expect('HOD-added user rendered safely', "document.body.innerText.includes('QA Tester')&&document.body.innerText.includes('qa.tester@example.edu')", true);
+  await expect('HOD-added user rendered safely', "document.body.innerText.includes('Dr. QA Tester')&&document.body.innerText.includes('qa.tester@example.edu')", true);
   await evaluate("document.getElementById('signOutBtn').click();document.getElementById('loginUser').value='qa.tester@example.edu';document.getElementById('signInBtn').click()");
   await sleep(200);
   await expect('HOD-added user can sign in', "document.getElementById('currentUserRole').textContent", 'Instructor');
