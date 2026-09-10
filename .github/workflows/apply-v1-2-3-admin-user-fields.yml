@@ -12,6 +12,8 @@ permissions:
 jobs:
   apply:
     runs-on: ubuntu-latest
+    env:
+      PATCH_B64: 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
     steps:
       - uses: actions/checkout@v4
         with:
@@ -19,96 +21,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Apply v1.2.3 changes
+      - name: Apply tested patch
         shell: bash
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          root=Path('.')
-          app=root/'src/app.js'
-          s=app.read_text()
-          s=s.replace("const TITLE_PREFIXES = ['Mr.','Mrs.','Dr.'];", "const TITLE_PREFIXES = ['Mr.','Ms.','Dr.'];")
-          needle="  const displayUserName = user => [normalizeTitlePrefix(user?.titlePrefix), user?.firstName, user?.lastName].filter(Boolean).join(' ').trim() || user?.email || 'User';\n"
-          if 'const findProgramFromInput' not in s:
-              s=s.replace(needle, needle+"  const programInputLabel = program => program ? `${program.code} · ${program.name}` : '';\n  const findProgramFromInput = value => {\n    const key=String(value||'').trim().toLowerCase();\n    if(!key) return null;\n    return programDirectory.find(program=>[program.id,program.code,program.name,programInputLabel(program)].some(candidate=>String(candidate||'').trim().toLowerCase()===key))||null;\n  };\n",1)
-          old="""    const programOptions=programDirectory.filter(p=>p.status==='Open').map(p=>`<option value=\"${p.id}\" ${p.id===activeProgramId?'selected':''}>${esc(p.code)} · ${esc(p.name)}</option>`).join('');
-    const roleOptions=isAdmin?'<option>HOD</option><option>Coordinator</option><option>Instructor</option>':'<option>Instructor</option><option>Coordinator</option>';
-"""
-          new="""    const openPrograms=programDirectory.filter(p=>p.status==='Open');
-    const programOptions=openPrograms.map(p=>`<option value=\"${esc(programInputLabel(p))}\">${esc(p.department||'')}</option>`).join('');
-    const departmentOptions=[...new Set(openPrograms.map(p=>String(p.department||'').trim()).filter(Boolean))].map(department=>`<option value=\"${esc(department)}\"></option>`).join('');
-    const roleOptions=isAdmin?'<option>HOD</option><option>Coordinator</option><option>Instructor</option>':'<option>Instructor</option><option>Coordinator</option>';
-"""
-          if old in s: s=s.replace(old,new,1)
-          oldfrag='''${isAdmin?`<div class="field f12"><label>Academic program *</label><select id="auProgram"><option value="">Select program</option>${programOptions}</select></div>`:''}<div class="field f12"><label>Department *</label><input id="auDepartment" value="${esc(state.program.department||'')}"></div>'''
-          newfrag='''${isAdmin?`<div class="field f12"><label>Academic program *</label><input id="auProgram" list="auProgramList" placeholder="Type program code or name" autocomplete="off"><datalist id="auProgramList">${programOptions}</datalist><span class="tiny">Type an existing open program code or name. You can still create new programs from Academic Programs.</span></div>`:''}<div class="field f12"><label>Department *</label><input id="auDepartment" ${isAdmin?`list="auDepartmentList" placeholder="Type department name" value=""`:`value="${esc(state.program.department||'')}"`} autocomplete="off">${isAdmin?`<datalist id="auDepartmentList">${departmentOptions}</datalist>`:''}</div>'''
-          if oldfrag in s: s=s.replace(oldfrag,newfrag,1)
-          oldadd="""    const titlePrefix=normalizeTitlePrefix($('auPrefix')?.value),first=$('auFirst')?.value.trim(),last=$('auLast')?.value.trim(),department=$('auDepartment')?.value.trim(),role=$('auRole')?.value,email=$('auEmail')?.value.trim().toLowerCase();
-    const programId=state.role==='System Administrator'?$('auProgram')?.value:activeProgramId;
-    if(!titlePrefix||!first||!last||!department||!email||(backendEnabled&&!programId)){toast('Prefix, first name, last name, department, role, email, and academic program are required.');return;}
-"""
-          newadd="""    const titlePrefix=normalizeTitlePrefix($('auPrefix')?.value),first=$('auFirst')?.value.trim(),last=$('auLast')?.value.trim(),department=$('auDepartment')?.value.trim(),role=$('auRole')?.value,email=$('auEmail')?.value.trim().toLowerCase();
-    const typedProgram=state.role==='System Administrator'?$('auProgram')?.value.trim():'';
-    const matchedProgram=state.role==='System Administrator'?findProgramFromInput(typedProgram):null;
-    const programId=state.role==='System Administrator'?matchedProgram?.id:activeProgramId;
-    if(!titlePrefix||!first||!last||!department||!email||(backendEnabled&&!programId)){toast('Prefix, first name, last name, department, role, email, and academic program are required.');return;}
-    if(state.role==='System Administrator'&&backendEnabled&&!matchedProgram){toast('Enter an existing open academic program by code or name, or create it first from Academic Programs.');return;}
-"""
-          if oldadd in s: s=s.replace(oldadd,newadd,1)
-          bind="    if($('addAuthorizedUser'))$('addAuthorizedUser').addEventListener('click',addAuthorizedUser);\n"
-          if 'syncDepartmentFromProgram' not in s:
-              s=s.replace(bind,"    if($('auProgram')){\n      const syncDepartmentFromProgram=()=>{const program=findProgramFromInput($('auProgram').value);if(program&&$('auDepartment')&&!$('auDepartment').value.trim())$('auDepartment').value=program.department||'';};\n      $('auProgram').addEventListener('change',syncDepartmentFromProgram);\n      $('auProgram').addEventListener('blur',syncDepartmentFromProgram);\n    }\n"+bind,1)
-          app.write_text(s)
-
-          fn=root/'supabase/functions/admin-create-user/index.ts'
-          f=fn.read_text().replace("const allowedPrefixes = ['Mr.','Mrs.','Dr.'];", "const allowedPrefixes = ['Mr.','Ms.','Dr.'];").replace('Prefix must be Mr., Mrs., or Dr.', 'Prefix must be Mr., Ms., or Dr.')
-          fn.write_text(f)
-
-          mig=root/'supabase/migrations/20260910_authorized_user_title_prefix.sql'
-          m=mig.read_text().replace("('Mr.', 'Mrs.', 'Dr.')", "('Mr.', 'Ms.', 'Dr.')")
-          mig.write_text(m)
-          (root/'supabase/migrations/20260910_replace_mrs_with_ms.sql').write_text("""update public.profiles
-set title_prefix = 'Ms.'
-where title_prefix = 'Mrs.';
-
-alter table public.profiles
-  drop constraint if exists profiles_title_prefix_check;
-
-alter table public.profiles
-  add constraint profiles_title_prefix_check
-  check (title_prefix is null or title_prefix in ('Mr.', 'Ms.', 'Dr.'));
-""")
-
-          pkg=root/'package.json'
-          pkg.write_text(pkg.read_text().replace('"version": "1.2.2"','"version": "1.2.3"'))
-
-          chg=root/'CHANGELOG.md'
-          c=chg.read_text()
-          if '### 1.2.3' not in c:
-              entry="""\n### 1.2.3 — User prefix and admin entry controls
-- Replaced the authorized-user prefix `Mrs.` with `Ms.`; allowed prefixes are now Mr., Ms., and Dr.
-- System Administrator can type the academic program code/name directly when assigning a user, with existing open programs offered as suggestions.
-- System Administrator can type the department directly; matching program selection can auto-fill its department while remaining editable.
-- Added a migration that converts any legacy `Mrs.` prefix to `Ms.` and updates the database constraint.
-\n"""
-              pos=c.find('\n')+1
-              c=c[:pos]+entry+c[pos:]
-          chg.write_text(c)
-
-          chk=root/'scripts/check-project.js'
-          c=chk.read_text().replace("const TITLE_PREFIXES = ['Mr.','Mrs.','Dr.']", "const TITLE_PREFIXES = ['Mr.','Ms.','Dr.']")
-          marker="assert.ok(app.includes(\"const TITLE_PREFIXES = ['Mr.','Ms.','Dr.']\"), 'Authorized-user title prefixes are missing');\n"
-          if marker in c and 'SystemAdmin academic program entry must be writable' not in c:
-              c=c.replace(marker,marker+"assert.ok(app.includes('id=\\\"auProgram\\\" list=\\\"auProgramList\\\"'), 'SystemAdmin academic program entry must be writable');\nassert.ok(app.includes('id=\\\"auDepartment\\\"'), 'Authorized-user department entry is missing');\n")
-          chk.write_text(c)
-
-          smoke=root/'scripts/browser-smoke.js'
-          b=smoke.read_text()
-          marker="  await expect('SystemAdmin cannot see instructor report creation nav', \"document.querySelector('[data-view=course-reports]').classList.contains('role-hidden')\", true);\n"
-          if 'SystemAdmin program field is writable' not in b:
-              b=b.replace(marker,marker+"  await evaluate(\"document.querySelector('[data-view=users]').click()\");\n  await sleep(100);\n  await expect('SystemAdmin program field is writable', \"document.getElementById('auProgram').tagName\", 'INPUT');\n  await expect('SystemAdmin department field is writable', \"document.getElementById('auDepartment').disabled||document.getElementById('auDepartment').readOnly\", false);\n  await expect('Ms prefix available', \"[...document.getElementById('auPrefix').options].some(o=>o.value==='Ms.')\", true);\n",1)
-          smoke.write_text(b)
-          PY
+          echo "$PATCH_B64" | base64 -d | gzip -d > /tmp/v123.patch
+          patch -p1 < /tmp/v123.patch
       - name: Build and verify
         run: |
           npm run build
