@@ -1,0 +1,127 @@
+name: Apply v1.2.3 admin user fields
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-v1-2-3-admin-user-fields.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Apply v1.2.3 changes
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          root=Path('.')
+          app=root/'src/app.js'
+          s=app.read_text()
+          s=s.replace("const TITLE_PREFIXES = ['Mr.','Mrs.','Dr.'];", "const TITLE_PREFIXES = ['Mr.','Ms.','Dr.'];")
+          needle="  const displayUserName = user => [normalizeTitlePrefix(user?.titlePrefix), user?.firstName, user?.lastName].filter(Boolean).join(' ').trim() || user?.email || 'User';\n"
+          if 'const findProgramFromInput' not in s:
+              s=s.replace(needle, needle+"  const programInputLabel = program => program ? `${program.code} · ${program.name}` : '';\n  const findProgramFromInput = value => {\n    const key=String(value||'').trim().toLowerCase();\n    if(!key) return null;\n    return programDirectory.find(program=>[program.id,program.code,program.name,programInputLabel(program)].some(candidate=>String(candidate||'').trim().toLowerCase()===key))||null;\n  };\n",1)
+          old="""    const programOptions=programDirectory.filter(p=>p.status==='Open').map(p=>`<option value=\"${p.id}\" ${p.id===activeProgramId?'selected':''}>${esc(p.code)} · ${esc(p.name)}</option>`).join('');
+    const roleOptions=isAdmin?'<option>HOD</option><option>Coordinator</option><option>Instructor</option>':'<option>Instructor</option><option>Coordinator</option>';
+"""
+          new="""    const openPrograms=programDirectory.filter(p=>p.status==='Open');
+    const programOptions=openPrograms.map(p=>`<option value=\"${esc(programInputLabel(p))}\">${esc(p.department||'')}</option>`).join('');
+    const departmentOptions=[...new Set(openPrograms.map(p=>String(p.department||'').trim()).filter(Boolean))].map(department=>`<option value=\"${esc(department)}\"></option>`).join('');
+    const roleOptions=isAdmin?'<option>HOD</option><option>Coordinator</option><option>Instructor</option>':'<option>Instructor</option><option>Coordinator</option>';
+"""
+          if old in s: s=s.replace(old,new,1)
+          oldfrag='''${isAdmin?`<div class="field f12"><label>Academic program *</label><select id="auProgram"><option value="">Select program</option>${programOptions}</select></div>`:''}<div class="field f12"><label>Department *</label><input id="auDepartment" value="${esc(state.program.department||'')}"></div>'''
+          newfrag='''${isAdmin?`<div class="field f12"><label>Academic program *</label><input id="auProgram" list="auProgramList" placeholder="Type program code or name" autocomplete="off"><datalist id="auProgramList">${programOptions}</datalist><span class="tiny">Type an existing open program code or name. You can still create new programs from Academic Programs.</span></div>`:''}<div class="field f12"><label>Department *</label><input id="auDepartment" ${isAdmin?`list="auDepartmentList" placeholder="Type department name" value=""`:`value="${esc(state.program.department||'')}"`} autocomplete="off">${isAdmin?`<datalist id="auDepartmentList">${departmentOptions}</datalist>`:''}</div>'''
+          if oldfrag in s: s=s.replace(oldfrag,newfrag,1)
+          oldadd="""    const titlePrefix=normalizeTitlePrefix($('auPrefix')?.value),first=$('auFirst')?.value.trim(),last=$('auLast')?.value.trim(),department=$('auDepartment')?.value.trim(),role=$('auRole')?.value,email=$('auEmail')?.value.trim().toLowerCase();
+    const programId=state.role==='System Administrator'?$('auProgram')?.value:activeProgramId;
+    if(!titlePrefix||!first||!last||!department||!email||(backendEnabled&&!programId)){toast('Prefix, first name, last name, department, role, email, and academic program are required.');return;}
+"""
+          newadd="""    const titlePrefix=normalizeTitlePrefix($('auPrefix')?.value),first=$('auFirst')?.value.trim(),last=$('auLast')?.value.trim(),department=$('auDepartment')?.value.trim(),role=$('auRole')?.value,email=$('auEmail')?.value.trim().toLowerCase();
+    const typedProgram=state.role==='System Administrator'?$('auProgram')?.value.trim():'';
+    const matchedProgram=state.role==='System Administrator'?findProgramFromInput(typedProgram):null;
+    const programId=state.role==='System Administrator'?matchedProgram?.id:activeProgramId;
+    if(!titlePrefix||!first||!last||!department||!email||(backendEnabled&&!programId)){toast('Prefix, first name, last name, department, role, email, and academic program are required.');return;}
+    if(state.role==='System Administrator'&&backendEnabled&&!matchedProgram){toast('Enter an existing open academic program by code or name, or create it first from Academic Programs.');return;}
+"""
+          if oldadd in s: s=s.replace(oldadd,newadd,1)
+          bind="    if($('addAuthorizedUser'))$('addAuthorizedUser').addEventListener('click',addAuthorizedUser);\n"
+          if 'syncDepartmentFromProgram' not in s:
+              s=s.replace(bind,"    if($('auProgram')){\n      const syncDepartmentFromProgram=()=>{const program=findProgramFromInput($('auProgram').value);if(program&&$('auDepartment')&&!$('auDepartment').value.trim())$('auDepartment').value=program.department||'';};\n      $('auProgram').addEventListener('change',syncDepartmentFromProgram);\n      $('auProgram').addEventListener('blur',syncDepartmentFromProgram);\n    }\n"+bind,1)
+          app.write_text(s)
+
+          fn=root/'supabase/functions/admin-create-user/index.ts'
+          f=fn.read_text().replace("const allowedPrefixes = ['Mr.','Mrs.','Dr.'];", "const allowedPrefixes = ['Mr.','Ms.','Dr.'];").replace('Prefix must be Mr., Mrs., or Dr.', 'Prefix must be Mr., Ms., or Dr.')
+          fn.write_text(f)
+
+          mig=root/'supabase/migrations/20260910_authorized_user_title_prefix.sql'
+          m=mig.read_text().replace("('Mr.', 'Mrs.', 'Dr.')", "('Mr.', 'Ms.', 'Dr.')")
+          mig.write_text(m)
+          (root/'supabase/migrations/20260910_replace_mrs_with_ms.sql').write_text("""update public.profiles
+set title_prefix = 'Ms.'
+where title_prefix = 'Mrs.';
+
+alter table public.profiles
+  drop constraint if exists profiles_title_prefix_check;
+
+alter table public.profiles
+  add constraint profiles_title_prefix_check
+  check (title_prefix is null or title_prefix in ('Mr.', 'Ms.', 'Dr.'));
+""")
+
+          pkg=root/'package.json'
+          pkg.write_text(pkg.read_text().replace('"version": "1.2.2"','"version": "1.2.3"'))
+
+          chg=root/'CHANGELOG.md'
+          c=chg.read_text()
+          if '### 1.2.3' not in c:
+              entry="""\n### 1.2.3 — User prefix and admin entry controls
+- Replaced the authorized-user prefix `Mrs.` with `Ms.`; allowed prefixes are now Mr., Ms., and Dr.
+- System Administrator can type the academic program code/name directly when assigning a user, with existing open programs offered as suggestions.
+- System Administrator can type the department directly; matching program selection can auto-fill its department while remaining editable.
+- Added a migration that converts any legacy `Mrs.` prefix to `Ms.` and updates the database constraint.
+\n"""
+              pos=c.find('\n')+1
+              c=c[:pos]+entry+c[pos:]
+          chg.write_text(c)
+
+          chk=root/'scripts/check-project.js'
+          c=chk.read_text().replace("const TITLE_PREFIXES = ['Mr.','Mrs.','Dr.']", "const TITLE_PREFIXES = ['Mr.','Ms.','Dr.']")
+          marker="assert.ok(app.includes(\"const TITLE_PREFIXES = ['Mr.','Ms.','Dr.']\"), 'Authorized-user title prefixes are missing');\n"
+          if marker in c and 'SystemAdmin academic program entry must be writable' not in c:
+              c=c.replace(marker,marker+"assert.ok(app.includes('id=\\\"auProgram\\\" list=\\\"auProgramList\\\"'), 'SystemAdmin academic program entry must be writable');\nassert.ok(app.includes('id=\\\"auDepartment\\\"'), 'Authorized-user department entry is missing');\n")
+          chk.write_text(c)
+
+          smoke=root/'scripts/browser-smoke.js'
+          b=smoke.read_text()
+          marker="  await expect('SystemAdmin cannot see instructor report creation nav', \"document.querySelector('[data-view=course-reports]').classList.contains('role-hidden')\", true);\n"
+          if 'SystemAdmin program field is writable' not in b:
+              b=b.replace(marker,marker+"  await evaluate(\"document.querySelector('[data-view=users]').click()\");\n  await sleep(100);\n  await expect('SystemAdmin program field is writable', \"document.getElementById('auProgram').tagName\", 'INPUT');\n  await expect('SystemAdmin department field is writable', \"document.getElementById('auDepartment').disabled||document.getElementById('auDepartment').readOnly\", false);\n  await expect('Ms prefix available', \"[...document.getElementById('auPrefix').options].some(o=>o.value==='Ms.')\", true);\n",1)
+          smoke.write_text(b)
+          PY
+      - name: Build and verify
+        run: |
+          npm run build
+          npm run test:core
+          npm run check
+      - name: Commit v1.2.3
+        shell: bash
+        run: |
+          git config user.name 'RafMStudio'
+          git config user.email 'acadeloop@gmail.com'
+          git add CHANGELOG.md package.json scripts/browser-smoke.js scripts/check-project.js src/app.js src/backend.js supabase/functions/admin-create-user/index.ts supabase/migrations/20260910_authorized_user_title_prefix.sql supabase/migrations/20260910_replace_mrs_with_ms.sql index.html
+          git add -f dist/index.html
+          git rm .github/workflows/apply-v1-2-3-admin-user-fields.yml
+          git diff --cached --check
+          git commit -m 'Allow admin program and department entry'
+          git push origin HEAD:main
