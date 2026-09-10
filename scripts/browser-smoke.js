@@ -159,6 +159,11 @@ async function main() {
   await expect('SystemAdmin role canonicalized', "document.getElementById('currentUserRole').textContent", 'System Administrator');
   await expect('SystemAdmin workspace selected', "document.getElementById('roleContext').innerText.includes('System administration')", true);
   await expect('SystemAdmin cannot see instructor report creation nav', "document.querySelector('[data-view=course-reports]').classList.contains('role-hidden')", true);
+  await evaluate("document.querySelector('[data-view=users]').click()");
+  await sleep(100);
+  await expect('SystemAdmin program field is writable', "document.getElementById('auProgram').tagName", 'INPUT');
+  await expect('SystemAdmin department field is writable', "document.getElementById('auDepartment').disabled||document.getElementById('auDepartment').readOnly", false);
+  await expect('Ms prefix available', "[...document.getElementById('auPrefix').options].some(o=>o.value==='Ms.')", true);
   await evaluate("document.getElementById('signOutBtn').click()");
   await sleep(100);
 

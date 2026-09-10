@@ -7,7 +7,7 @@ const cors = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 const reply = (status:number, body:unknown) => new Response(JSON.stringify(body), { status, headers:{...cors,"Content-Type":"application/json","Cache-Control":"no-store"} });
-const allowedPrefixes = ['Mr.','Mrs.','Dr.'];
+const allowedPrefixes = ['Mr.','Ms.','Dr.'];
 
 Deno.serve(async (req:Request) => {
   if(req.method === "OPTIONS") return new Response("ok", {headers:cors});
@@ -29,7 +29,7 @@ Deno.serve(async (req:Request) => {
   const role=String(body.role||"").trim();
   const programId=String(body.program_id||body.programId||"").trim()||null;
   if(!email||!/^\S+@\S+\.\S+$/.test(email)) return reply(400,{error:"A valid email is required"});
-  if(!allowedPrefixes.includes(titlePrefix)) return reply(400,{error:"Prefix must be Mr., Mrs., or Dr."});
+  if(!allowedPrefixes.includes(titlePrefix)) return reply(400,{error:"Prefix must be Mr., Ms., or Dr."});
   if(!firstName||!lastName) return reply(400,{error:"First and last name are required"});
   if(!['HOD','Coordinator','Instructor'].includes(role)) return reply(400,{error:"Role must be HOD, Coordinator, or Instructor"});
   if(caller.role==='HOD'&&role==='HOD') return reply(403,{error:"Only System Administrator can appoint an HOD"});

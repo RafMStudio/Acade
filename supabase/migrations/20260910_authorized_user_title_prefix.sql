@@ -11,7 +11,7 @@ begin
   ) then
     alter table public.profiles
       add constraint profiles_title_prefix_check
-      check (title_prefix is null or title_prefix in ('Mr.', 'Mrs.', 'Dr.'));
+      check (title_prefix is null or title_prefix in ('Mr.', 'Ms.', 'Dr.'));
   end if;
 end
 $$;
