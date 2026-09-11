@@ -1,5 +1,15 @@
 # Changelog
 
+### 1.2.7 — Authentication and authorization hardening
+- Fixed login/session restoration race that could open a previously authenticated administrator session while the login form was visible.
+- Moved production Supabase credentials from persistent localStorage to tab-scoped sessionStorage and invalidated the legacy browser token store.
+- Added strict full-email and six-digit OTP validation plus exact Auth-user/profile/email binding.
+- Added a 12-hour client session ceiling and no-store requests for authenticated traffic.
+- Hardened database grants/RLS and removed legacy cross-program Operational Plan policies.
+- Moved privileged SECURITY DEFINER implementations out of the exposed public schema.
+- Added automated authentication security regression tests.
+
+
 ### 1.2.6 — Supabase project heartbeat
 - Added an isolated `project_keepalive` table and scheduled Supabase Cron heartbeat.
 - Cron checks daily and inserts a row only when at least five days have elapsed since the previous heartbeat.

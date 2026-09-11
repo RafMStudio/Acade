@@ -52,6 +52,8 @@
   const seed = window.ACADELOOP_SEED;
 
   const backendEnabled = !!Backend?.enabled;
+  const normalizeLoginEmail = value => String(value||'').trim().toLowerCase();
+  const validLoginEmail = value => { const email=normalizeLoginEmail(value); return email.length<=254 && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/u.test(email); };
   function canonicalUiRole(role){
     const value=String(role||'').trim();
     if(value==='SystemAdmin'||value==='System Administrator') return 'System Administrator';
@@ -979,18 +981,34 @@
     syncChrome();render();window.__ACADELOOP_READY__=true;
   }
   async function sendOtp(){
-    const email=$('loginUser')?.value.trim().toLowerCase();if(!email){setAuthStatus('Enter your authorized email address.','error');return;}
+    const email=normalizeLoginEmail($('loginUser')?.value);
+    if(!validLoginEmail(email)){setAuthStatus('Enter your complete authorized email address.','error');return;}
     const btn=$('signInBtn');btn.disabled=true;btn.textContent='Sending code…';setAuthStatus('');
-    try{await Backend.requestOtp(email);sessionStorage.setItem('acadeloop_pending_email',email);showCodeStep(email);setAuthStatus('A one-time sign-in code was sent to your email.','ok');}
-    catch(e){setAuthStatus(e?.message?.includes('Signups not allowed')||e?.status===400?'This email is not authorized for Acadeloop.':(e?.message||'Unable to send the code.'),'error');}
+    try{
+      await Backend.requestOtp(email);
+      sessionStorage.setItem('acadeloop_pending_email',email);
+      showCodeStep(email);
+      setAuthStatus('If this is an authorized Acadeloop account, a six-digit sign-in code has been sent.','ok');
+    }
+    catch(e){setAuthStatus('Unable to send a sign-in code. Check the email and try again.','error');}
     finally{btn.disabled=false;btn.textContent='Send one-time code';}
   }
   async function verifyLoginCode(){
-    const email=sessionStorage.getItem('acadeloop_pending_email')||$('loginUser')?.value.trim().toLowerCase();const code=$('loginCode')?.value.trim();
-    if(!email||!code){setAuthStatus('Enter the six-digit code from your email.','error');return;}
+    const requestedEmail=normalizeLoginEmail(sessionStorage.getItem('acadeloop_pending_email'));
+    const code=String($('loginCode')?.value||'').trim();
+    if(!validLoginEmail(requestedEmail)){await Backend.signOut();showLoginStep();setAuthStatus('Start a new sign-in with your full authorized email address.','error');return;}
+    if(!/^\d{6}$/.test(code)){setAuthStatus('Enter the six-digit code from your email.','error');return;}
     const btn=$('verifyOtpBtn');btn.disabled=true;btn.textContent='Verifying…';
-    try{await Backend.verifyOtp(email,code);const p=await Backend.profile();if(!p||p.active===false)throw new Error('Your Acadeloop account is not active.');sessionStorage.removeItem('acadeloop_pending_email');await onAuthenticated({id:p.id,email:p.email,titlePrefix:normalizeTitlePrefix(p.title_prefix),firstName:p.first_name,lastName:p.last_name,department:p.department,role:dbRoleToUi(p.role),active:p.active,defaultProgramId:p.default_program_id||null,limitProgramAccess:!!p.limit_program_access});}
-    catch(e){await Backend.signOut();setAuthStatus(e?.message||'The code is invalid or expired.','error');}
+    try{
+      const verified=await Backend.verifyOtp(requestedEmail,code);
+      const authUser=await Backend.currentAuthUser();
+      if(!authUser?.id||normalizeLoginEmail(authUser.email)!==requestedEmail||verified?.user?.id!==authUser.id)throw new Error('Verified identity mismatch.');
+      const p=await Backend.profile();
+      if(!p||p.active===false||p.id!==authUser.id||normalizeLoginEmail(p.email)!==requestedEmail)throw new Error('This account is not authorized for Acadeloop.');
+      sessionStorage.removeItem('acadeloop_pending_email');
+      await onAuthenticated({id:p.id,email:p.email,titlePrefix:normalizeTitlePrefix(p.title_prefix),firstName:p.first_name,lastName:p.last_name,department:p.department,role:dbRoleToUi(p.role),active:p.active,defaultProgramId:p.default_program_id||null,limitProgramAccess:!!p.limit_program_access});
+    }
+    catch(e){await Backend.signOut();sessionStorage.removeItem('acadeloop_pending_email');showLoginStep();setAuthStatus(e?.message||'The code is invalid or expired.','error');}
     finally{btn.disabled=false;btn.textContent='Verify & sign in';}
   }
   async function signIn(){
@@ -1008,10 +1026,18 @@
     $('workspaceProgramSelect')?.addEventListener('change',e=>switchActiveProgram(e.target.value));
     if(backendEnabled){
       $('authTestPanel')?.classList.add('hidden');$('authProductionNote')?.classList.remove('hidden');
-      $('signInBtn')?.addEventListener('click',sendOtp);$('verifyOtpBtn')?.addEventListener('click',verifyLoginCode);$('backToEmail')?.addEventListener('click',showLoginStep);
-      $('loginUser')?.addEventListener('keydown',e=>{if(e.key==='Enter')sendOtp()});$('loginCode')?.addEventListener('keydown',e=>{if(e.key==='Enter')verifyLoginCode()});
-      try{const p=await Backend.profile();if(p?.active){await onAuthenticated({id:p.id,email:p.email,titlePrefix:normalizeTitlePrefix(p.title_prefix),firstName:p.first_name,lastName:p.last_name,department:p.department,role:dbRoleToUi(p.role),active:p.active,defaultProgramId:p.default_program_id||null,limitProgramAccess:!!p.limit_program_access});return;}}catch(e){console.warn('Session restore failed',e);}
-      showLoginStep();setAuthStatus('Enter your authorized Acadeloop email address. You may receive a six-digit code or a secure sign-in link.','');return;
+      const emailInput=$('loginUser'),sendBtn=$('signInBtn'),verifyBtn=$('verifyOtpBtn');
+      if(emailInput)emailInput.disabled=true;if(sendBtn){sendBtn.disabled=true;sendBtn.textContent='Checking session…';}if(verifyBtn)verifyBtn.disabled=true;
+      $('signInBtn')?.addEventListener('click',sendOtp);$('verifyOtpBtn')?.addEventListener('click',verifyLoginCode);$('backToEmail')?.addEventListener('click',()=>{sessionStorage.removeItem('acadeloop_pending_email');Backend.discardSession?.();showLoginStep();});
+      $('loginUser')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.currentTarget.disabled)sendOtp()});$('loginCode')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.currentTarget.disabled)verifyLoginCode()});
+      try{
+        const p=await Backend.profile();
+        if(p?.active){await onAuthenticated({id:p.id,email:p.email,titlePrefix:normalizeTitlePrefix(p.title_prefix),firstName:p.first_name,lastName:p.last_name,department:p.department,role:dbRoleToUi(p.role),active:p.active,defaultProgramId:p.default_program_id||null,limitProgramAccess:!!p.limit_program_access});return;}
+        Backend.discardSession?.();
+      }catch(e){console.warn('Session restore failed',e);Backend.discardSession?.();}
+      sessionStorage.removeItem('acadeloop_pending_email');
+      showLoginStep();if(emailInput)emailInput.disabled=false;if(sendBtn){sendBtn.disabled=false;sendBtn.textContent='Send one-time code';}if(verifyBtn)verifyBtn.disabled=false;
+      setAuthStatus('Enter your complete authorized Acadeloop email address.','');return;
     }
     loadLocalUsers();$('authTestPanel')?.classList.remove('hidden');$('authProductionNote')?.classList.add('hidden');
     $('signInBtn')?.addEventListener('click',signIn);$('loginUser')?.addEventListener('keydown',e=>{if(e.key==='Enter')signIn()});

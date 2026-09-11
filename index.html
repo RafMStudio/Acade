@@ -230,8 +230,8 @@ nav{display:grid;gap:4px}.nav-item{border:0;background:transparent;border-radius
 <h1 id="authTitle">Sign in to Acadeloop</h1>
 <p id="authMessage">Use the email address authorized by your Head of Department. Acadeloop will send a one-time sign-in code. There is no public registration.</p>
 <div id="authEmailStep">
-<label class="auth-field"><span>Email address</span><input autocomplete="email" id="loginUser" placeholder="name@university.edu" type="email"/></label>
-<button class="btn btn-primary auth-submit" id="signInBtn" type="button">Send one-time code</button>
+<label class="auth-field"><span>Email address</span><input autocomplete="email" id="loginUser" placeholder="name@university.edu" type="email"/ maxlength="254" autocomplete="email" autocapitalize="none" spellcheck="false" disabled></label>
+<button class="btn btn-primary auth-submit" id="signInBtn" type="button" disabled>Send one-time code</button>
 </div>
 <div class="hidden" id="authCodeStep">
 <label class="auth-field"><span>One-time code sent to <strong id="otpEmailLabel"></strong></span><input autocomplete="one-time-code" id="loginCode" inputmode="numeric" maxlength="6" placeholder="123456" type="text"/></label>
@@ -892,9 +892,49 @@ window.ACADELOOP_SEED = {
 
   const SUPABASE_URL = 'https://bzqtgcopnnscvacynybl.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_C34DQ7afa0EjU6eJstFWJw_RizL3YzU';
-  const SESSION_KEY = 'acadeloop_supabase_session_v1';
-  const TEST_HOSTS = new Set(['', 'localhost', '127.0.0.1']);
+  const SESSION_KEY = 'acadeloop_supabase_session_v2';
+  const LEGACY_SESSION_KEYS = ['acadeloop_supabase_session_v1'];
+  const SESSION_MAX_AGE_MS = 12 * 60 * 60 * 1000;
+  const TEST_HOSTS = new Set(['localhost', '127.0.0.1']);
   const testMode = location.protocol === 'file:' || location.protocol === 'about:' || TEST_HOSTS.has(location.hostname) || window.__ACADELOOP_TEST_MODE__ === true;
+  const normalizeEmail = value => String(value || '').trim().toLowerCase();
+  const validEmail = value => {
+    const email = normalizeEmail(value);
+    return email.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/u.test(email);
+  };
+
+  // v1 stored refresh credentials in localStorage. Never restore them after this
+  // security upgrade: a login is now limited to the current browser tab/session.
+  for (const key of LEGACY_SESSION_KEYS) {
+    try { localStorage.removeItem(key); } catch {}
+  }
+
+  function readSession() {
+    try {
+      const session = JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null');
+      if (!session) return null;
+      const startedAt = Number(session.client_started_at || 0);
+      if (!startedAt || Date.now() - startedAt > SESSION_MAX_AGE_MS) {
+        sessionStorage.removeItem(SESSION_KEY);
+        return null;
+      }
+      return session;
+    } catch { return null; }
+  }
+
+  function writeSession(session, preserveStartedAt=true) {
+    try {
+      if (!session) {
+        sessionStorage.removeItem(SESSION_KEY);
+        return;
+      }
+      const prior = preserveStartedAt ? readSession() : null;
+      const client_started_at = Number(prior?.client_started_at || session.client_started_at || Date.now());
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify({ ...session, client_started_at }));
+    } catch {}
+  }
+
+  function discardSession() { writeSession(null); }
 
   function captureAuthRedirectSession() {
     if (testMode || !location.hash) return;
@@ -903,7 +943,7 @@ window.ACADELOOP_SEED = {
     const refresh_token = hash.get('refresh_token');
     if (!access_token || !refresh_token) return;
     const expires_in = Number(hash.get('expires_in') || 3600);
-    writeSession({ access_token, refresh_token, token_type: hash.get('token_type') || 'bearer', expires_in, expires_at: Math.floor(Date.now()/1000) + expires_in });
+    writeSession({ access_token, refresh_token, token_type: hash.get('token_type') || 'bearer', expires_in, expires_at: Math.floor(Date.now()/1000) + expires_in, client_started_at: Date.now() }, false);
     history.replaceState(null, document.title, location.pathname + location.search);
   }
 
@@ -914,16 +954,6 @@ window.ACADELOOP_SEED = {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...extra,
     };
-  }
-
-  function readSession() {
-    try { return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch { return null; }
-  }
-  function writeSession(session) {
-    try {
-      if (session) localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-      else localStorage.removeItem(SESSION_KEY);
-    } catch {}
   }
 
   captureAuthRedirectSession();
@@ -939,7 +969,7 @@ window.ACADELOOP_SEED = {
   }
 
   async function fetchJson(path, options={}) {
-    const response = await fetch(`${SUPABASE_URL}${path}`, options);
+    const response = await fetch(`${SUPABASE_URL}${path}`, { ...options, cache: 'no-store' });
     if (!response.ok) throw await parseError(response);
     if (response.status === 204) return null;
     const text = await response.text();
@@ -951,15 +981,15 @@ window.ACADELOOP_SEED = {
     if (!session?.access_token) return null;
     const expiresAt = Number(session.expires_at || 0) * 1000;
     if (expiresAt && Date.now() < expiresAt - 60_000) return session;
-    if (!session.refresh_token) { writeSession(null); return null; }
+    if (!session.refresh_token) { discardSession(); return null; }
     try {
       const next = await fetchJson('/auth/v1/token?grant_type=refresh_token', {
         method: 'POST', headers: jsonHeaders(), body: JSON.stringify({ refresh_token: session.refresh_token })
       });
-      writeSession(next);
-      return next;
+      writeSession({ ...next, client_started_at: session.client_started_at });
+      return readSession();
     } catch {
-      writeSession(null);
+      discardSession();
       return null;
     }
   }
@@ -969,17 +999,31 @@ window.ACADELOOP_SEED = {
     return session?.access_token || '';
   }
 
-  async function requestOtp(email) {
+  async function requestOtp(emailValue) {
+    const email = normalizeEmail(emailValue);
+    if (!validEmail(email)) throw new Error('Enter a complete valid email address.');
+    // Starting a new sign-in must never inherit the identity of an older session.
+    discardSession();
     return fetchJson('/auth/v1/otp', {
       method: 'POST', headers: jsonHeaders(), body: JSON.stringify({ email, create_user: false })
     });
   }
 
-  async function verifyOtp(email, token) {
+  async function verifyOtp(emailValue, tokenValue) {
+    const email = normalizeEmail(emailValue);
+    const token = String(tokenValue || '').trim();
+    if (!validEmail(email)) throw new Error('Enter a complete valid email address.');
+    if (!/^\d{6}$/.test(token)) throw new Error('Enter the six-digit sign-in code.');
+    discardSession();
     const session = await fetchJson('/auth/v1/verify', {
       method: 'POST', headers: jsonHeaders(), body: JSON.stringify({ email, token, type: 'email' })
     });
-    writeSession(session);
+    const sessionEmail = normalizeEmail(session?.user?.email);
+    if (!session?.access_token || !session?.refresh_token || !session?.user?.id || sessionEmail !== email) {
+      discardSession();
+      throw new Error('The verified account did not match the requested email.');
+    }
+    writeSession({ ...session, client_started_at: Date.now() }, false);
     return session;
   }
 
@@ -988,14 +1032,20 @@ window.ACADELOOP_SEED = {
     if (token) {
       try { await fetchJson('/auth/v1/logout', { method: 'POST', headers: jsonHeaders(token) }); } catch {}
     }
-    writeSession(null);
+    discardSession();
   }
 
   async function currentAuthUser() {
     const token = await accessToken();
     if (!token) return null;
-    try { return await fetchJson('/auth/v1/user', { headers: jsonHeaders(token) }); }
-    catch { writeSession(null); return null; }
+    try {
+      const user = await fetchJson('/auth/v1/user', { headers: jsonHeaders(token) });
+      if (!user?.id || !validEmail(user?.email)) throw new Error('Invalid authenticated user.');
+      return user;
+    } catch {
+      discardSession();
+      return null;
+    }
   }
 
   async function db(path, options={}) {
@@ -1008,35 +1058,34 @@ window.ACADELOOP_SEED = {
   }
 
   const q = encodeURIComponent;
-  async function select(table, query='select=*') {
-    return db(`${table}?${query}`, { method: 'GET' });
-  }
+  async function select(table, query='select=*') { return db(`${table}?${query}`, { method: 'GET' }); }
   async function insert(table, row, options={}) {
     return db(`${table}${options.onConflict ? `?on_conflict=${q(options.onConflict)}` : ''}`, {
-      method: 'POST',
-      headers: { Prefer: options.upsert ? 'resolution=merge-duplicates,return=representation' : 'return=representation' },
-      body: JSON.stringify(row),
+      method: 'POST', headers: { Prefer: options.upsert ? 'resolution=merge-duplicates,return=representation' : 'return=representation' }, body: JSON.stringify(row),
     });
   }
   async function patch(table, filter, changes) {
-    return db(`${table}?${filter}`, {
-      method: 'PATCH', headers: { Prefer: 'return=representation' }, body: JSON.stringify(changes)
-    });
+    return db(`${table}?${filter}`, { method: 'PATCH', headers: { Prefer: 'return=representation' }, body: JSON.stringify(changes) });
   }
-  async function rpc(name, body={}) {
-    return db(`rpc/${name}`, { method: 'POST', body: JSON.stringify(body) });
-  }
+  async function rpc(name, body={}) { return db(`rpc/${name}`, { method: 'POST', body: JSON.stringify(body) }); }
+
   async function profile() {
     const user = await currentAuthUser();
     if (!user?.id) return null;
     const rows = await select('profiles', `id=eq.${q(user.id)}&select=id,email,title_prefix,first_name,last_name,department,role,active,default_program_id,limit_program_access,created_at`);
-    return rows?.[0] || null;
+    const profile = rows?.[0] || null;
+    if (!profile || normalizeEmail(profile.email) !== normalizeEmail(user.email)) {
+      discardSession();
+      return null;
+    }
+    return profile;
   }
+
   async function invoke(name, body, responseType='json') {
     const token = await accessToken();
     if (!token) throw new Error('Your session has expired. Please sign in again.');
     const response = await fetch(`${SUPABASE_URL}/functions/v1/${name}`, {
-      method: 'POST', headers: jsonHeaders(token), body: JSON.stringify(body || {})
+      method: 'POST', headers: jsonHeaders(token), body: JSON.stringify(body || {}), cache: 'no-store'
     });
     if (!response.ok) throw await parseError(response);
     if (responseType === 'blob') return response.blob();
@@ -1045,8 +1094,9 @@ window.ACADELOOP_SEED = {
 
   window.AcadeloopBackend = {
     enabled: !testMode,
+    testMode,
     url: SUPABASE_URL,
-    requestOtp, verifyOtp, signOut, currentAuthUser, profile,
+    requestOtp, verifyOtp, signOut, discardSession, currentAuthUser, profile,
     select, insert, patch, rpc, invoke, accessToken,
     session: readSession,
   };
@@ -1108,6 +1158,8 @@ window.ACADELOOP_SEED = {
   const seed = window.ACADELOOP_SEED;
 
   const backendEnabled = !!Backend?.enabled;
+  const normalizeLoginEmail = value => String(value||'').trim().toLowerCase();
+  const validLoginEmail = value => { const email=normalizeLoginEmail(value); return email.length<=254 && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/u.test(email); };
   function canonicalUiRole(role){
     const value=String(role||'').trim();
     if(value==='SystemAdmin'||value==='System Administrator') return 'System Administrator';
@@ -2035,18 +2087,34 @@ window.ACADELOOP_SEED = {
     syncChrome();render();window.__ACADELOOP_READY__=true;
   }
   async function sendOtp(){
-    const email=$('loginUser')?.value.trim().toLowerCase();if(!email){setAuthStatus('Enter your authorized email address.','error');return;}
+    const email=normalizeLoginEmail($('loginUser')?.value);
+    if(!validLoginEmail(email)){setAuthStatus('Enter your complete authorized email address.','error');return;}
     const btn=$('signInBtn');btn.disabled=true;btn.textContent='Sending code…';setAuthStatus('');
-    try{await Backend.requestOtp(email);sessionStorage.setItem('acadeloop_pending_email',email);showCodeStep(email);setAuthStatus('A one-time sign-in code was sent to your email.','ok');}
-    catch(e){setAuthStatus(e?.message?.includes('Signups not allowed')||e?.status===400?'This email is not authorized for Acadeloop.':(e?.message||'Unable to send the code.'),'error');}
+    try{
+      await Backend.requestOtp(email);
+      sessionStorage.setItem('acadeloop_pending_email',email);
+      showCodeStep(email);
+      setAuthStatus('If this is an authorized Acadeloop account, a six-digit sign-in code has been sent.','ok');
+    }
+    catch(e){setAuthStatus('Unable to send a sign-in code. Check the email and try again.','error');}
     finally{btn.disabled=false;btn.textContent='Send one-time code';}
   }
   async function verifyLoginCode(){
-    const email=sessionStorage.getItem('acadeloop_pending_email')||$('loginUser')?.value.trim().toLowerCase();const code=$('loginCode')?.value.trim();
-    if(!email||!code){setAuthStatus('Enter the six-digit code from your email.','error');return;}
+    const requestedEmail=normalizeLoginEmail(sessionStorage.getItem('acadeloop_pending_email'));
+    const code=String($('loginCode')?.value||'').trim();
+    if(!validLoginEmail(requestedEmail)){await Backend.signOut();showLoginStep();setAuthStatus('Start a new sign-in with your full authorized email address.','error');return;}
+    if(!/^\d{6}$/.test(code)){setAuthStatus('Enter the six-digit code from your email.','error');return;}
     const btn=$('verifyOtpBtn');btn.disabled=true;btn.textContent='Verifying…';
-    try{await Backend.verifyOtp(email,code);const p=await Backend.profile();if(!p||p.active===false)throw new Error('Your Acadeloop account is not active.');sessionStorage.removeItem('acadeloop_pending_email');await onAuthenticated({id:p.id,email:p.email,titlePrefix:normalizeTitlePrefix(p.title_prefix),firstName:p.first_name,lastName:p.last_name,department:p.department,role:dbRoleToUi(p.role),active:p.active,defaultProgramId:p.default_program_id||null,limitProgramAccess:!!p.limit_program_access});}
-    catch(e){await Backend.signOut();setAuthStatus(e?.message||'The code is invalid or expired.','error');}
+    try{
+      const verified=await Backend.verifyOtp(requestedEmail,code);
+      const authUser=await Backend.currentAuthUser();
+      if(!authUser?.id||normalizeLoginEmail(authUser.email)!==requestedEmail||verified?.user?.id!==authUser.id)throw new Error('Verified identity mismatch.');
+      const p=await Backend.profile();
+      if(!p||p.active===false||p.id!==authUser.id||normalizeLoginEmail(p.email)!==requestedEmail)throw new Error('This account is not authorized for Acadeloop.');
+      sessionStorage.removeItem('acadeloop_pending_email');
+      await onAuthenticated({id:p.id,email:p.email,titlePrefix:normalizeTitlePrefix(p.title_prefix),firstName:p.first_name,lastName:p.last_name,department:p.department,role:dbRoleToUi(p.role),active:p.active,defaultProgramId:p.default_program_id||null,limitProgramAccess:!!p.limit_program_access});
+    }
+    catch(e){await Backend.signOut();sessionStorage.removeItem('acadeloop_pending_email');showLoginStep();setAuthStatus(e?.message||'The code is invalid or expired.','error');}
     finally{btn.disabled=false;btn.textContent='Verify & sign in';}
   }
   async function signIn(){
@@ -2064,10 +2132,18 @@ window.ACADELOOP_SEED = {
     $('workspaceProgramSelect')?.addEventListener('change',e=>switchActiveProgram(e.target.value));
     if(backendEnabled){
       $('authTestPanel')?.classList.add('hidden');$('authProductionNote')?.classList.remove('hidden');
-      $('signInBtn')?.addEventListener('click',sendOtp);$('verifyOtpBtn')?.addEventListener('click',verifyLoginCode);$('backToEmail')?.addEventListener('click',showLoginStep);
-      $('loginUser')?.addEventListener('keydown',e=>{if(e.key==='Enter')sendOtp()});$('loginCode')?.addEventListener('keydown',e=>{if(e.key==='Enter')verifyLoginCode()});
-      try{const p=await Backend.profile();if(p?.active){await onAuthenticated({id:p.id,email:p.email,titlePrefix:normalizeTitlePrefix(p.title_prefix),firstName:p.first_name,lastName:p.last_name,department:p.department,role:dbRoleToUi(p.role),active:p.active,defaultProgramId:p.default_program_id||null,limitProgramAccess:!!p.limit_program_access});return;}}catch(e){console.warn('Session restore failed',e);}
-      showLoginStep();setAuthStatus('Enter your authorized Acadeloop email address. You may receive a six-digit code or a secure sign-in link.','');return;
+      const emailInput=$('loginUser'),sendBtn=$('signInBtn'),verifyBtn=$('verifyOtpBtn');
+      if(emailInput)emailInput.disabled=true;if(sendBtn){sendBtn.disabled=true;sendBtn.textContent='Checking session…';}if(verifyBtn)verifyBtn.disabled=true;
+      $('signInBtn')?.addEventListener('click',sendOtp);$('verifyOtpBtn')?.addEventListener('click',verifyLoginCode);$('backToEmail')?.addEventListener('click',()=>{sessionStorage.removeItem('acadeloop_pending_email');Backend.discardSession?.();showLoginStep();});
+      $('loginUser')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.currentTarget.disabled)sendOtp()});$('loginCode')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.currentTarget.disabled)verifyLoginCode()});
+      try{
+        const p=await Backend.profile();
+        if(p?.active){await onAuthenticated({id:p.id,email:p.email,titlePrefix:normalizeTitlePrefix(p.title_prefix),firstName:p.first_name,lastName:p.last_name,department:p.department,role:dbRoleToUi(p.role),active:p.active,defaultProgramId:p.default_program_id||null,limitProgramAccess:!!p.limit_program_access});return;}
+        Backend.discardSession?.();
+      }catch(e){console.warn('Session restore failed',e);Backend.discardSession?.();}
+      sessionStorage.removeItem('acadeloop_pending_email');
+      showLoginStep();if(emailInput)emailInput.disabled=false;if(sendBtn){sendBtn.disabled=false;sendBtn.textContent='Send one-time code';}if(verifyBtn)verifyBtn.disabled=false;
+      setAuthStatus('Enter your complete authorized Acadeloop email address.','');return;
     }
     loadLocalUsers();$('authTestPanel')?.classList.remove('hidden');$('authProductionNote')?.classList.add('hidden');
     $('signInBtn')?.addEventListener('click',signIn);$('loginUser')?.addEventListener('keydown',e=>{if(e.key==='Enter')signIn()});

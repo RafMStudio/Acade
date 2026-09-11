@@ -17,8 +17,8 @@
 <h1 id="authTitle">Sign in to Acadeloop</h1>
 <p id="authMessage">Use the email address authorized by your Head of Department. Acadeloop will send a one-time sign-in code. There is no public registration.</p>
 <div id="authEmailStep">
-<label class="auth-field"><span>Email address</span><input autocomplete="email" id="loginUser" placeholder="name@university.edu" type="email"/></label>
-<button class="btn btn-primary auth-submit" id="signInBtn" type="button">Send one-time code</button>
+<label class="auth-field"><span>Email address</span><input autocomplete="email" id="loginUser" placeholder="name@university.edu" type="email"/ maxlength="254" autocomplete="email" autocapitalize="none" spellcheck="false" disabled></label>
+<button class="btn btn-primary auth-submit" id="signInBtn" type="button" disabled>Send one-time code</button>
 </div>
 <div class="hidden" id="authCodeStep">
 <label class="auth-field"><span>One-time code sent to <strong id="otpEmailLabel"></strong></span><input autocomplete="one-time-code" id="loginCode" inputmode="numeric" maxlength="6" placeholder="123456" type="text"/></label>

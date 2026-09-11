@@ -1,6 +1,6 @@
 {
   "name": "acadeloop-academic-quality",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "private": true,
   "description": "Acadeloop academic program quality management web application.",
   "scripts": {
@@ -10,7 +10,8 @@
     "test:core": "node --test tests/core.test.js",
     "check": "node scripts/check-project.js",
     "test:browser": "node scripts/browser-smoke.js",
-    "test": "npm run build && npm run test:core && npm run check && npm run test:browser"
+    "test": "npm run build && npm run test:core && npm run test:security && npm run check && npm run test:browser",
+    "test:security": "node --test tests/security.test.js"
   },
   "devDependencies": {
     "wrangler": "4.129.1"
