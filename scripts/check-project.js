@@ -90,6 +90,8 @@ assert.ok(app.includes('id="auPrefix"'), 'Authorized-user prefix selector is mis
 assert.ok(app.includes('title_prefix:titlePrefix'), 'Authorized-user prefix is not sent to Supabase');
 assert.ok(read('src/backend.js').includes('title_prefix'), 'Profile title prefix is not loaded from Supabase');
 assert.ok(app.includes("export-backup-xlsx"), 'Excel backup integration is missing');
+assert.ok(app.includes("project_keepalive"), 'System Administrator keepalive status integration is missing');
+assert.ok(app.includes("Supabase project heartbeat"), 'Keepalive dashboard panel is missing');
 assert.ok(app.includes('persistCourseReport'), 'Supabase Course Report data persistence is missing');
 assert.ok(!app.includes('COURSE_REPORT_TEMPLATE_BASE64'), 'Generated DOCX must not be stored as Base64');
 

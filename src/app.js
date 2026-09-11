@@ -71,6 +71,7 @@
 
   let currentUser = null;
   let userDirectory = [];
+  let keepaliveStatus = null;
   const SESSION_KEY = 'acadeloop_session_v100';
   const USERS_KEY = 'acadeloop_authorized_users_v100';
   const memoryStorage = new Map();
@@ -490,8 +491,15 @@
     const open=programDirectory.filter(p=>p.status==='Open').length;
     const activeUsers=userDirectory.filter(u=>u.active!==false).length;
     const hods=userDirectory.filter(u=>u.role==='Head of Department').length;
+    const pingedAt=keepaliveStatus?.pinged_at?new Date(keepaliveStatus.pinged_at):null;
+    const nextAt=pingedAt?new Date(pingedAt.getTime()+5*24*60*60*1000):null;
+    const ageDays=pingedAt?(Date.now()-pingedAt.getTime())/(24*60*60*1000):null;
+    const heartbeatHealthy=!!pingedAt&&ageDays<6;
+    const heartbeatState=keepaliveStatus?.error?'Unavailable':heartbeatHealthy?'Healthy':pingedAt?'Overdue':'Waiting for first heartbeat';
+    const heartbeatClass=heartbeatHealthy?'text-good':keepaliveStatus?.error||pingedAt?'text-warn':'';
+    const heartbeatPanel=`<div class="section"><div class="section-title"><div><h2>Supabase project heartbeat</h2><p>A lightweight scheduled database heartbeat records one row approximately every five days. This table is isolated from Acadeloop business data and visible only to System Administrators.</p></div><span class="tag blue">Scheduled</span></div><div class="grid grid-3"><div class="card"><span class="eyebrow">Status</span><div class="big ${heartbeatClass}" style="margin:10px 0 4px">${esc(heartbeatState)}</div><div class="tiny">Cron checks daily and inserts only after five days have elapsed.</div></div><div class="card"><span class="eyebrow">Last heartbeat</span><div style="font-weight:760;margin:12px 0 5px">${pingedAt?esc(pingedAt.toLocaleString()):'—'}</div><div class="tiny">Source: ${esc(keepaliveStatus?.source||'—')}</div></div><div class="card"><span class="eyebrow">Next expected</span><div style="font-weight:760;margin:12px 0 5px">${nextAt?esc(nextAt.toLocaleString()):'—'}</div><div class="tiny">Approximately five days after the latest successful heartbeat.</div></div></div></div>`;
     return roleHero()+pageHead('Platform control','Acadeloop Administration','System-wide control for academic programs and authorized users.',backendEnabled?'<button class="btn btn-ghost" id="backupAllData">Backup Entire System (.xlsx)</button>':'')+`
-      <div class="grid grid-4"><div class="card metric"><div class="label">Academic programs</div><div class="value">${programDirectory.length}</div><div class="sub">${open} currently open</div></div><div class="card metric"><div class="label">Authorized users</div><div class="value">${activeUsers}</div><div class="sub">Across all programs</div></div><div class="card metric"><div class="label">Heads of Department</div><div class="value">${hods}</div><div class="sub">Program leadership assignments</div></div><div class="card metric"><div class="label">System backup</div><div class="value">XLSX</div><div class="sub">All structured data; no generated DOCX stored</div></div></div>
+      <div class="grid grid-4"><div class="card metric"><div class="label">Academic programs</div><div class="value">${programDirectory.length}</div><div class="sub">${open} currently open</div></div><div class="card metric"><div class="label">Authorized users</div><div class="value">${activeUsers}</div><div class="sub">Across all programs</div></div><div class="card metric"><div class="label">Heads of Department</div><div class="value">${hods}</div><div class="sub">Program leadership assignments</div></div><div class="card metric"><div class="label">System backup</div><div class="value">XLSX</div><div class="sub">All structured data; no generated DOCX stored</div></div></div>${heartbeatPanel}
       <div class="section"><div class="section-title"><div><h2>Academic programs</h2><p>Open and closed program workspaces managed by the System Administrator.</p></div><button class="btn btn-primary" data-go="setup">Manage programs</button></div>${programTableHtml()}</div>`;
   }
   function programTableHtml(){
@@ -911,6 +919,17 @@
     if($('otpEmailLabel'))$('otpEmailLabel').textContent=email;
     if($('loginCode'))$('loginCode').value='';
   }
+  async function loadKeepaliveStatus(){
+    if(!backendEnabled||currentUser?.role!=='System Administrator'){keepaliveStatus=null;return;}
+    try{
+      const rows=await Backend.select('project_keepalive','select=id,pinged_at,source&order=pinged_at.desc&limit=1');
+      keepaliveStatus=rows?.[0]||null;
+    }catch(e){
+      console.warn('Could not load project keepalive status',e);
+      keepaliveStatus={error:true};
+    }
+  }
+
   async function hydrateSharedState(){
     if(!backendEnabled){state=normalizeState(loadState());state.role=currentUser.role;ploYear=state.program.academicYear;ploTerm='Annual';return;}
     await loadPrograms();
@@ -954,6 +973,7 @@
     // Never let stale seed/browser state replace the authenticated Supabase role.
     state.role=role;
     if(['Head of Department','System Administrator'].includes(state.role))await loadUsers();
+    if(state.role==='System Administrator')await loadKeepaliveStatus();
     currentView='dashboard';currentPortfolioId=null;activePlo=null;
     $('authScreen')?.classList.add('hidden');$('appShell')?.classList.remove('hidden');
     syncChrome();render();window.__ACADELOOP_READY__=true;

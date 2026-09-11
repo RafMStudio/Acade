@@ -1,5 +1,12 @@
 # Changelog
 
+### 1.2.6 — Supabase project heartbeat
+- Added an isolated `project_keepalive` table and scheduled Supabase Cron heartbeat.
+- Cron checks daily and inserts a row only when at least five days have elapsed since the previous heartbeat.
+- Added a System Administrator dashboard panel showing heartbeat status, last run, source, and next expected run.
+- Heartbeat records are read-only to authenticated users and visible through RLS only to System Administrators.
+
+
 ### 1.2.5 — Permanent programs and department-wide access
 - Academic Programs are permanent master records and no longer contain an academic year.
 - HOD sets current and available academic years separately in Program Settings for each accessible program.
