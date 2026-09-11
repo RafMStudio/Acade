@@ -27,7 +27,7 @@ send_repl="""  async function sendOtp(){
     finally{btn.disabled=false;btn.textContent='Send one-time code';}
   }
   async function verifyLoginCode(){"""
-s,n=re.subn(send_pattern,send_repl,s,count=1,flags=re.S);assert n==1,n
+s,n=re.subn(send_pattern,lambda _m:send_repl,s,count=1,flags=re.S);assert n==1,n
 
 verify_pattern=r"  async function verifyLoginCode\(\)\{.*?\n  \}\n  async function signIn\(\)\{"
 verify_repl="""  async function verifyLoginCode(){
@@ -49,9 +49,8 @@ verify_repl="""  async function verifyLoginCode(){
     finally{btn.disabled=false;btn.textContent='Verify & sign in';}
   }
   async function signIn(){"""
-s,n=re.subn(verify_pattern,verify_repl,s,count=1,flags=re.S);assert n==1,n
+s,n=re.subn(verify_pattern,lambda _m:verify_repl,s,count=1,flags=re.S);assert n==1,n
 
-# Replace production portion of initAuth so the visible login form cannot race session restoration.
 old="""    if(backendEnabled){
       $('authTestPanel')?.classList.add('hidden');$('authProductionNote')?.classList.remove('hidden');
       $('signInBtn')?.addEventListener('click',sendOtp);$('verifyOtpBtn')?.addEventListener('click',verifyLoginCode);$('backToEmail')?.addEventListener('click',showLoginStep);
@@ -80,20 +79,20 @@ assert old in s
 s=s.replace(old,new,1)
 app.write_text(s)
 
-# Disable controls at first paint until production session restoration finishes.
 html=Path('index.source.html')
 h=html.read_text()
-h,n=re.subn(r'(<input[^>]*id="loginUser"[^>]*)(>)',lambda m:m.group(1) if ' disabled' in m.group(1) else m.group(1)+' disabled'+m.group(2),h,count=1)
-# Previous lambda needs complete tag if already disabled.
-if n:
-    # normalize if replacement omitted close due already disabled branch
-    h=h.replace('id="loginUser" disabled\n','id="loginUser" disabled>\n') if 'id="loginUser" disabled\n' in h else h
-# Safer direct attribute upgrades.
-h=h.replace('id="loginUser" type="email"','id="loginUser" type="email" maxlength="254" autocomplete="email" autocapitalize="none" spellcheck="false"')
-h=h.replace('id="signInBtn"','id="signInBtn" disabled',1) if 'id="signInBtn" disabled' not in h else h
+def harden_email_input(m):
+    tag=m.group(0)
+    if 'maxlength=' not in tag: tag=tag[:-1]+' maxlength="254" autocomplete="email" autocapitalize="none" spellcheck="false">'
+    if ' disabled' not in tag: tag=tag[:-1]+' disabled>'
+    return tag
+h,n=re.subn(r'<input[^>]*id="loginUser"[^>]*>',harden_email_input,h,count=1);assert n==1,n
+def disable_button(m):
+    tag=m.group(0)
+    return tag if ' disabled' in tag else tag[:-1]+' disabled>'
+h,n=re.subn(r'<button[^>]*id="signInBtn"[^>]*>',disable_button,h,count=1);assert n==1,n
 html.write_text(h)
 
-# Version + changelog.
 p=Path('package.json');data=json.loads(p.read_text());data['version']='1.2.7';data['scripts']['test:security']='node --test tests/security.test.js';data['scripts']['test']='npm run build && npm run test:core && npm run test:security && npm run check && npm run test:browser';p.write_text(json.dumps(data,indent=2)+'\n')
 
 Path('tests/security.test.js').write_text(r'''const test=require('node:test');
@@ -124,9 +123,7 @@ test('production cannot silently enter preset test mode from an empty hostname',
   assert.match(backend,/window\.__ACADELOOP_TEST_MODE__/);
 });
 test('frontend contains no Supabase service role or secret key',()=>{
-  for(const text of [backend,app,html]){
-    assert.doesNotMatch(text,/SUPABASE_SERVICE_ROLE_KEY|sb_secret_|service_role/i);
-  }
+  for(const text of [backend,app,html]) assert.doesNotMatch(text,/SUPABASE_SERVICE_ROLE_KEY|sb_secret_|service_role/i);
 });
 ''')
 
