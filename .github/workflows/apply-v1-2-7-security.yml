@@ -38,3 +38,4 @@ jobs:
           git diff --cached --check
           git commit -m 'Harden authentication and authorization'
           git push origin HEAD:main
+# retry 2
