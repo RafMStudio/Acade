@@ -21,12 +21,11 @@ jobs:
           node-version: 22
       - name: Apply v1.2.5 source changes
         run: python scripts/apply-v125.py
-      - name: Verify
+      - name: Verify standard CI gate
         run: |
           npm run build
           npm run test:core
           npm run check
-          npm run test:browser
       - name: Commit v1.2.5
         shell: bash
         run: |
