@@ -162,7 +162,8 @@ async function main() {
   await evaluate("document.querySelector('[data-view=users]').click()");
   await sleep(100);
   await expect('SystemAdmin department is a dropdown', "document.getElementById('auDepartment').tagName", 'SELECT');
-  await expect('SystemAdmin academic program is a dropdown', "document.getElementById('auProgram').tagName", 'SELECT');
+  await expect('SystemAdmin no longer assigns a program by default', "document.getElementById('auProgram')===null", true);
+  await expect('SystemAdmin can limit program access', "!!document.getElementById('auLimitPrograms')", true);
   await expect('Ms prefix available', "[...document.getElementById('auPrefix').options].some(o=>o.value==='Ms.')", true);
   await evaluate("document.getElementById('signOutBtn').click()");
   await sleep(100);

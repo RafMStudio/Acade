@@ -140,7 +140,7 @@
   async function profile() {
     const user = await currentAuthUser();
     if (!user?.id) return null;
-    const rows = await select('profiles', `id=eq.${q(user.id)}&select=id,email,title_prefix,first_name,last_name,department,role,active,default_program_id,created_at`);
+    const rows = await select('profiles', `id=eq.${q(user.id)}&select=id,email,title_prefix,first_name,last_name,department,role,active,default_program_id,limit_program_access,created_at`);
     return rows?.[0] || null;
   }
   async function invoke(name, body, responseType='json') {

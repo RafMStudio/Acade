@@ -1,5 +1,14 @@
 # Changelog
 
+### 1.2.5 — Permanent programs and department-wide access
+- Academic Programs are permanent master records and no longer contain an academic year.
+- HOD sets current and available academic years separately in Program Settings for each accessible program.
+- New users are assigned by Department and receive all open programs in that department by default.
+- Added optional Limit program access control for Admin/HOD to restrict a user to selected programs.
+- Unrestricted users automatically receive access when a new program is later added to their department.
+- Added a top-bar program switcher for users who can access more than one program.
+
+
 ### 1.2.4 — Academic Programs master list
 - Academic Programs is now the master source for Department and Academic Program assignments.
 - Added required Program Type with Diploma and Bachelor options.

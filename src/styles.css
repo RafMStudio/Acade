@@ -201,3 +201,5 @@ nav{display:grid;gap:4px}.nav-item{border:0;background:transparent;border-radius
 @media(max-width:1100px){.grade-average-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
 @media(max-width:820px){.quality-signal-grid{grid-template-columns:1fr}.grade-average-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.quality-monitor-tools{align-items:flex-start;flex-direction:column}}
 
+
+.program-access-list{display:grid;gap:7px;margin-top:7px}.program-access-option{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:9px;padding:9px 10px;background:#fafafa;cursor:pointer}.program-access-option input{width:16px;height:16px}.program-access-option span{display:flex;flex-direction:column;gap:2px}.program-access-option strong{font-size:11px}.program-access-option small{font-size:9px;color:var(--muted)}.access-limit-toggle{display:flex!important;align-items:center;gap:8px}.access-limit-toggle input{width:16px;height:16px}
