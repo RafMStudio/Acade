@@ -1,0 +1,40 @@
+name: Apply v1.2.7 security hardening
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-v1-2-7-security.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Apply security changes
+        run: python scripts/apply-v127-security.py
+      - name: Verify security and regression gates
+        run: |
+          npm run build
+          npm run test:core
+          npm run test:security
+          npm run check
+      - name: Commit v1.2.7
+        shell: bash
+        run: |
+          git config user.name 'RafMStudio'
+          git config user.email 'acadeloop@gmail.com'
+          git add CHANGELOG.md package.json src/app.js src/backend.js index.source.html tests/security.test.js scripts/check-project.js index.html
+          git add -f dist/index.html
+          git rm scripts/apply-v127-security.py .github/workflows/apply-v1-2-7-security.yml
+          git diff --cached --check
+          git commit -m 'Harden authentication and authorization'
+          git push origin HEAD:main
