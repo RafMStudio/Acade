@@ -46,6 +46,14 @@
     'Head of Department': {
       views:['dashboard','course-reports','course-portfolios','plo','apr','operational','users','setup'], label:'Executive oversight', avatar:'HD',
       dashboard:'Department Quality Overview', description:'View approved quality results and control who is allowed to access Acadeloop.'
+    },
+    'APU': {
+      views:['dashboard','course-reports','plo','apr','operational'], label:'Institution supervision', avatar:'AP',
+      dashboard:'APU Supervision Dashboard', description:'Read-only oversight across all academic programs, academic years, and semesters.'
+    },
+    'VDAA': {
+      views:['dashboard','course-reports','plo','apr','operational'], label:'Institution supervision', avatar:'VD',
+      dashboard:'VDAA Supervision Dashboard', description:'Read-only oversight across all academic programs, academic years, and semesters.'
     }
   };
 
@@ -60,8 +68,11 @@
     if(value==='HOD'||value==='Head of Department') return 'Head of Department';
     if(value==='Coordinator') return 'Coordinator';
     if(value==='Instructor') return 'Instructor';
+    if(value==='APU') return 'APU';
+    if(value==='VDAA') return 'VDAA';
     return '';
   }
+  const isSupervisorRole = role => ['APU','VDAA'].includes(canonicalUiRole(role));
   const dbRoleToUi = role => canonicalUiRole(role);
   const uiRoleToDb = role => canonicalUiRole(role)==='Head of Department' ? 'HOD' : canonicalUiRole(role)==='System Administrator' ? 'SystemAdmin' : canonicalUiRole(role);
   const clone = value => JSON.parse(JSON.stringify(value));
@@ -341,8 +352,29 @@
     </div>`;
   }
 
+  function renderSupervisorDashboard(){
+    const year=ploYear||state.program.academicYear||state.academicYears[0]||'';
+    const term=ploTerm||'Annual';
+    const periodReports=state.reports.filter(r=>(!year||r.academicYear===year)&&(term==='Annual'||r.semester===term));
+    const approved=periodReports.filter(r=>r.status==='Approved');
+    const waiting=periodReports.filter(r=>r.status==='Awaiting Quality Approval');
+    const returned=periodReports.filter(r=>r.status==='Returned for Revision');
+    const roll=year?ploRollups(year,term):[];
+    const program=programDirectory.find(p=>p.id===activeProgramId);
+    const programOptions=programDirectory.map(p=>`<option value="${esc(p.id)}" ${p.id===activeProgramId?'selected':''}>${esc(programDirectoryLabel(p))}${p.status==='Closed'?' · Closed':''}</option>`).join('');
+    const yearOptions=state.academicYears.map(y=>`<option value="${esc(y)}" ${y===year?'selected':''}>${esc(y)}</option>`).join('');
+    const termOptions=['Annual',...TERMS].map(t=>`<option value="${esc(t)}" ${t===term?'selected':''}>${esc(t)}</option>`).join('');
+    return roleHero()+pageHead('Institution-wide supervision',`${state.role} Supervision Dashboard`,'Read-only oversight across every Acadeloop academic program. Filter by program, academic year, and semester; no data can be edited or deleted from this role.')+`
+      <div class="period-filter"><label><span>Academic program</span><select id="supervisorProgram">${programOptions}</select></label><label><span>Academic year</span><select id="supervisorYear">${yearOptions}</select></label><label><span>Semester</span><select id="supervisorTerm">${termOptions}</select></label></div>
+      <div class="user-directory-note"><div class="automation-icon">◉</div><div><strong>Read-only supervision</strong><span>${esc(program?.name||'Academic program')} · ${esc(year||'No academic year')} · ${esc(term)}. APU/VDAA can inspect all available quality data but cannot create, edit, approve, return, delete, or change settings.</span></div></div>
+      <div class="grid grid-4"><div class="card metric"><div class="label">Reports</div><div class="value">${periodReports.length}</div><div class="sub">All statuses in selected period</div></div><div class="card metric"><div class="label">Quality approved</div><div class="value">${approved.length}</div><div class="sub">Official program data</div></div><div class="card metric"><div class="label">In workflow</div><div class="value">${waiting.length+returned.length}</div><div class="sub">${waiting.length} awaiting · ${returned.length} returned</div></div><div class="card metric"><div class="label">PLOs meeting target</div><div class="value">${roll.filter(x=>x.met).length}/${roll.length}</div><div class="sub">Approved CLO evidence only</div></div></div>
+      ${dashboardQualitySection(periodReports,year,term)}
+      ${reportBoard(periodReports,'Program reporting oversight')}`;
+  }
+
   function renderDashboard(){
     if(state.role==='System Administrator') return renderSystemAdminDashboard();
+    if(isSupervisorRole(state.role)) return renderSupervisorDashboard();
     const rs=reportsForRole();
     if(state.role==='Instructor'){
       const open=rs.filter(r=>r.status==='Draft'||r.status==='Returned for Revision').length;
@@ -513,11 +545,12 @@
     const openPrograms=programDirectory.filter(p=>p.status==='Open');
     const departments=isAdmin?uniqueDepartments(openPrograms):[currentUser?.department||state.program.department].filter(Boolean);
     const departmentOptions=departments.map(department=>`<option value="${esc(department)}">${esc(department)}</option>`).join('');
-    const roleOptions=isAdmin?'<option>HOD</option><option>Coordinator</option><option>Instructor</option>':'<option>Instructor</option><option>Coordinator</option>';
+    const roleOptions=isAdmin?'<option>APU</option><option>VDAA</option><option>HOD</option><option>Coordinator</option><option>Instructor</option>':'<option>Instructor</option><option>Coordinator</option>';
     const rows=userDirectory.map(u=>{
       const programs=(u.programIds||[]).map(id=>programDirectory.find(p=>p.id===id)).filter(Boolean);
-      const access=u.role==='System Administrator'?'Global':u.limitProgramAccess?`${programs.length} selected program${programs.length===1?'':'s'}`:`All ${u.department||''} programs`;
-      const detail=u.limitProgramAccess&&programs.length?programs.map(programDirectoryLabel).join(', '):u.department||'System';
+      const supervisor=isSupervisorRole(u.role);
+      const access=u.role==='System Administrator'?'Global':supervisor?'All programs · Read only':u.limitProgramAccess?`${programs.length} selected program${programs.length===1?'':'s'}`:`All ${u.department||''} programs`;
+      const detail=supervisor?'System-wide supervision':u.limitProgramAccess&&programs.length?programs.map(programDirectoryLabel).join(', '):u.department||'System';
       return `<tr><td><strong>${esc(displayUserName(u))}</strong><div class="tiny">${esc(u.email)}</div></td><td><strong>${esc(access)}</strong><div class="tiny">${esc(detail)}</div></td><td><span class="user-table-role">${esc(u.role)}</span></td><td><span class="user-table-role user-status-active">${u.active===false?'Inactive':'Active'}</span></td><td>${esc(u.createdAt?String(u.createdAt).slice(0,10):'—')}</td><td>${u.role==='System Administrator'?'—':`<button class="btn btn-ghost" data-user-status="${u.id}" data-user-active="${u.active===false?'1':'0'}" data-user-program="${esc(u.programIds?.[0]||u.programId||'')}">${u.active===false?'Reactivate':'Deactivate'}</button>`}</td></tr>`;
     }).join('');
     const actions=backendEnabled?`<button class="btn btn-ghost" id="backupAllData">${isAdmin?'Backup Entire System':'Backup Program'} (.xlsx)</button>`:'';
@@ -716,20 +749,21 @@
   async function addAuthorizedUser(){
     const isAdmin=state.role==='System Administrator';
     const titlePrefix=normalizeTitlePrefix($('auPrefix')?.value),first=$('auFirst')?.value.trim(),last=$('auLast')?.value.trim(),role=$('auRole')?.value,email=$('auEmail')?.value.trim().toLowerCase();
-    const department=isAdmin?$('auDepartment')?.value.trim():(currentUser?.department||state.program.department||'').trim();
-    const limitProgramAccess=!!$('auLimitPrograms')?.checked;
-    const programIds=limitProgramAccess?[...document.querySelectorAll('[data-au-program]:checked')].map(el=>el.value):[];
-    const departmentPrograms=programDirectory.filter(p=>p.status==='Open'&&p.department===department);
-    if(!titlePrefix||!first||!last||!department||!email){toast('Prefix, first name, last name, department, role, and email are required.');return;}
-    if(backendEnabled&&!departmentPrograms.length){toast('This department has no open academic programs. Add a program first.');return;}
-    if(limitProgramAccess&&!programIds.length){toast('Select at least one academic program or turn off Limit program access.');return;}
+    const globalSupervisor=isAdmin&&['APU','VDAA'].includes(role);
+    const department=globalSupervisor?'System Supervision':isAdmin?$('auDepartment')?.value.trim():(currentUser?.department||state.program.department||'').trim();
+    const limitProgramAccess=globalSupervisor?false:!!$('auLimitPrograms')?.checked;
+    const programIds=globalSupervisor?[]:(limitProgramAccess?[...document.querySelectorAll('[data-au-program]:checked')].map(el=>el.value):[]);
+    const departmentPrograms=globalSupervisor?[]:programDirectory.filter(p=>p.status==='Open'&&p.department===department);
+    if(!titlePrefix||!first||!last||(!globalSupervisor&&!department)||!email){toast('Prefix, first name, last name, role, and email are required. Department is required for program roles.');return;}
+    if(backendEnabled&&!globalSupervisor&&!departmentPrograms.length){toast('This department has no open academic programs. Add a program first.');return;}
+    if(!globalSupervisor&&limitProgramAccess&&!programIds.length){toast('Select at least one academic program or turn off Limit program access.');return;}
     if(!$('auEmail')?.checkValidity()){toast('Enter a valid email address.');return;}
-    const allowed=isAdmin?['HOD','Coordinator','Instructor']:['Instructor','Coordinator'];if(!allowed.includes(role)){toast('That role is not permitted here.');return;}
+    const allowed=isAdmin?['APU','VDAA','HOD','Coordinator','Instructor']:['Instructor','Coordinator'];if(!allowed.includes(role)){toast('That role is not permitted here.');return;}
     const btn=$('addAuthorizedUser');if(btn){btn.disabled=true;btn.textContent='Adding…'}
     try{
       if(!backendEnabled){const users=loadLocalUsers();if(users.some(u=>String(u.email||'').toLowerCase()===email))throw new Error('This email is already authorized.');users.push({id:uid(),titlePrefix,firstName:first,lastName:last,department,role,email,limitProgramAccess,programIds,active:true,createdAt:nowDate()});saveLocalUsers(users);userDirectory=users;}
       else{await Backend.invoke('admin-create-user',{title_prefix:titlePrefix,first_name:first,last_name:last,department,role,email,limit_program_access:limitProgramAccess,program_ids:programIds});await loadUsers();}
-      render();toast(limitProgramAccess?'User added with limited program access.':'User added with access to all department programs.');
+      render();toast(globalSupervisor?'Read-only supervisor added with access to all academic programs.':limitProgramAccess?'User added with limited program access.':'User added with access to all department programs.');
     }catch(e){toast(e?.message||'Could not add user.');}finally{if(btn){btn.disabled=false;btn.textContent='Add / assign user'}}
   }
   async function setUserStatus(userId,active,programId){
@@ -774,6 +808,9 @@
     }
     if($('periodYear'))$('periodYear').addEventListener('change',()=>{ploYear=$('periodYear').value;activePlo=null;render();});
     if($('periodTerm'))$('periodTerm').addEventListener('change',()=>{ploTerm=$('periodTerm').value;activePlo=null;render();});
+    if($('supervisorProgram'))$('supervisorProgram').addEventListener('change',e=>switchActiveProgram(e.target.value));
+    if($('supervisorYear'))$('supervisorYear').addEventListener('change',()=>{ploYear=$('supervisorYear').value;activePlo=null;render();});
+    if($('supervisorTerm'))$('supervisorTerm').addEventListener('change',()=>{ploTerm=$('supervisorTerm').value;activePlo=null;render();});
     if($('aprYear'))$('aprYear').addEventListener('change',()=>{ploYear=$('aprYear').value;render();});
     if($('portfolioBack'))$('portfolioBack').addEventListener('click',()=>{currentPortfolioId=null;render();});
     document.querySelectorAll('[data-portfolio-term]').forEach(b=>b.addEventListener('click',()=>{const g=portfolioGroupsForRole().find(x=>x.key===currentPortfolioId);if(!g)return;portfolioActiveTerms.set(g.key,b.dataset.portfolioTerm);render();}));
@@ -938,11 +975,18 @@
     if(currentUser.role==='System Administrator'){
       accessibleProgramIds=[];activeProgramId=null;backendProgramSettingsId=null;const base=clone(seed);base.reports=[];base.operational=[];base.audit=[];state=normalizeState(base);state.role=currentUser.role;ploYear=state.program.academicYear;ploTerm='Annual';return;
     }
-    const memberships=await Backend.select('program_memberships',`user_id=eq.${encodeURIComponent(currentUser.id)}&active=eq.true&select=program_id,role`);
-    membershipDirectory=memberships||[];
-    accessibleProgramIds=[...new Set(membershipDirectory.map(m=>m.program_id).filter(Boolean))];
-    if(!accessibleProgramIds.length) throw new Error('Your account is not assigned to an academic program. Contact the System Administrator or HOD.');
-    if(!activeProgramId||!accessibleProgramIds.includes(activeProgramId))activeProgramId=accessibleProgramIds.includes(currentUser.defaultProgramId)?currentUser.defaultProgramId:accessibleProgramIds[0];
+    if(isSupervisorRole(currentUser.role)){
+      membershipDirectory=[];
+      accessibleProgramIds=programDirectory.map(p=>p.id).filter(Boolean);
+      if(!accessibleProgramIds.length) throw new Error('No academic programs are available for supervision.');
+      if(!activeProgramId||!accessibleProgramIds.includes(activeProgramId))activeProgramId=programDirectory.find(p=>p.status==='Open')?.id||accessibleProgramIds[0];
+    }else{
+      const memberships=await Backend.select('program_memberships',`user_id=eq.${encodeURIComponent(currentUser.id)}&active=eq.true&select=program_id,role`);
+      membershipDirectory=memberships||[];
+      accessibleProgramIds=[...new Set(membershipDirectory.map(m=>m.program_id).filter(Boolean))];
+      if(!accessibleProgramIds.length) throw new Error('Your account is not assigned to an academic program. Contact the System Administrator or HOD.');
+      if(!activeProgramId||!accessibleProgramIds.includes(activeProgramId))activeProgramId=accessibleProgramIds.includes(currentUser.defaultProgramId)?currentUser.defaultProgramId:accessibleProgramIds[0];
+    }
     const base=clone(seed);base.reports=[];base.operational=[];base.audit=[];base.academicYears=[];base.program={...base.program,academicYear:''};backendProgramSettingsId=null;
     const pid=encodeURIComponent(activeProgramId);
     const [programRows,settingsRows,ploRows,operationalRows,reportRows]=await Promise.all([
