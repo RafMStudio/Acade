@@ -17,7 +17,7 @@ jobs:
         with:
           node-version: 22
       - name: Apply supervisor role patch
-        run: python scripts/patch-supervisors.py
+        run: python scripts/patch-supervisors-v2.py
       - name: Install dependencies
         run: npm install
       - name: Build and test
