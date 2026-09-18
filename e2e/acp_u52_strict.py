@@ -241,11 +241,7 @@ def candidates(text,tok,mode):
                 sv=local_save(tok,text,m.start(),m.end(),new)
                 if sv>0: out.append(Cand(m.start(),m.end(),m.group(),new,sv,risk,kind))
     # Prompt structure: standardized compact MCQ surface.
-    structural=[
-        (re.compile(r"^السؤال:\s*",re.M),"",0,"S_Q"),
-        (re.compile(r"\n([A-F])\)\s*"),r"\n\1:",0,"S_OPT"),
-        (re.compile(r"\nاختر حرف الإجابة الصحيحة فقط من الخيارات أعلاه\.\s*\nالإجابة:\s*$"),"\nAnswer:",0,"S_ANS"),
-    ]
+    structural=[]
     for rx,repl,risk,kind in structural:
         for m in rx.finditer(text):
             new=m.expand(repl); sv=local_save(tok,text,m.start(),m.end(),new)
