@@ -37,7 +37,7 @@ WORDS={"القلب":"heart","الكبد":"liver","الكلية":"kidney","الك
 "دوخة":"dizziness","الدوخة":"dizziness","الخاصرة":"flank","الكرياتينين":"creatinine","الهواء":"air"}
 CRIT=set("""لا ليس ليست لم لن دون بدون ينفي تنفي نفي عدم قبل بعد منذ خلال الأيمن الايمن أيمن ايمن اليمنى يمنى الأيسر الايسر أيسر ايسر اليسرى يسرى يمين يسار جرعة جرعات حامل الحمل حساسية تحسس استبعاد أقل اقل أكثر اكثر فوق تحت""".split())
 AR=re.compile(r"[\u0621-\u063A\u0641-\u064A]+")
-NUMUNIT=re.compile(r"\d+(?:\.\d+)?(?:/\d+(?:\.\d+)?)?(?:\s*(?:mg/dL|g/dL|mmol/L|mmHg|mg|mL|bpm|°C|%|وحدات?))?",re.I)
+NUMUNIT=re.compile(r"(?<![A-Za-z])\\d+(?:\\.\\d+)?(?:/\\d+(?:\\.\\d+)?)?(?:\\s*(?:mg/dL|g/dL|mmol/L|mmHg|mg|mL|bpm|°C|%|وحدات?))?(?![A-Za-z])",re.I)
 
 def tc(tk,s):return len(tk(s,add_special_tokens=False)["input_ids"])
 def protected(t):
