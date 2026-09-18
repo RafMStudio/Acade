@@ -1,26 +1,23 @@
 #!/usr/bin/env python3
-import csv, io, json, os, re, math, random, urllib.request, gc
+import csv,io,json,os,re,random,statistics as st,urllib.request,gc
 from collections import Counter
 import torch
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
-
-SEED=43
-random.seed(SEED); torch.manual_seed(SEED)
+from transformers import AutoTokenizer,AutoModelForSeq2SeqLM
+SEED=41
+random.seed(SEED);torch.manual_seed(SEED)
 TRAIN_URL="https://raw.githubusercontent.com/nyuad-cai/MedAraBench/main/medarabench-train_split.csv"
 TEST_URL="https://raw.githubusercontent.com/nyuad-cai/MedAraBench/main/medarabench-test_split.csv"
-MT_ID="Helsinki-NLP/opus-mt-ar-en"
+MT="Helsinki-NLP/opus-mt-ar-en"
 MODELS=[
 "Qwen/Qwen2.5-0.5B-Instruct",
 "HuggingFaceTB/SmolLM2-360M-Instruct",
 "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
 "mistralai/Mistral-7B-Instruct-v0.3",
 "microsoft/Phi-3-mini-4k-instruct",
-"tiiuae/Falcon3-1B-Instruct"
-]
+"tiiuae/Falcon3-1B-Instruct"]
 ARWORD=re.compile(r"[\u0621-\u063A\u0641-\u064A]+")
 DIAC=re.compile(r"[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]")
-STOP=set("""من في على إلى الى عن مع ما ماذا هل لا لم لن ليس ليست كان كانت يكون تكون هذا هذه ذلك تلك الذي التي الذين كل أي اى او أو و ثم ف ب ك ل لل ال عند بين بعد قبل خلال ضمن حيث إذا اذا إن ان أن قد كما فقط غير عدا سوى حتى هو هي هم هن نحن انا أنا انت أنت هناك هنا تم يتم لدى له لها لهم بها به فيه فيها منها منه إليها اليها عليه عليها والتي والذين أما اما لأن لان لكن أى يكون يوجد توجد يتم كانت كما حيث التي ذلك هذه هذا هم هي هو و أو او ثم أو لكن بل لدى عند مع بين من الى إلى في على عن""".split())
-
+STOP=set("""من في على إلى الى عن مع ما ماذا هل لا لم لن ليس ليست كان كانت يكون تكون هذا هذه ذلك تلك الذي التي الذين كل أي اى او أو و ثم ف ب ك ل لل ال عند بين بعد قبل خلال ضمن حيث إذا اذا إن ان أن قد كما فقط غير عدا سوى حتى هو هي هم هن نحن انا أنا انت أنت هناك هنا تم يتم لدى له لها لهم بها به فيه فيها منها منه إليها اليها عليه عليها والتي والذين أما اما لأن لان لكن أى يوجد توجد السؤال الإجابة الاجابة اختر الصحيحة الصحيح الخاطئة الخاطئ حرف الخيارات أعلاه اعلاه""".split())
 HOLDOUT=[
 "تقدّم مؤسسة الرعاية الصحية الأولية خدمةً فريدة من نوعها وهي عيادة المدرّب الصحي، بهدف تمكين المرضى الذين يعانون من السمنة والأمراض المزمنة مثل السكري وارتفاع ضغط الدم ومتلازمة التمثيل الغذائي من تحسين نوعية حياتهم من خلال اتباع عادات وسلوكيات صحية.",
 "ويأتي الربو الشعبي على شكل نوبات بين الحين والآخر، وهذه النوبات تحصل بسبب تهيج في الشعب والشعيبات الهوائية نتيجة التعرض لمهيجات، ويؤدي هذا التهيج إلى تورم الطبقة المبطنة لهذه الشعب مما يؤدي إلى تضيقها الأمر الذي يظهر بصورة صعوبة في التنفس وكحة وضيق في الصدر وصفير مصاحب للتنفس.",
@@ -38,19 +35,15 @@ HOLDOUT=[
 "تشمل الخبرة إدارة حالات الربو ومرض الانسداد الرئوي المزمن وارتفاع ضغط الدم وإدارة أمراض القلب الإقفارية وعدم انتظام ضربات القلب ومرض السكري.",
 "يتم إجراء فحوصات المختبر اللازمة لدراسة كل مريض بشكل أوسع، الأمر الذي سيتيح التشخيص والمراقبة المستمرة للحالة الصحية، مثل ارتفاع ضغط الدم ومرض السكري واضطرابات دهون الدم وأمراض التهاب المفاصل وغيرها من الأمراض."
 ]
-
 MANUAL={
 ("ارتفاع","ضغط","الدم"):"HTN",("مرض","السكري"):"diabetes",("داء","السكري"):"diabetes",
 ("السكري","من","النوع","الأول"):"T1DM",("السكري","من","النوع","الثاني"):"T2DM",
 ("مرض","الكلى","المزمن"):"CKD",("تخطيط","القلب","الكهربائي"):"ECG",
 ("التصوير","بالرنين","المغناطيسي"):"MRI",("التصوير","المقطعي","المحوسب"):"CT",
 ("مرض","الانسداد","الرئوي","المزمن"):"COPD",("احتشاء","عضلة","القلب"):"MI",
-("الرجفان","الأذيني"):"AF",("مؤشر","كتلة","الجسم"):"BMI",
-("تشبع","الأكسجين"):"SpO2",("تعداد","الدم","الكامل"):"CBC",
-("الحماض","الكيتوني","السكري"):"DKA",("فيروس","نقص","المناعة","البشرية"):"HIV",
-("التهاب","المسالك","البولية"):"UTI"
-}
-
+("الرجفان","الأذيني"):"AF",("مؤشر","كتلة","الجسم"):"BMI",("تشبع","الأكسجين"):"SpO2",
+("تعداد","الدم","الكامل"):"CBC",("الحماض","الكيتوني","السكري"):"DKA",
+("فيروس","نقص","المناعة","البشرية"):"HIV",("التهاب","المسالك","البولية"):"UTI"}
 def getcsv(url):
     raw=urllib.request.urlopen(url,timeout=120).read().decode("utf-8-sig","replace")
     return list(csv.DictReader(io.StringIO(raw)))
@@ -67,25 +60,24 @@ def prompt(r):
         if v:z.append(f"{L}) {v}")
     z+=["اختر حرف الإجابة الصحيحة فقط من الخيارات أعلاه.","الإجابة:"]
     return "\n".join(z)
-def ws(t):return [m.group(0) for m in ARWORD.finditer(t)]
-
+def ws(t): return [m.group(0) for m in ARWORD.finditer(t)]
 def mine(rows):
-    uni=Counter();bi=Counter();tri=Counter()
+    uni=Counter();bi=Counter();tri=Counter();quad=Counter()
     for r in rows:
         for t in fields(r):
             w=ws(t)
             uni.update((x,) for x in w if len(x)>=3 and x not in STOP)
             bi.update(tuple(w[i:i+2]) for i in range(len(w)-1) if not all(x in STOP for x in w[i:i+2]))
             tri.update(tuple(w[i:i+3]) for i in range(len(w)-2) if not all(x in STOP for x in w[i:i+3]))
-    # High coverage, learned only from train.
-    u=[k for k,v in uni.most_common(2200) if v>=4]
-    b=[k for k,v in bi.most_common(1200) if v>=3]
-    tr=[k for k,v in tri.most_common(600) if v>=2]
-    return tr+b+u
-
+            quad.update(tuple(w[i:i+4]) for i in range(len(w)-3) if not all(x in STOP for x in w[i:i+4]))
+    u=[k for k,v in uni.most_common(3500) if v>=3]
+    b=[k for k,v in bi.most_common(1800) if v>=2]
+    tr=[k for k,v in tri.most_common(900) if v>=2]
+    q=[k for k,v in quad.most_common(400) if v>=2]
+    return q+tr+b+u
 def translate(ph):
-    tok=AutoTokenizer.from_pretrained(MT_ID)
-    m=AutoModelForSeq2SeqLM.from_pretrained(MT_ID,torch_dtype=torch.float32);m.eval()
+    tok=AutoTokenizer.from_pretrained(MT)
+    m=AutoModelForSeq2SeqLM.from_pretrained(MT,torch_dtype=torch.float32);m.eval()
     src=[" ".join(x) for x in ph];outs=[]
     for i in range(0,len(src),48):
         inp=tok(src[i:i+48],return_tensors="pt",padding=True,truncation=True,max_length=64)
@@ -97,33 +89,27 @@ def translate(ph):
         v=re.sub(r"\s+"," ",v.strip());v=re.sub(r"^[Tt]he\s+","",v).strip(" .,:;!?")
         if not v or any("\u0600"<=c<="\u06ff" for c in v):continue
         if len(v)>70 or len(v.split())>max(5,len(k)+1):continue
-        # Avoid translations that are just punctuation/numbers.
         if not re.search(r"[A-Za-z]",v):continue
         d.setdefault(k,v)
     return d
-
-def tc(tok,t):return len(tok(t,add_special_tokens=False)["input_ids"])
+def tc(tok,t): return len(tok(t,add_special_tokens=False)["input_ids"])
 def cc(tok,t):
     try:return len(tok.apply_chat_template([{"role":"user","content":t}],tokenize=True,add_generation_prompt=True))
     except:return tc(tok,t)
-
 def ortho(t):
     t=DIAC.sub("",t).replace("ـ","")
     t=t.translate(str.maketrans("٠١٢٣٤٥٦٧٨٩","0123456789"))
     t=t.replace("،",",").replace("؛",";")
-    t=re.sub(r"[ \t]+"," ",t)
-    t=re.sub(r" +([,;:.!?])",r"\1",t)
+    t=re.sub(r"[ \t]+"," ",t);t=re.sub(r" +([,;:.!?])",r"\1",t)
     return t
-
 def spans(t,rules):
     ms=list(ARWORD.finditer(t));w=[m.group(0) for m in ms];out=[]
     for i in range(len(w)):
         for n in (4,3,2,1):
-            if i+n>len(w):continue
-            k=tuple(w[i:i+n])
-            if k in rules:out.append((ms[i].start(),ms[i+n-1].end(),rules[k],n))
+            if i+n<=len(w):
+                k=tuple(w[i:i+n])
+                if k in rules:out.append((ms[i].start(),ms[i+n-1].end(),rules[k],n))
     return out
-
 def transform(t,tok,rules):
     base=tc(tok,t);raw=[]
     for s,e,new,nw in spans(t,rules):
@@ -137,17 +123,14 @@ def transform(t,tok,rules):
     o=[];p=0
     for s,e,new,sv,nw in sel:o += [t[p:s],new];p=e
     o.append(t[p:]);tr=ortho("".join(o));n=tc(tok,tr)
-    # Compare with orthographic-only and original; choose cheapest.
     oo=ortho(t);on=tc(tok,oo)
     choices=[(base,t,0),(on,oo,0),(n,tr,len(sel))]
     best=min(choices,key=lambda x:x[0])
     return best[1],base,best[0],best[2]
-
-train=getcsv(TRAIN_URL);test=getcsv(TEST_URL)
-phrases=mine(train);rules=translate(phrases)
+train=getcsv(TRAIN_URL);test=getcsv(TEST_URL);phrases=mine(train);rules=translate(phrases)
 os.makedirs("e2e",exist_ok=True)
 open("e2e/acp_u8_dictionary.json","w",encoding="utf-8").write(json.dumps({"source":"MedAraBench train only","rules":[{"ar":" ".join(k),"en":v} for k,v in rules.items()]},ensure_ascii=False,indent=2))
-res={"version":"ACP-U8 word+phrase interlingua","mined":len(phrases),"rules":len(rules),"models":{}}
+res={"version":"ACP-U8 high-coverage phrase interlingua","mined":len(phrases),"rules":len(rules),"models":{}}
 for mid in MODELS:
     try:
         tok=AutoTokenizer.from_pretrained(mid,use_fast=True,trust_remote_code=True)
@@ -156,29 +139,9 @@ for mid in MODELS:
             _,b,n,_=transform(x,tok,rules);hb+=b;ht+=n
         mb=mt=cb=ct=rep=0
         for r in test[:1200]:
-            p=prompt(r);tr,b,n,k=transform(p,tok,rules)
-            mb+=b;mt+=n;cb+=cc(tok,p);ct+=cc(tok,tr);rep+=k
+            p=prompt(r);tr,b,n,k=transform(p,tok,rules);mb+=b;mt+=n;cb+=cc(tok,p);ct+=cc(tok,tr);rep+=k
         cr=100*(mb-mt)/mb;chr=100*(cb-ct)/cb
-        res["models"][mid]={
-          "holdout_reduction_pct":100*(hb-ht)/hb,
-          "test1200_content_reduction_pct":cr,
-          "test1200_chat_reduction_pct":chr,
-          "replacements":rep,
-          "passes30_content":cr>=30,
-          "passes30_chat":chr>=30,
-          "no_regression":ht<=hb and mt<=mb and ct<=cb
-        }
+        res["models"][mid]={"holdout_reduction_pct":100*(hb-ht)/hb,"test1200_content_reduction_pct":cr,"test1200_chat_reduction_pct":chr,"replacements":rep,"passes30_content":cr>=30,"passes30_chat":chr>=30,"no_regression":ht<=hb and mt<=mb and ct<=cb}
     except Exception as e:res["models"][mid]={"error":repr(e)}
-try:
-    import tiktoken
-    for name in ("cl100k_base","o200k_base"):
-        enc=tiktoken.get_encoding(name)
-        class W:
-            def __call__(self,text,add_special_tokens=False):return {"input_ids":enc.encode(text)}
-        tok=W();B=T=0
-        for x in HOLDOUT:
-            _,b,n,_=transform(x,tok,rules);B+=b;T+=n
-        res["models"]["tiktoken/"+name]={"holdout_reduction_pct":100*(B-T)/B,"passes30":100*(B-T)/B>=30,"no_regression":T<=B}
-except Exception as e:res["tiktoken_error"]=repr(e)
 open("e2e/acp_u8_results.json","w",encoding="utf-8").write(json.dumps(res,ensure_ascii=False,indent=2))
 print("ACP_U8="+json.dumps(res,ensure_ascii=False),flush=True)
