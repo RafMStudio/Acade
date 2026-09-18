@@ -22,11 +22,11 @@ TOKENIZERS=[
 ("DeepSeek-R1-Distill","deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B")
 ]
 BEHAVIOR=[
-("Qwen3","Qwen/Qwen3-0.6B",16),
-("Qwen2.5","Qwen/Qwen2.5-0.5B-Instruct",16),
-("Llama3.2","unsloth/Llama-3.2-1B-Instruct",16),
-("Gemma3","unsloth/gemma-3-1b-it",16),
-("DeepSeek-R1-Distill","deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",12)
+("Qwen3","Qwen/Qwen3-0.6B",12),
+("Qwen2.5","Qwen/Qwen2.5-0.5B-Instruct",12),
+("Llama3.2","unsloth/Llama-3.2-1B-Instruct",12),
+("Gemma3","unsloth/gemma-3-1b-it",12),
+("DeepSeek-R1-Distill","deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",8)
 ]
 
 def loadrows():
@@ -113,10 +113,17 @@ def suffix_score(model,tok,prefix,suffix):
     return total
 
 def choice(model,tok,text,labels):
-    # score both bare and leading-space label forms; supports multi-token labels
+    # Fast exact next-token score where possible; autoregressive fallback only for multi-token labels.
+    pref=torch.tensor([chatids(tok,text)],dtype=torch.long)
+    with torch.no_grad(): z=model(input_ids=pref,use_cache=False).logits[0,-1].float()
     sc={}
     for L in labels:
-        sc[L]=max(suffix_score(model,tok,text,L),suffix_score(model,tok,text," "+L))
+        vals=[]
+        for surf in (L," "+L):
+            ii=tok(surf,add_special_tokens=False)["input_ids"]
+            if len(ii)==1: vals.append(float(z[ii[0]]))
+            else: vals.append(suffix_score(model,tok,text,surf))
+        sc[L]=max(vals)
     return max(sc,key=sc.get)
 
 rows=loadrows()
