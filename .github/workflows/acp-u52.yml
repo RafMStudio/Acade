@@ -1,0 +1,23 @@
+name: ArabClinPack U5.2 Strict
+on:
+  push:
+    branches: [arabclinpack-e2e-20260918]
+    paths:
+      - 'e2e/acp_u52_strict.py'
+      - '.github/workflows/acp-u52.yml'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_DISABLE_XET: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: |
+          python -m pip install --upgrade pip
+          pip install "torch==2.7.1" --index-url https://download.pytorch.org/whl/cpu
+          pip install "transformers>=4.48,<4.58" accelerate sentencepiece tiktoken protobuf
+      - run: python e2e/acp_u52_strict.py
