@@ -1,0 +1,28 @@
+name: ArabClinPack U8.2 Tokens
+on:
+  push:
+    branches: [arabclinpack-e2e-20260918]
+    paths:
+      - 'e2e/acp_u82_tokens.py'
+      - '.github/workflows/acp-u82-tokens.yml'
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions: {actions: read, contents: read}
+    env:
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_DISABLE_XET: "1"
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - run: |
+          gh api /repos/${GITHUB_REPOSITORY}/actions/artifacts/10539096336/zip > /tmp/u8.zip
+          unzip -o /tmp/u8.zip -d e2e/
+      - run: |
+          python -m pip install --upgrade pip
+          pip install "torch==2.7.1" --index-url https://download.pytorch.org/whl/cpu
+          pip install "transformers>=4.48,<4.58" accelerate sentencepiece protobuf
+      - run: python e2e/acp_u82_tokens.py
