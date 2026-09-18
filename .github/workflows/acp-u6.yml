@@ -19,7 +19,7 @@ jobs:
           python-version: '3.11'
       - run: |
           python -m pip install --upgrade pip
-          pip install "torch==2.5.1" --index-url https://download.pytorch.org/whl/cpu
+          pip install "torch==2.7.1" --index-url https://download.pytorch.org/whl/cpu
           pip install "transformers>=4.48,<4.58" accelerate sentencepiece sacremoses tiktoken protobuf
       - run: python e2e/acp_u6_interlingua.py
       - if: always()
