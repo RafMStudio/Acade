@@ -152,6 +152,16 @@ async function main() {
   await expect('preset test users', "document.querySelectorAll('[data-test-login]').length", 4);
   await expect('template fetch mock works', "fetch('templates/Course_Report_Placeholder.docx').then(r=>r.ok)", true);
 
+  // Every homepage selection enters immediately; sign out restores the selector.
+  for (const [login, role] of [['TestSA','System Administrator'],['TestHOD','Head of Department'],['TestQ','Coordinator'],['TestI','Instructor'],['TestAPU','APU'],['TestVDAA','VDAA']]) {
+    await evaluate(`(()=>{const select=document.getElementById('testRoleSelect');select.value=${JSON.stringify(login)};select.dispatchEvent(new Event('change',{bubbles:true}));})()`);
+    await sleep(150);
+    await expect(`${role} selected from homepage`, "document.getElementById('currentUserRole').textContent", role);
+    await expect(`${role} workspace visible`, "!document.getElementById('appShell').classList.contains('hidden')", true);
+    await evaluate("document.getElementById('signOutBtn').click()");
+    await expect(`${role} sign out resets selection`, "document.getElementById('testRoleSelect').value", '');
+  }
+
   // Regression: the database stores the global administrator role as `SystemAdmin`.
   // Even if that raw value reaches the UI, it must never fall back to Instructor.
   await evaluate(`(()=>{document.getElementById('loginUser').value='TestSA';document.getElementById('signInBtn').click();return true})()`);
@@ -254,3 +264,4 @@ main().catch((error) => {
   await sleep(300);
   try { fs.rmSync(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 150 }); } catch {}
 });
+

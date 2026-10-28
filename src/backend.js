@@ -7,7 +7,10 @@
   const LEGACY_SESSION_KEYS = ['acadeloop_supabase_session_v1'];
   const SESSION_MAX_AGE_MS = 12 * 60 * 60 * 1000;
   const TEST_HOSTS = new Set(['localhost', '127.0.0.1']);
-  const testMode = location.protocol === 'file:' || location.protocol === 'about:' || TEST_HOSTS.has(location.hostname) || window.__ACADELOOP_TEST_MODE__ === true;
+  // TEMPORARY: set false and rebuild to remove hosted role login and restore OTP.
+  const TEMPORARY_ROLE_LOGIN = true;
+  const localTestMode = location.protocol === 'file:' || location.protocol === 'about:' || TEST_HOSTS.has(location.hostname) || window.__ACADELOOP_TEST_MODE__ === true;
+  const testMode = TEMPORARY_ROLE_LOGIN || localTestMode;
   const normalizeEmail = value => String(value || '').trim().toLowerCase();
   const validEmail = value => {
     const email = normalizeEmail(value);
@@ -80,6 +83,7 @@
   }
 
   async function fetchJson(path, options={}) {
+    if (testMode) throw new Error('Test workspaces use browser sample data only.');
     const response = await fetch(`${SUPABASE_URL}${path}`, { ...options, cache: 'no-store' });
     if (!response.ok) throw await parseError(response);
     if (response.status === 204) return null;
@@ -106,6 +110,7 @@
   }
 
   async function accessToken() {
+    if (testMode) return '';
     const session = await refreshSessionIfNeeded();
     return session?.access_token || '';
   }
@@ -206,9 +211,12 @@
   window.AcadeloopBackend = {
     enabled: !testMode,
     testMode,
+    localTestMode,
+    temporaryRoleLogin: TEMPORARY_ROLE_LOGIN,
     url: SUPABASE_URL,
     requestOtp, verifyOtp, signOut, discardSession, currentAuthUser, profile,
     select, insert, patch, rpc, invoke, accessToken,
     session: readSession,
   };
 })();
+

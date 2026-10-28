@@ -105,12 +105,14 @@
   function defaultTestUsers(){
     const department=state?.program?.department||seed.program.department;
     return [
-      // Hidden local-only regression account. Production authentication never uses preset users.
+      // Preset identities are used only with the isolated test backend.
       {id:'test-system-admin',username:'TestSA',firstName:'System',lastName:'Admin',department,role:'SystemAdmin',email:'system.admin@acadeloop.test',active:true,createdAt:nowDate(),preset:true,testOnly:true},
       {id:'test-hod',username:'TestHOD',firstName:'Test',lastName:'HOD',department,role:'Head of Department',email:'testhod@acadeloop.test',active:true,createdAt:nowDate(),preset:true},
       {id:'test-i',username:'TestI',firstName:'Test',lastName:'Instructor',department,role:'Instructor',email:'testi@acadeloop.test',active:true,createdAt:nowDate(),preset:true},
       {id:'test-q',username:'TestQ',firstName:'Test',lastName:'Quality',department,role:'Coordinator',email:'testq@acadeloop.test',active:true,createdAt:nowDate(),preset:true},
-      {id:'test-i2',username:'TestI2',firstName:'Test',lastName:'Instructor 2',department,role:'Instructor',email:'testi2@acadeloop.test',active:true,createdAt:nowDate(),preset:true}
+      {id:'test-i2',username:'TestI2',firstName:'Test',lastName:'Instructor 2',department,role:'Instructor',email:'testi2@acadeloop.test',active:true,createdAt:nowDate(),preset:true},
+      {id:'test-apu',username:'TestAPU',firstName:'Test',lastName:'APU',department,role:'APU',email:'apu@acadeloop.test',active:true,createdAt:nowDate(),preset:true,testOnly:true},
+      {id:'test-vdaa',username:'TestVDAA',firstName:'Test',lastName:'VDAA',department,role:'VDAA',email:'vdaa@acadeloop.test',active:true,createdAt:nowDate(),preset:true,testOnly:true}
     ];
   }
   function loadLocalUsers(){
@@ -952,6 +954,7 @@
   }
   function showLoginStep(){
     $('authEmailStep')?.classList.remove('hidden');$('authCodeStep')?.classList.add('hidden');setAuthStatus('');
+    if(!backendEnabled&&!Backend?.localTestMode)$('authEmailStep')?.classList.add('hidden');
   }
   function showCodeStep(email){
     $('authEmailStep')?.classList.add('hidden');$('authCodeStep')?.classList.remove('hidden');
@@ -1056,6 +1059,7 @@
     finally{btn.disabled=false;btn.textContent='Verify & sign in';}
   }
   async function signIn(){
+    if(backendEnabled)return;
     const login=$('loginUser')?.value.trim();if(!login){setAuthStatus('Enter a test username such as TestHOD, TestI, or TestQ.','error');return;}
     const btn=$('signInBtn');btn.disabled=true;btn.textContent='Signing in…';setAuthStatus('');
     try{const user=localUserByLogin(login);if(!user)throw new Error('Unknown test user. Use TestHOD, TestI, TestQ, TestI2, or an email added by the HOD.');setAuthToken(user.username||user.email);await onAuthenticated(user);}
@@ -1063,6 +1067,8 @@
     finally{btn.disabled=false;btn.textContent='Sign in';}
   }
   async function signOut(){
+    portfolioUploadFiles.clear();portfolioActiveTerms.clear();hideDrawer();hideModal();
+    if($('testRoleSelect'))$('testRoleSelect').value='';
     if(backendEnabled)await Backend.signOut();else setAuthToken('');currentUser=null;userDirectory=[];$('appShell')?.classList.add('hidden');$('authScreen')?.classList.remove('hidden');showLoginStep();if($('loginUser'))$('loginUser').value='';
   }
   async function initAuth(){
@@ -1084,10 +1090,24 @@
       setAuthStatus('Enter your complete authorized Acadeloop email address.','');return;
     }
     loadLocalUsers();$('authTestPanel')?.classList.remove('hidden');$('authProductionNote')?.classList.add('hidden');
+    $('authEyebrow').textContent='Temporary testing access';
+    $('authTitle').textContent='Choose a role to explore Acadeloop';
+    $('authMessage').textContent='Select an account role to enter its workspace immediately. No email or sign-in code is needed.';
+    $('testModeBadge')?.classList.remove('hidden');
+    $('localTestControls')?.classList.toggle('hidden',!Backend?.localTestMode);
+    $('loginUser').disabled=false;$('loginUser').type='text';$('signInBtn').disabled=false;$('signInBtn').textContent='Sign in';
+    $('authEmailStep')?.classList.toggle('hidden',!Backend?.localTestMode);
+    $('testRoleSelect')?.addEventListener('change',async e=>{
+      const select=e.currentTarget;
+      if(!select.value)return;
+      select.disabled=true;
+      $('loginUser').value=select.value;
+      try{await signIn();}finally{select.disabled=false;}
+    });
     $('signInBtn')?.addEventListener('click',signIn);$('loginUser')?.addEventListener('keydown',e=>{if(e.key==='Enter')signIn()});
     document.querySelectorAll('[data-test-login]').forEach(btn=>btn.addEventListener('click',()=>{if($('loginUser'))$('loginUser').value=btn.dataset.testLogin||'';signIn();}));
     const savedLogin=authToken();if(savedLogin){const user=localUserByLogin(savedLogin);if(user){await onAuthenticated(user);return;}setAuthToken('');}
-    showLoginStep();setAuthStatus('Preset test users are available only in local/test mode.','ok');
+    showLoginStep();setAuthStatus('Test changes stay in this browser. Live university data is not accessed.','ok');
   }
 
   document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.view)));
@@ -1097,3 +1117,4 @@
 })();
 
   
+

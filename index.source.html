@@ -13,9 +13,21 @@
 <div class="auth-shell">
 <div class="auth-brand"><div class="brand-mark">A</div><div><strong>Acadeloop</strong><span>Academic Program Quality</span></div></div>
 <div class="auth-card">
-<span class="eyebrow">Secure access</span>
+<span class="eyebrow" id="authEyebrow">Secure access</span>
 <h1 id="authTitle">Sign in to Acadeloop</h1>
 <p id="authMessage">Use the email address authorized by your Head of Department. Acadeloop will send a one-time sign-in code. There is no public registration.</p>
+<div class="hidden" id="authTestPanel">
+<label class="auth-field"><span>Account role</span><select id="testRoleSelect" aria-describedby="testRoleNote">
+<option value="">Select a role to sign in…</option>
+<option value="TestSA">System Administrator</option>
+<option value="TestHOD">Head of Department (HOD)</option>
+<option value="TestQ">Coordinator</option>
+<option value="TestI">Instructor</option>
+<option value="TestAPU">APU</option>
+<option value="TestVDAA">VDAA</option>
+</select></label>
+<div class="auth-note" id="testRoleNote"><strong>Testing only.</strong> Opens a sample workspace immediately. Changes are saved in this browser only. Use Sign out to return here and try another role.</div>
+</div>
 <div id="authEmailStep">
 <label class="auth-field"><span>Email address</span><input autocomplete="email" id="loginUser" placeholder="name@university.edu" type="email"/ maxlength="254" autocomplete="email" autocapitalize="none" spellcheck="false" disabled></label>
 <button class="btn btn-primary auth-submit" id="signInBtn" type="button" disabled>Send one-time code</button>
@@ -27,7 +39,7 @@
 </div>
 <div class="auth-status" id="authStatus"></div>
 <div class="auth-note" id="authProductionNote"><strong>Authorized users only.</strong> Accounts are created by the HOD. Course Report documents are generated on demand; Acadeloop stores the structured data, not DOCX files.</div>
-<div class="hidden" id="authTestPanel" style="margin-top:12px">
+<div class="hidden" id="localTestControls" style="margin-top:12px">
 <div class="auth-note" style="margin-bottom:10px">LOCAL TEST MODE — preset accounts are available only when the project is opened locally or by the automated test runner.</div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
 <button class="btn btn-ghost" data-test-login="TestHOD" type="button">TestHOD · HOD</button>
@@ -70,6 +82,7 @@
 <button aria-label="Open navigation menu" class="icon-btn mobile-only" id="menuBtn" type="button">☰</button>
 <div class="breadcrumb"><span id="pageKicker">Program workspace</span><strong id="pageTitle">Overview</strong></div>
 <div class="top-actions">
+<span class="hidden" id="testModeBadge" role="status">Testing · Sample data</span>
 <span class="role-context" id="roleContext"><span>Workspace</span><b>Loading</b></span>
 <div class="role-switch hidden" id="workspaceProgramWrap"><span>Program</span><select id="workspaceProgramSelect" aria-label="Academic program"></select></div>
 <button class="btn btn-ghost" id="quickAdd" type="button">＋ New</button>
