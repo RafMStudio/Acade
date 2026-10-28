@@ -153,7 +153,7 @@ async function main() {
   await expect('template fetch mock works', "fetch('templates/Course_Report_Placeholder.docx').then(r=>r.ok)", true);
 
   // Every homepage selection enters immediately; sign out restores the selector.
-  for (const [login, role] of [['TestSA','System Administrator'],['TestHOD','Head of Department'],['TestQ','Coordinator'],['TestI','Instructor'],['TestAPU','APU'],['TestVDAA','VDAA']]) {
+  for (const [login, role] of [['TestHOD','Head of Department'],['TestQ','Coordinator'],['TestI','Instructor'],['TestAPU','APU'],['TestVDAA','VDAA']]) {
     await evaluate(`(()=>{const select=document.getElementById('testRoleSelect');select.value=${JSON.stringify(login)};select.dispatchEvent(new Event('change',{bubbles:true}));})()`);
     await sleep(150);
     await expect(`${role} selected from homepage`, "document.getElementById('currentUserRole').textContent", role);
@@ -162,21 +162,11 @@ async function main() {
     await expect(`${role} sign out resets selection`, "document.getElementById('testRoleSelect').value", '');
   }
 
-  // Regression: the database stores the global administrator role as `SystemAdmin`.
-  // Even if that raw value reaches the UI, it must never fall back to Instructor.
-  await evaluate(`(()=>{document.getElementById('loginUser').value='TestSA';document.getElementById('signInBtn').click();return true})()`);
-  await sleep(200);
-  await expect('SystemAdmin role canonicalized', "document.getElementById('currentUserRole').textContent", 'System Administrator');
-  await expect('SystemAdmin workspace selected', "document.getElementById('roleContext').innerText.includes('System administration')", true);
-  await expect('SystemAdmin cannot see instructor report creation nav', "document.querySelector('[data-view=course-reports]').classList.contains('role-hidden')", true);
-  await evaluate("document.querySelector('[data-view=users]').click()");
+  // Old preset or persisted administrator identities must never enter a test workspace.
+  await evaluate("document.getElementById('loginUser').value='TestSA';document.getElementById('signInBtn').click()");
   await sleep(100);
-  await expect('SystemAdmin department is a dropdown', "document.getElementById('auDepartment').tagName", 'SELECT');
-  await expect('SystemAdmin no longer assigns a program by default', "document.getElementById('auProgram')===null", true);
-  await expect('SystemAdmin can limit program access', "!!document.getElementById('auLimitPrograms')", true);
-  await expect('Ms prefix available', "[...document.getElementById('auPrefix').options].some(o=>o.value==='Ms.')", true);
-  await evaluate("document.getElementById('signOutBtn').click()");
-  await sleep(100);
+  await expect('preset administrator login rejected', "document.getElementById('appShell').classList.contains('hidden')", true);
+  await expect('administrator selection uses real login', "document.querySelector('#testRoleSelect option[value=admin]').textContent.includes('email login')", true);
 
   await evaluate(`(()=>{window.__downloadCapture=null;window.__downloadCapturePromise=Promise.resolve();HTMLAnchorElement.prototype.click=function(){const href=this.href,name=this.download;window.__downloadCapturePromise=(async()=>{const buf=await fetch(href).then(r=>r.arrayBuffer());const result={name,size:buf.byteLength,entries:[],docxPlaceholders:[]};if(name.endsWith('.zip')){const z=await JSZip.loadAsync(buf);result.entries=Object.keys(z.files);for(const entry of result.entries.filter(x=>x.endsWith('.docx'))){const file=z.file(entry);if(!file)continue;const inner=await JSZip.loadAsync(await file.async('arraybuffer'));const xml=await inner.file('word/document.xml').async('string');result.docxPlaceholders.push({entry,unreplaced:xml.includes('{{')});}}else if(name.endsWith('.docx')){const inner=await JSZip.loadAsync(buf);const xml=await inner.file('word/document.xml').async('string');result.docxPlaceholders.push({entry:name,unreplaced:xml.includes('{{')});}window.__downloadCapture=result;return result;})().catch(error=>{window.__downloadCapture={name,error:String(error)};return window.__downloadCapture});};return true})()`);
 

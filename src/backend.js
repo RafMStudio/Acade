@@ -10,7 +10,10 @@
   // TEMPORARY: set false and rebuild to remove hosted role login and restore OTP.
   const TEMPORARY_ROLE_LOGIN = true;
   const localTestMode = location.protocol === 'file:' || location.protocol === 'about:' || TEST_HOSTS.has(location.hostname) || window.__ACADELOOP_TEST_MODE__ === true;
-  const testMode = TEMPORARY_ROLE_LOGIN || localTestMode;
+  const adminEmail = 'rafedmoha@gmail.com';
+  const adminLogin = new URLSearchParams(location.search || '').get('login') === 'admin';
+  const adminOnly = TEMPORARY_ROLE_LOGIN && adminLogin;
+  const testMode = !adminLogin && (TEMPORARY_ROLE_LOGIN || localTestMode);
   const normalizeEmail = value => String(value || '').trim().toLowerCase();
   const validEmail = value => {
     const email = normalizeEmail(value);
@@ -118,6 +121,7 @@
   async function requestOtp(emailValue) {
     const email = normalizeEmail(emailValue);
     if (!validEmail(email)) throw new Error('Enter a complete valid email address.');
+    if (adminOnly && email !== adminEmail) throw new Error('System Administrator login is restricted to ' + adminEmail + '.');
     // Starting a new sign-in must never inherit the identity of an older session.
     discardSession();
     return fetchJson('/auth/v1/otp', {
@@ -129,6 +133,7 @@
     const email = normalizeEmail(emailValue);
     const token = String(tokenValue || '').trim();
     if (!validEmail(email)) throw new Error('Enter a complete valid email address.');
+    if (adminOnly && email !== adminEmail) throw new Error('System Administrator login is restricted to ' + adminEmail + '.');
     if (!/^\d{6}$/.test(token)) throw new Error('Enter the six-digit sign-in code.');
     discardSession();
     const session = await fetchJson('/auth/v1/verify', {
@@ -194,6 +199,11 @@
       discardSession();
       return null;
     }
+    const isAdmin = ['SystemAdmin', 'System Administrator'].includes(profile.role);
+    if ((isAdmin && normalizeEmail(user.email) !== adminEmail) || (adminOnly && (!isAdmin || profile.active !== true))) {
+      discardSession();
+      return null;
+    }
     return profile;
   }
 
@@ -213,6 +223,7 @@
     testMode,
     localTestMode,
     temporaryRoleLogin: TEMPORARY_ROLE_LOGIN,
+    adminEmail, adminOnly,
     url: SUPABASE_URL,
     requestOtp, verifyOtp, signOut, discardSession, currentAuthUser, profile,
     select, insert, patch, rpc, invoke, accessToken,

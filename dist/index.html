@@ -235,14 +235,14 @@ nav{display:grid;gap:4px}.nav-item{border:0;background:transparent;border-radius
 <div class="hidden" id="authTestPanel">
 <label class="auth-field"><span>Account role</span><select id="testRoleSelect" aria-describedby="testRoleNote">
 <option value="">Select a role to sign in…</option>
-<option value="TestSA">System Administrator</option>
+<option value="admin">System Administrator — email login</option>
 <option value="TestHOD">Head of Department (HOD)</option>
 <option value="TestQ">Coordinator</option>
 <option value="TestI">Instructor</option>
 <option value="TestAPU">APU</option>
 <option value="TestVDAA">VDAA</option>
 </select></label>
-<div class="auth-note" id="testRoleNote"><strong>Testing only.</strong> Opens a sample workspace immediately. Changes are saved in this browser only. Use Sign out to return here and try another role.</div>
+<div class="auth-note" id="testRoleNote"><strong>Testing only.</strong> Other roles open a sample workspace immediately. Changes are saved in this browser only. Use Sign out to return here and try another role.</div>
 </div>
 <div id="authEmailStep">
 <label class="auth-field"><span>Email address</span><input autocomplete="email" id="loginUser" placeholder="name@university.edu" type="email"/ maxlength="254" autocomplete="email" autocapitalize="none" spellcheck="false" disabled></label>
@@ -254,6 +254,7 @@ nav{display:grid;gap:4px}.nav-item{border:0;background:transparent;border-radius
 <button class="btn btn-ghost auth-submit" id="backToEmail" type="button">Use a different email</button>
 </div>
 <div class="auth-status" id="authStatus"></div>
+<button class="btn btn-ghost auth-submit hidden" id="backToRoles" type="button">Back to role selection</button>
 <div class="auth-note" id="authProductionNote"><strong>Authorized users only.</strong> Accounts are created by the HOD. Course Report documents are generated on demand; Acadeloop stores the structured data, not DOCX files.</div>
 <div class="hidden" id="localTestControls" style="margin-top:12px">
 <div class="auth-note" style="margin-bottom:10px">LOCAL TEST MODE — preset accounts are available only when the project is opened locally or by the automated test runner.</div>
@@ -917,7 +918,10 @@ window.ACADELOOP_SEED = {
   // TEMPORARY: set false and rebuild to remove hosted role login and restore OTP.
   const TEMPORARY_ROLE_LOGIN = true;
   const localTestMode = location.protocol === 'file:' || location.protocol === 'about:' || TEST_HOSTS.has(location.hostname) || window.__ACADELOOP_TEST_MODE__ === true;
-  const testMode = TEMPORARY_ROLE_LOGIN || localTestMode;
+  const adminEmail = 'rafedmoha@gmail.com';
+  const adminLogin = new URLSearchParams(location.search || '').get('login') === 'admin';
+  const adminOnly = TEMPORARY_ROLE_LOGIN && adminLogin;
+  const testMode = !adminLogin && (TEMPORARY_ROLE_LOGIN || localTestMode);
   const normalizeEmail = value => String(value || '').trim().toLowerCase();
   const validEmail = value => {
     const email = normalizeEmail(value);
@@ -1025,6 +1029,7 @@ window.ACADELOOP_SEED = {
   async function requestOtp(emailValue) {
     const email = normalizeEmail(emailValue);
     if (!validEmail(email)) throw new Error('Enter a complete valid email address.');
+    if (adminOnly && email !== adminEmail) throw new Error('System Administrator login is restricted to ' + adminEmail + '.');
     // Starting a new sign-in must never inherit the identity of an older session.
     discardSession();
     return fetchJson('/auth/v1/otp', {
@@ -1036,6 +1041,7 @@ window.ACADELOOP_SEED = {
     const email = normalizeEmail(emailValue);
     const token = String(tokenValue || '').trim();
     if (!validEmail(email)) throw new Error('Enter a complete valid email address.');
+    if (adminOnly && email !== adminEmail) throw new Error('System Administrator login is restricted to ' + adminEmail + '.');
     if (!/^\d{6}$/.test(token)) throw new Error('Enter the six-digit sign-in code.');
     discardSession();
     const session = await fetchJson('/auth/v1/verify', {
@@ -1101,6 +1107,11 @@ window.ACADELOOP_SEED = {
       discardSession();
       return null;
     }
+    const isAdmin = ['SystemAdmin', 'System Administrator'].includes(profile.role);
+    if ((isAdmin && normalizeEmail(user.email) !== adminEmail) || (adminOnly && (!isAdmin || profile.active !== true))) {
+      discardSession();
+      return null;
+    }
     return profile;
   }
 
@@ -1120,6 +1131,7 @@ window.ACADELOOP_SEED = {
     testMode,
     localTestMode,
     temporaryRoleLogin: TEMPORARY_ROLE_LOGIN,
+    adminEmail, adminOnly,
     url: SUPABASE_URL,
     requestOtp, verifyOtp, signOut, discardSession, currentAuthUser, profile,
     select, insert, patch, rpc, invoke, accessToken,
@@ -1238,7 +1250,6 @@ window.ACADELOOP_SEED = {
     const department=state?.program?.department||seed.program.department;
     return [
       // Preset identities are used only with the isolated test backend.
-      {id:'test-system-admin',username:'TestSA',firstName:'System',lastName:'Admin',department,role:'SystemAdmin',email:'system.admin@acadeloop.test',active:true,createdAt:nowDate(),preset:true,testOnly:true},
       {id:'test-hod',username:'TestHOD',firstName:'Test',lastName:'HOD',department,role:'Head of Department',email:'testhod@acadeloop.test',active:true,createdAt:nowDate(),preset:true},
       {id:'test-i',username:'TestI',firstName:'Test',lastName:'Instructor',department,role:'Instructor',email:'testi@acadeloop.test',active:true,createdAt:nowDate(),preset:true},
       {id:'test-q',username:'TestQ',firstName:'Test',lastName:'Quality',department,role:'Coordinator',email:'testq@acadeloop.test',active:true,createdAt:nowDate(),preset:true},
@@ -1264,7 +1275,7 @@ window.ACADELOOP_SEED = {
   }
   function localUserByLogin(login){
     const key=String(login||'').trim().toLowerCase();
-    return loadLocalUsers().find(u=>u.active!==false&&(String(u.username||'').toLowerCase()===key||String(u.email||'').toLowerCase()===key))||null;
+    return loadLocalUsers().find(u=>canonicalUiRole(u.role)!=='System Administrator'&&u.active!==false&&(String(u.username||'').toLowerCase()===key||String(u.email||'').toLowerCase()===key))||null;
   }
 
   let state = normalizeState(loadState());
@@ -2149,6 +2160,8 @@ window.ACADELOOP_SEED = {
   async function onAuthenticated(user){
     const role=canonicalUiRole(user?.role);
     if(!role) throw new Error('Your Acadeloop account has an unsupported role. Contact the System Administrator.');
+    if(role==='System Administrator'&&(!backendEnabled||normalizeLoginEmail(user.email)!==Backend.adminEmail))throw new Error('System Administrator requires verified login as '+Backend.adminEmail+'.');
+    if(Backend?.adminOnly&&role!=='System Administrator')throw new Error('This account is not the System Administrator.');
     currentUser={...user,role};state.role=role;
     await hydrateSharedState();
     // Never let stale seed/browser state replace the authenticated Supabase role.
@@ -2200,15 +2213,24 @@ window.ACADELOOP_SEED = {
   }
   async function signOut(){
     portfolioUploadFiles.clear();portfolioActiveTerms.clear();hideDrawer();hideModal();
+    if(Backend?.adminOnly){await Backend.signOut();setAuthToken('');location.assign(location.pathname);return;}
     if($('testRoleSelect'))$('testRoleSelect').value='';
     if(backendEnabled)await Backend.signOut();else setAuthToken('');currentUser=null;userDirectory=[];$('appShell')?.classList.add('hidden');$('authScreen')?.classList.remove('hidden');showLoginStep();if($('loginUser'))$('loginUser').value='';
   }
   async function initAuth(){
     $('signOutBtn')?.addEventListener('click',signOut);
+    $('backToRoles')?.addEventListener('click',()=>{Backend.discardSession?.();setAuthToken('');sessionStorage.removeItem('acadeloop_pending_email');location.assign(location.pathname);});
     $('workspaceProgramSelect')?.addEventListener('change',e=>switchActiveProgram(e.target.value));
     if(backendEnabled){
       $('authTestPanel')?.classList.add('hidden');$('authProductionNote')?.classList.remove('hidden');
       const emailInput=$('loginUser'),sendBtn=$('signInBtn'),verifyBtn=$('verifyOtpBtn');
+      if(Backend.adminOnly){
+        $('authTitle').textContent='System Administrator sign in';
+        $('authMessage').textContent='Sign in as '+Backend.adminEmail+' using the one-time code sent to your email.';
+        emailInput.value=Backend.adminEmail;emailInput.readOnly=true;
+        $('authProductionNote').textContent='Verified System Administrator access. This workspace uses live Acadeloop data.';
+        $('backToRoles')?.classList.remove('hidden');
+      }
       if(emailInput)emailInput.disabled=true;if(sendBtn){sendBtn.disabled=true;sendBtn.textContent='Checking session…';}if(verifyBtn)verifyBtn.disabled=true;
       $('signInBtn')?.addEventListener('click',sendOtp);$('verifyOtpBtn')?.addEventListener('click',verifyLoginCode);$('backToEmail')?.addEventListener('click',()=>{sessionStorage.removeItem('acadeloop_pending_email');Backend.discardSession?.();showLoginStep();});
       $('loginUser')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.currentTarget.disabled)sendOtp()});$('loginCode')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.currentTarget.disabled)verifyLoginCode()});
@@ -2224,7 +2246,7 @@ window.ACADELOOP_SEED = {
     loadLocalUsers();$('authTestPanel')?.classList.remove('hidden');$('authProductionNote')?.classList.add('hidden');
     $('authEyebrow').textContent='Temporary testing access';
     $('authTitle').textContent='Choose a role to explore Acadeloop';
-    $('authMessage').textContent='Select an account role to enter its workspace immediately. No email or sign-in code is needed.';
+    $('authMessage').textContent='Other roles open immediately for testing. System Administrator requires verified email login.';
     $('testModeBadge')?.classList.remove('hidden');
     $('localTestControls')?.classList.toggle('hidden',!Backend?.localTestMode);
     $('loginUser').disabled=false;$('loginUser').type='text';$('signInBtn').disabled=false;$('signInBtn').textContent='Sign in';
@@ -2232,6 +2254,7 @@ window.ACADELOOP_SEED = {
     $('testRoleSelect')?.addEventListener('change',async e=>{
       const select=e.currentTarget;
       if(!select.value)return;
+      if(select.value==='admin'){setAuthToken('');location.assign(location.pathname+'?login=admin');return;}
       select.disabled=true;
       $('loginUser').value=select.value;
       try{await signIn();}finally{select.disabled=false;}

@@ -19,14 +19,14 @@
 <div class="hidden" id="authTestPanel">
 <label class="auth-field"><span>Account role</span><select id="testRoleSelect" aria-describedby="testRoleNote">
 <option value="">Select a role to sign in…</option>
-<option value="TestSA">System Administrator</option>
+<option value="admin">System Administrator — email login</option>
 <option value="TestHOD">Head of Department (HOD)</option>
 <option value="TestQ">Coordinator</option>
 <option value="TestI">Instructor</option>
 <option value="TestAPU">APU</option>
 <option value="TestVDAA">VDAA</option>
 </select></label>
-<div class="auth-note" id="testRoleNote"><strong>Testing only.</strong> Opens a sample workspace immediately. Changes are saved in this browser only. Use Sign out to return here and try another role.</div>
+<div class="auth-note" id="testRoleNote"><strong>Testing only.</strong> Other roles open a sample workspace immediately. Changes are saved in this browser only. Use Sign out to return here and try another role.</div>
 </div>
 <div id="authEmailStep">
 <label class="auth-field"><span>Email address</span><input autocomplete="email" id="loginUser" placeholder="name@university.edu" type="email"/ maxlength="254" autocomplete="email" autocapitalize="none" spellcheck="false" disabled></label>
@@ -38,6 +38,7 @@
 <button class="btn btn-ghost auth-submit" id="backToEmail" type="button">Use a different email</button>
 </div>
 <div class="auth-status" id="authStatus"></div>
+<button class="btn btn-ghost auth-submit hidden" id="backToRoles" type="button">Back to role selection</button>
 <div class="auth-note" id="authProductionNote"><strong>Authorized users only.</strong> Accounts are created by the HOD. Course Report documents are generated on demand; Acadeloop stores the structured data, not DOCX files.</div>
 <div class="hidden" id="localTestControls" style="margin-top:12px">
 <div class="auth-note" style="margin-bottom:10px">LOCAL TEST MODE — preset accounts are available only when the project is opened locally or by the automated test runner.</div>
