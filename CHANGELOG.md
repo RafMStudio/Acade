@@ -1,5 +1,20 @@
 # Changelog
 
+### 1.3.0 — Ministry of Defense identity, liquid glass interface and Arabic
+- Colours from the Ministry of Defense identity guide v3.0: dark green #29504D, light green #00A05A, grey #B2BEC4.
+- Typeface: FS Albert Arabic when installed on the device (Light / Regular / Bold / ExtraBold); self-hosted Readex Pro (OFL) otherwise. Google Fonts dependency removed.
+- Liquid glass interface: floating glass navigation rail with a sliding selection pill, floating top bar, campus-photo hero with glass filters and metric tiles, pointer-following specular light, glass dialogs; bottom glass tab bar on phones. Falls back to solid surfaces when blur or transparency is unavailable or reduced.
+- Less text: explanatory paragraphs under titles, hero and metrics are no longer shown; large numbers and titles use the light weight.
+- New visual identity from the Prince Sultan Military College of Health Sciences brand: deep teal, slate and signal green; college seal in the sidebar and sign-in; campus photo on the sign-in panel.
+- Arabic / English switch with full right-to-left layout (`src/i18n.js`, dictionary in `src/i18n-ar.js`). Data and codes stay as entered; academic years are kept left-to-right inside Arabic text.
+- Seal-derived ornaments (rings, dot ring, laurel, crescent) generated as SVG in `src/visuals.js`; entrance animation when the workspace opens, page-change signal and content reveal; all motion respects reduced-motion settings.
+- Removed the role banner that repeated the dashboard title on every page; page headings no longer repeat the top-bar label.
+- Raised the minimum text size from 7–10px to 11–12px; tables, labels and forms are easier to read.
+- Mobile: single-line top bar, slide-in menu with backdrop that closes after navigation, scrollable tables.
+- Sign-in redesigned as a split layout; SVG icons replace text glyphs in navigation.
+- Build: inline scripts are substituted with a function so `$` sequences in source are never expanded.
+- Added `tests/i18n.test.js`.
+
 ### 1.2.7 — Authentication and authorization hardening
 - Fixed login/session restoration race that could open a previously authenticated administrator session while the login form was visible.
 - Moved production Supabase credentials from persistent localStorage to tab-scoped sessionStorage and invalidated the legacy browser token store.
