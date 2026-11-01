@@ -12,16 +12,17 @@ function buildHtml() {
   let html = read('index.source.html');
   html = html.replace(
     '<link href="src/styles.css" rel="stylesheet"/>',
-    `<style id="acadeloop-styles">\n${read('src/styles.css')}\n</style>`
+    () => `<style id="acadeloop-styles">\n${read('src/styles.css')}\n</style>`
   );
   html = html.replace(
     '<script src="src/vendor/jszip.min.js"></script>',
     '<script src="vendor/jszip.min.js"></script>'
   );
-  for (const file of ['src/core.js', 'src/seed.js', 'src/backend.js', 'src/app.js']) {
+  for (const file of ['src/core.js', 'src/seed.js', 'src/backend.js', 'src/i18n-ar.js', 'src/i18n.js', 'src/visuals.js', 'src/app.js']) {
     html = html.replace(
       `<script src="${file}"></script>`,
-      `<script data-source="${file}">\n${escapeScript(read(file))}\n</script>`
+      // Function replacement: source code may contain `$'`/`$``, which String.replace would expand.
+      () => `<script data-source="${file}">\n${escapeScript(read(file))}\n</script>`
     );
   }
   const banner = `<!--\n  Acadeloop deployment bundle.\n  Editable source: index.source.html + src/*.js + src/styles.css\n  The DOCX template remains a normal binary file under templates/.\n  No Base64 Word template is embedded here.\n-->\n`;
@@ -44,5 +45,6 @@ const copy = (from, to = from) => {
 copy('robots.txt');
 copy('vendor/jszip.min.js');
 copy('templates/Course_Report_Placeholder.docx');
+for (const file of ['seal.png', 'seal-white.png', 'campus.jpg']) copy(`assets/brand/${file}`);
 
 console.log('Built resilient deployment: dist/index.html has inline Acadeloop CSS/app code; vendor + DOCX stay separate.');

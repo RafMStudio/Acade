@@ -9,7 +9,7 @@ const { spawnSync } = require('node:child_process');
 const root = path.join(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 const sourceFiles = [
-  'src/core.js', 'src/seed.js', 'src/backend.js', 'src/app.js',
+  'src/core.js', 'src/seed.js', 'src/backend.js', 'src/i18n-ar.js', 'src/i18n.js', 'src/visuals.js', 'src/app.js',
   'scripts/build.js', 'scripts/check-project.js', 'scripts/browser-smoke.js',
   'tests/core.test.js'
 ];
@@ -32,11 +32,11 @@ for (const button of sourceIndex.matchAll(/<button\b[^>]*>/g)) {
   assert.match(button[0], /\btype="button"/, `Static button missing type="button": ${button[0]}`);
 }
 
-for (const marker of ['src/styles.css', 'src/vendor/jszip.min.js', 'src/core.js', 'src/seed.js', 'src/backend.js', 'src/app.js']) {
+for (const marker of ['src/styles.css', 'src/vendor/jszip.min.js', 'src/core.js', 'src/seed.js', 'src/backend.js', 'src/i18n-ar.js', 'src/i18n.js', 'src/visuals.js', 'src/app.js']) {
   assert.ok(sourceIndex.includes(marker), `index.source.html is missing ${marker}`);
 }
 assert.ok(index.includes('id="acadeloop-styles"'), 'Deployment index must inline Acadeloop CSS');
-for (const file of ['src/core.js', 'src/seed.js', 'src/backend.js', 'src/app.js']) {
+for (const file of ['src/core.js', 'src/seed.js', 'src/backend.js', 'src/i18n-ar.js', 'src/i18n.js', 'src/visuals.js', 'src/app.js']) {
   assert.ok(index.includes(`data-source="${file}"`), `Deployment index must inline ${file}`);
   assert.ok(!index.includes(`<script src="${file}"></script>`), `Deployment index must not depend on ${file} at runtime`);
 }

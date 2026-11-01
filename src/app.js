@@ -307,7 +307,7 @@
     if($('avatarLabel')){$('avatarLabel').textContent=currentUserInitials();$('avatarLabel').title=currentUserName();}
     if($('currentUserName'))$('currentUserName').textContent=currentUserName();
     if($('currentUserRole'))$('currentUserRole').textContent=state.role;
-    if($('quickAdd')){$('quickAdd').style.display=canCreateReport()?'inline-flex':'none';$('quickAdd').textContent='＋ New report';}
+    if($('quickAdd')){$('quickAdd').style.display=canCreateReport()?'inline-flex':'none';$('quickAdd').textContent='+ New report';}
   }
   function syncChrome(){
     if($('sideAcademicYear'))$('sideAcademicYear').textContent=state.program.academicYear||'Not set'; if($('sideProgram'))$('sideProgram').textContent=state.program.name;
@@ -316,7 +316,8 @@
   }
   function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),2600)}
   function pageHead(kicker,title,desc,actions=''){return `<div class="page-head"><div><span class="eyebrow">${esc(kicker)}</span><h1>${esc(title)}</h1><p>${esc(desc)}</p></div><div class="page-actions">${actions}</div></div>`}
-  function roleHero(){const c=roleConfig();return `<div class="role-hero"><div class="copy"><span>${esc(c.label)}</span><strong>${esc(c.dashboard)}</strong><p>${esc(c.description)}</p></div><span class="role-chip">${esc(state.role)}</span></div>`}
+  // The role banner repeated the dashboard title on every page; the sidebar, top bar and page heading already carry that context.
+  function roleHero(){return ''}
   function periodFilter(yearId='periodYear',termId='periodTerm',includeAnnual=true){return `<div class="period-filter"><label><span>Academic year</span><select id="${yearId}">${state.academicYears.map(y=>`<option ${y===ploYear?'selected':''}>${esc(y)}</option>`).join('')}</select></label><label><span>Period</span><select id="${termId}">${includeAnnual?'<option>Annual</option>':''}${TERMS.map(t=>`<option ${t===ploTerm?'selected':''}>${t}</option>`).join('')}</select></label></div>`}
 
   function render(){
@@ -1228,8 +1229,9 @@
     showLoginStep();setAuthStatus('Test changes stay in this browser. Live university data is not accessed.','ok');
   }
 
-  document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.view)));
-  $('quickAdd')?.addEventListener('click',openNewReport); $('drawerClose')?.addEventListener('click',hideDrawer); $('drawerBackdrop')?.addEventListener('click',hideDrawer); $('modalClose')?.addEventListener('click',hideModal); $('modalBackdrop')?.addEventListener('click',hideModal); $('menuBtn')?.addEventListener('click',()=>$('sidebar').classList.toggle('open'));
+  function setSidebarOpen(open){$('sidebar')?.classList.toggle('open',open);$('sidebarScrim')?.classList.toggle('show',open);$('menuBtn')?.setAttribute('aria-expanded',String(open));}
+  document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.addEventListener('click',()=>{setSidebarOpen(false);go(b.dataset.view);}));
+  $('quickAdd')?.addEventListener('click',openNewReport); $('drawerClose')?.addEventListener('click',hideDrawer); $('drawerBackdrop')?.addEventListener('click',hideDrawer); $('modalClose')?.addEventListener('click',hideModal); $('modalBackdrop')?.addEventListener('click',hideModal); $('menuBtn')?.addEventListener('click',()=>setSidebarOpen(!$('sidebar').classList.contains('open'))); $('sidebarScrim')?.addEventListener('click',()=>setSidebarOpen(false));
   window.addEventListener('keydown',e=>{if(e.key==='Escape'){hideDrawer();hideModal();}});
   initAuth();
 })();
