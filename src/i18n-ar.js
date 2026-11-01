@@ -796,7 +796,7 @@ window.ACADELOOP_AR = {
     ['Department performance · Annual (\\d{4}–\\d{4})', 'أداء القسم · سنوي $1'],
     ['Department performance · (\\S+) (\\d{4}–\\d{4})', 'أداء القسم · $1 $2'],
     ['Enrollment-weighted across letter grades A\\+ through F for (.+)\\. Status categories such as Withdrawn or Incomplete are excluded\\.', 'موزون بعدد المسجلين عبر التقديرات من +A إلى F لـ $1. تُستبعد حالات مثل الانسحاب وغير المكتمل.'],
-    ['(\\S+) · (S1|S2|Summer) (\\d{4}–\\d{4})', '$1 · $2 $3'],
+    ['(\\S+) · (S1|S2|Summer) (\\d{4}–\\d{4})', '\u2066$1 · $2 $3\u2069'],
     ['(S1|S2|Summer) (\\d{4}–\\d{4})', '$1 $2'],
     ['Target ([\\d.]+)% · (\\d+) approved CLO sources?', 'المستهدف $1% · $2 مصدر معتمد من نواتج المقرر'],
     ['Complete before submission: (.+)', 'أكمل قبل الإرسال: $1'],
