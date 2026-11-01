@@ -505,7 +505,9 @@ body{font-weight:400;letter-spacing:0;color:var(--ink);background:#e9eeee}
   background:var(--glass-fill);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
   border:1px solid var(--glass-rim);box-shadow:var(--glass-shadow)}
 /* Specular sheen: a light that follows the pointer across glass (set by visuals.js) */
-.sidebar,.topbar,.auth-card,.dashboard-page .metric,.drawer,.modal{position:relative;isolation:isolate}
+/* Containers for the sheen. Sidebar and top bar keep their sticky position; dialogs stay fixed. */
+.auth-card,.dashboard-page .metric{position:relative}
+.sidebar,.topbar,.auth-card,.dashboard-page .metric{isolation:isolate}
 .sidebar::after,.topbar::after,.auth-card::after,.dashboard-page .metric::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;
   background:radial-gradient(420px circle at var(--mx,30%) var(--my,0%),rgba(255,255,255,.55),transparent 42%);opacity:.7;transition:opacity .4s}
 
@@ -540,7 +542,7 @@ body{font-weight:400;letter-spacing:0;color:var(--ink);background:#e9eeee}
 /* ---------- Floating top bar ---------- */
 .main{padding:14px 14px 0 18px}
 [dir=rtl] .main{padding:14px 18px 0 14px}
-.topbar{top:14px;height:64px;border-radius:22px;padding:0 10px 0 22px;border-bottom:1px solid var(--glass-rim)}
+.topbar{position:sticky;top:14px;height:64px;border-radius:22px;padding:0 10px 0 22px;border-bottom:1px solid var(--glass-rim)}
 [dir=rtl] .topbar{padding:0 22px 0 10px}
 .breadcrumb span{display:none}
 .breadcrumb strong{font-size:17px;font-weight:700;color:var(--ink)}
@@ -623,7 +625,7 @@ body{font-weight:400;letter-spacing:0;color:var(--ink);background:#e9eeee}
 .grade-average-item strong{font-weight:300;font-size:20px}
 
 /* ---------- Dialogs ---------- */
-.drawer{border-radius:var(--radius-xl);top:12px;bottom:12px;inset-inline-end:12px;right:12px;width:min(760px,94vw);border:1px solid var(--glass-rim);background:linear-gradient(160deg,rgba(255,255,255,.9),rgba(255,255,255,.78))}
+.drawer{border-radius:var(--radius-xl);top:12px;bottom:12px;right:12px;left:auto;width:min(760px,94vw);border:1px solid var(--glass-rim);background:linear-gradient(160deg,rgba(255,255,255,.9),rgba(255,255,255,.78))}
 [dir=rtl] .drawer{right:auto;left:12px}
 .drawer-head,.drawer-foot{background:transparent;border-color:rgba(41,80,77,.08)}
 .drawer-head h2,.modal-head h2{font-weight:300;font-size:24px}
