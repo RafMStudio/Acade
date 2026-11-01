@@ -26,7 +26,11 @@
 <option value="TestAPU">APU</option>
 <option value="TestVDAA">VDAA</option>
 </select></label>
-<div class="auth-note" id="testRoleNote"><strong>Testing only.</strong> Other roles open a sample workspace immediately. Changes are saved in this browser only. Use Sign out to return here and try another role.</div>
+<div id="testPasswordPanel" class="hidden">
+<label class="auth-field"><span>Password</span><input id="testRolePassword" type="password" autocomplete="off" placeholder="Enter password" aria-describedby="authStatus"/></label>
+<button class="btn btn-primary auth-submit" id="testSignInBtn" type="button">Sign in</button>
+</div>
+<div class="auth-note" id="testRoleNote"><strong>Testing only.</strong> Select a role and enter the testing password to open a sample workspace. Changes are saved in this browser only. Use Sign out to return here and try another role.</div>
 </div>
 <div id="authEmailStep">
 <label class="auth-field"><span>Email address</span><input autocomplete="email" id="loginUser" placeholder="name@university.edu" type="email"/ maxlength="254" autocomplete="email" autocapitalize="none" spellcheck="false" disabled></label>

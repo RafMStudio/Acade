@@ -129,7 +129,7 @@ async function main() {
   await expect('deployment CSS is inline', "getComputedStyle(document.getElementById('authScreen')).display", 'grid');
   await expect('hidden app shell stays hidden before sign in', "getComputedStyle(document.getElementById('appShell')).display", 'none');
   await expect('Acadeloop app code is inline', "typeof window.AcadeloopCore==='object' && typeof window.ACADELOOP_SEED==='object'", true);
-  await evaluate("document.querySelector('[data-test-login=TestI]').click()");
+  await evaluate("document.getElementById('testRolePassword').value='1313';document.querySelector('[data-test-login=TestI]').click()");
   await sleep(120);
   await expect('inline app works without vendor library', "document.getElementById('currentUserRole').textContent", 'Instructor');
 
@@ -154,7 +154,7 @@ async function main() {
 
   // Every homepage selection enters immediately; sign out restores the selector.
   for (const [login, role] of [['TestHOD','Head of Department'],['TestQ','Coordinator'],['TestI','Instructor'],['TestAPU','APU'],['TestVDAA','VDAA']]) {
-    await evaluate(`(()=>{const select=document.getElementById('testRoleSelect');select.value=${JSON.stringify(login)};select.dispatchEvent(new Event('change',{bubbles:true}));})()`);
+    await evaluate(`(()=>{const select=document.getElementById('testRoleSelect');select.value=${JSON.stringify(login)};select.dispatchEvent(new Event('change',{bubbles:true}));document.getElementById('testRolePassword').value='1313';document.getElementById('testSignInBtn').click();})()`);
     await sleep(150);
     await expect(`${role} selected from homepage`, "document.getElementById('currentUserRole').textContent", role);
     await expect(`${role} workspace visible`, "!document.getElementById('appShell').classList.contains('hidden')", true);
@@ -163,14 +163,14 @@ async function main() {
   }
 
   // Old preset or persisted administrator identities must never enter a test workspace.
-  await evaluate("document.getElementById('loginUser').value='TestSA';document.getElementById('signInBtn').click()");
+  await evaluate("document.getElementById('loginUser').value='TestSA';document.getElementById('testRolePassword').value='1313';document.getElementById('signInBtn').click()");
   await sleep(100);
   await expect('preset administrator login rejected', "document.getElementById('appShell').classList.contains('hidden')", true);
   await expect('administrator selection uses real login', "document.querySelector('#testRoleSelect option[value=admin]').textContent.includes('email login')", true);
 
   await evaluate(`(()=>{window.__downloadCapture=null;window.__downloadCapturePromise=Promise.resolve();HTMLAnchorElement.prototype.click=function(){const href=this.href,name=this.download;window.__downloadCapturePromise=(async()=>{const buf=await fetch(href).then(r=>r.arrayBuffer());const result={name,size:buf.byteLength,entries:[],docxPlaceholders:[]};if(name.endsWith('.zip')){const z=await JSZip.loadAsync(buf);result.entries=Object.keys(z.files);for(const entry of result.entries.filter(x=>x.endsWith('.docx'))){const file=z.file(entry);if(!file)continue;const inner=await JSZip.loadAsync(await file.async('arraybuffer'));const xml=await inner.file('word/document.xml').async('string');result.docxPlaceholders.push({entry,unreplaced:xml.includes('{{')});}}else if(name.endsWith('.docx')){const inner=await JSZip.loadAsync(buf);const xml=await inner.file('word/document.xml').async('string');result.docxPlaceholders.push({entry:name,unreplaced:xml.includes('{{')});}window.__downloadCapture=result;return result;})().catch(error=>{window.__downloadCapture={name,error:String(error)};return window.__downloadCapture});};return true})()`);
 
-  await evaluate("document.querySelector('[data-test-login=TestI]').click()");
+  await evaluate("document.getElementById('testRolePassword').value='1313';document.querySelector('[data-test-login=TestI]').click()");
   await sleep(200);
   await expect('Instructor role', "document.getElementById('currentUserRole').textContent", 'Instructor');
   await expect('Instructor cannot see PLO nav', "document.querySelector('[data-view=plo]').classList.contains('role-hidden')", true);
@@ -185,7 +185,7 @@ async function main() {
   await sleep(200);
   await expect('r4 submitted', "[...document.querySelectorAll('[data-report-row]')].find(r=>r.innerText.includes('HIM474')).innerText.includes('Awaiting Quality Approval')", true);
 
-  await evaluate("document.getElementById('signOutBtn').click();document.querySelector('[data-test-login=TestQ]').click()");
+  await evaluate("document.getElementById('signOutBtn').click();document.getElementById('testRolePassword').value='1313';document.querySelector('[data-test-login=TestQ]').click()");
   await sleep(250);
   await expect('Coordinator role', "document.getElementById('currentUserRole').textContent", 'Coordinator');
   await expect('quality dashboard', "document.body.innerText.includes('Course quality monitor')", true);
@@ -220,7 +220,7 @@ async function main() {
   await expect('portfolio includes generated approved course reports', "window.__downloadCapture.entries.some(e=>e.includes('/Course Report/')&&e.endsWith('.docx'))", true);
   await expect('portfolio generated DOCX placeholders fully replaced', "window.__downloadCapture.docxPlaceholders.every(x=>!x.unreplaced)", true);
 
-  await evaluate("document.getElementById('signOutBtn').click();document.querySelector('[data-test-login=TestHOD]').click()");
+  await evaluate("document.getElementById('signOutBtn').click();document.getElementById('testRolePassword').value='1313';document.querySelector('[data-test-login=TestHOD]').click()");
   await sleep(250);
   await expect('HOD role', "document.getElementById('currentUserRole').textContent", 'Head of Department');
   await expect('HOD sees newly approved report', "document.body.innerText.includes('HIM474')", true);
@@ -232,7 +232,7 @@ async function main() {
   await evaluate(`(()=>{document.getElementById('auPrefix').value='Dr.';document.getElementById('auFirst').value='QA';document.getElementById('auLast').value='Tester';document.getElementById('auDepartment').value='Health Information Management';document.getElementById('auRole').value='Instructor';document.getElementById('auEmail').value='qa.tester@example.edu';document.getElementById('addAuthorizedUser').click();return true})()`);
   await sleep(150);
   await expect('HOD-added user rendered safely', "document.body.innerText.includes('Dr. QA Tester')&&document.body.innerText.includes('qa.tester@example.edu')", true);
-  await evaluate("document.getElementById('signOutBtn').click();document.getElementById('loginUser').value='qa.tester@example.edu';document.getElementById('signInBtn').click()");
+  await evaluate("document.getElementById('signOutBtn').click();document.getElementById('loginUser').value='qa.tester@example.edu';document.getElementById('testRolePassword').value='1313';document.getElementById('signInBtn').click()");
   await sleep(200);
   await expect('HOD-added user can sign in', "document.getElementById('currentUserRole').textContent", 'Instructor');
 

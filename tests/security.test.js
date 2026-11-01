@@ -91,3 +91,18 @@ test('administrator session requires the matching active SystemAdmin profile',as
     if(!allowed)assert.equal(api.session(),null);
   }
 });
+
+test('every sample role requires the shared password before authentication', async () => {
+  const source = app;
+  const signInSource=source.slice(source.indexOf('  async function signIn(){'),source.indexOf('  async function signOut(){'));
+  for(const login of ['TestHOD','TestQ','TestI','TestAPU','TestVDAA']){
+    const elements={loginUser:{value:login},testRolePassword:{value:'',focus(){}},signInBtn:{},testSignInBtn:{}};
+    let authenticated=0,status='';
+    const context={backendEnabled:false,$:id=>elements[id],setAuthStatus:msg=>{status=msg;},localUserByLogin:value=>({username:value}),setAuthToken:()=>{},onAuthenticated:async()=>{authenticated++;}};
+    vm.createContext(context);vm.runInContext(signInSource+'\nthis.runSignIn=signIn;',context);
+    await context.runSignIn();assert.equal(authenticated,0);
+    elements.testRolePassword.value='wrong';await context.runSignIn();assert.equal(authenticated,0);assert.match(status,/Incorrect password/);
+    elements.testRolePassword.value='1313';await context.runSignIn();assert.equal(authenticated,1);assert.equal(elements.testRolePassword.value,'');
+  }
+  assert.ok(!source.includes('const savedLogin=authToken()'),'Legacy passwordless session must not restore automatically');
+});

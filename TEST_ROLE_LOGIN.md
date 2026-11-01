@@ -2,7 +2,7 @@
 
 Hosted test access is enabled by `TEMPORARY_ROLE_LOGIN = true` in `src/backend.js`.
 Select HOD, Coordinator, Instructor, APU, or VDAA on the homepage to enter
-immediately. System Administrator opens `?login=admin` and requires Supabase
+with testing password `1313`. System Administrator opens `?login=admin` and requires Supabase
 email OTP for `rafedmoha@gmail.com` with an active SystemAdmin profile.
 Administrator presets and persisted browser administrator roles are rejected. Sign out to select another role. Existing role
 permissions still apply, including read-only APU/VDAA workspaces.
@@ -17,3 +17,8 @@ To remove hosted test access, set `TEMPORARY_ROLE_LOGIN = false`, run `npm test`
 and deploy the rebuilt output. Hosted pages then use the existing verified email
 OTP flow; preset role controls are hidden and local test identities are ignored.
 Localhost/file-based development testing remains available.
+
+Role selection no longer signs in automatically. Each new test login requires the
+shared password 1313, including local preset and username login. The password is
+not stored; old passwordless sessions are discarded on reload. This is a browser
+sample-workspace entry gate, not Supabase account authentication.

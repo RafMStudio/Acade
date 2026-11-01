@@ -6,7 +6,7 @@
  const change=(id,v)=>{$(id).value=v;$(id).dispatchEvent(new Event('change',{bubbles:true}));};
  const submit=async()=>{$('kpiForm').requestSubmit();await wait(()=>!$('saveKpi')||!$('saveKpi').disabled);if($('kpiError')?.textContent)throw new Error($('kpiError').textContent);};
  const open=()=>document.querySelector('[data-view="kpis"]').click();
- const login=async role=>{change('testRoleSelect',role);await wait(()=>!$('appShell').classList.contains('hidden'));open();};
+ const login=async role=>{change('testRoleSelect',role);$('testRolePassword').value='1313';$('testSignInBtn').click();await wait(()=>!$('appShell').classList.contains('hidden'));open();};
  try{
  await wait(()=>$('testRoleSelect')&&!$('testRoleSelect').disabled);
  await login('TestHOD');assert(!!$('newKpi'),'HOD can create KPIs');

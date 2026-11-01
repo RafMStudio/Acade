@@ -1162,15 +1162,18 @@
   async function signIn(){
     if(backendEnabled)return;
     const login=$('loginUser')?.value.trim();if(!login){setAuthStatus('Enter a test username such as TestHOD, TestI, or TestQ.','error');return;}
-    const btn=$('signInBtn');btn.disabled=true;btn.textContent='Signing in…';setAuthStatus('');
-    try{const user=localUserByLogin(login);if(!user)throw new Error('Unknown test user. Use TestHOD, TestI, TestQ, TestI2, or an email added by the HOD.');setAuthToken(user.username||user.email);await onAuthenticated(user);}
+    if($('testRolePassword')?.value!=='1313'){setAuthStatus('Incorrect password. Please try again.','error');$('testRolePassword')?.focus();return;}
+    const btn=$('signInBtn');btn.disabled=true;btn.textContent='Signing in…';$('testSignInBtn').disabled=true;setAuthStatus('');
+    try{const user=localUserByLogin(login);if(!user)throw new Error('Unknown test user. Use TestHOD, TestI, TestQ, TestI2, or an email added by the HOD.');setAuthToken('');$('testRolePassword').value='';await onAuthenticated(user);}
     catch(e){setAuthStatus(e.message||'Unable to sign in.','error');}
-    finally{btn.disabled=false;btn.textContent='Sign in';}
+    finally{btn.disabled=false;btn.textContent='Sign in';$('testSignInBtn').disabled=false;}
   }
   async function signOut(){
     portfolioUploadFiles.clear();portfolioActiveTerms.clear();hideDrawer();hideModal();
     if(Backend?.adminOnly){await Backend.signOut();setAuthToken('');location.assign(location.pathname);return;}
     if($('testRoleSelect'))$('testRoleSelect').value='';
+    if($('testRolePassword'))$('testRolePassword').value='';
+    $('testPasswordPanel')?.classList.toggle('hidden',!Backend?.localTestMode);
     if(backendEnabled)await Backend.signOut();else setAuthToken('');currentUser=null;userDirectory=[];$('appShell')?.classList.add('hidden');$('authScreen')?.classList.remove('hidden');showLoginStep();if($('loginUser'))$('loginUser').value='';
   }
   async function initAuth(){
@@ -1202,22 +1205,26 @@
     loadLocalUsers();$('authTestPanel')?.classList.remove('hidden');$('authProductionNote')?.classList.add('hidden');
     $('authEyebrow').textContent='Temporary testing access';
     $('authTitle').textContent='Choose a role to explore Acadeloop';
-    $('authMessage').textContent='Other roles open immediately for testing. System Administrator requires verified email login.';
+    $('authMessage').textContent='Select a role and enter its testing password. System Administrator requires verified email login.';
     $('testModeBadge')?.classList.remove('hidden');
     $('localTestControls')?.classList.toggle('hidden',!Backend?.localTestMode);
     $('loginUser').disabled=false;$('loginUser').type='text';$('signInBtn').disabled=false;$('signInBtn').textContent='Sign in';
     $('authEmailStep')?.classList.toggle('hidden',!Backend?.localTestMode);
-    $('testRoleSelect')?.addEventListener('change',async e=>{
+    $('testPasswordPanel')?.classList.toggle('hidden',!Backend?.localTestMode);
+    $('testRoleSelect')?.addEventListener('change',e=>{
       const select=e.currentTarget;
-      if(!select.value)return;
+      $('testRolePassword').value='';setAuthStatus('');
+      $('loginUser').value=select.value==='admin'?'':select.value;
+      $('testPasswordPanel').classList.toggle('hidden',!select.value||select.value==='admin');
       if(select.value==='admin'){setAuthToken('');location.assign(location.pathname+'?login=admin');return;}
-      select.disabled=true;
-      $('loginUser').value=select.value;
-      try{await signIn();}finally{select.disabled=false;}
+      if(select.value)$('testRolePassword').focus();
     });
+    $('testSignInBtn')?.addEventListener('click',signIn);
+    $('testRolePassword')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&!$('testSignInBtn').disabled){e.preventDefault();signIn();}});
     $('signInBtn')?.addEventListener('click',signIn);$('loginUser')?.addEventListener('keydown',e=>{if(e.key==='Enter')signIn()});
     document.querySelectorAll('[data-test-login]').forEach(btn=>btn.addEventListener('click',()=>{if($('loginUser'))$('loginUser').value=btn.dataset.testLogin||'';signIn();}));
-    const savedLogin=authToken();if(savedLogin){const user=localUserByLogin(savedLogin);if(user){await onAuthenticated(user);return;}setAuthToken('');}
+    // Existing passwordless test sessions must not bypass the new entry gate.
+    setAuthToken('');
     showLoginStep();setAuthStatus('Test changes stay in this browser. Live university data is not accessed.','ok');
   }
 
