@@ -463,11 +463,26 @@
   function kpiTrend(records,kpiId,year){
     return [Number(year)-2,Number(year)-1,Number(year)].map(y=>({year:y,actual:kpiNumber(records.find(r=>r.kpi_id===kpiId&&Number(r.year_start)===y)?.actual)}));
   }
+  function kpiMeasurement(unit, outOf){
+    if(!['%','ratio'].includes(unit))throw new Error('Select percentage or ratio.');
+    const ratio=unit==='ratio'?kpiNumber(outOf):null;
+    if(unit==='ratio'&&!(ratio>0))throw new Error('Enter a ratio “out of” value greater than zero.');
+    return {unit,ratio_out_of:ratio};
+  }
+  function kpiBenchmark(value,kpi){
+    const number=kpiNumber(value);
+    if(kpi.unit==='%'&&number!=null&&number>100)throw new Error('Percentage benchmarks must be between 0 and 100.');
+    return number;
+  }
+  function kpiDepartmentAccess(user,department){
+    const own=String(user?.department||'').trim();
+    return !!user&&user.active!==false&&!!own&&own===String(department||'').trim()&&['HOD','Head of Department','Coordinator','Instructor','APU','VDAA'].includes(user.role);
+  }
   function canEditKpi(user){return !!user&&user.active!==false&&['HOD','Head of Department'].includes(user.role);}
-  function canEditKpiAction(user,kpi){return !!user&&user.active!==false&&['HOD','Head of Department','Coordinator','Instructor'].includes(user.role)&&user.id===kpi?.owner_user_id;}
+  function canEditKpiAction(user,kpi){return !!user&&user.active!==false&&!!kpi?.owner_user_id&&['HOD','Head of Department','Coordinator','Instructor'].includes(user.role)&&user.id===kpi.owner_user_id;}
 
   return Object.freeze({
-    kpiYearStart, kpiYearLabel, kpiNumber, kpiInternal, kpiTrend, canEditKpi, canEditKpiAction,
+    kpiMeasurement, kpiBenchmark, kpiDepartmentAccess, kpiYearStart, kpiYearLabel, kpiNumber, kpiInternal, kpiTrend, canEditKpi, canEditKpiAction,
     TERMS,
     LETTER_GRADE_LABELS,
     GRADE_DEFS,

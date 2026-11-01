@@ -41,5 +41,33 @@ do $$ declare n integer; begin
  get diagnostics n=row_count;
  if n<>0 then raise exception 'Non-owner HOD edited action plan'; end if;
 end $$;
+-- Optional ownership and ratio constraints are enforced in the database.
+insert into public.kpi_definitions(program_id,code,name,unit,ratio_out_of,owner_category,owner_user_id)
+values(current_setting('test.kpi_program')::uuid,'RATIO-'||current_setting('test.kpi_id'),'Unregistered research owner','ratio',5,'Research',null);
+do $$ begin
+ begin
+ insert into public.kpi_definitions(program_id,code,name,unit,ratio_out_of,owner_category,owner_user_id)
+ values(current_setting('test.kpi_program')::uuid,'BAD-'||current_setting('test.kpi_id'),'Invalid denominator','ratio',0,'Research',null);
+ raise exception 'Invalid denominator accepted';
+ exception when check_violation then null; end;
+ begin
+ update public.kpi_years set actual=101 where kpi_id=current_setting('test.kpi_id')::uuid;
+ raise exception 'Percentage over 100 accepted';
+ exception when raise_exception then
+ if sqlerrm<>'Percentage benchmarks must be between 0 and 100.' then raise; end if;
+ end;
+end $$;
+-- Even a user with program membership cannot read another department's KPI data.
+reset role;
+update public.profiles set department='KPI isolation test department' where id=current_setting('test.kpi_hod')::uuid;
+set local role authenticated;
+do $$ begin
+ if public.kpi_can_read(current_setting('test.kpi_program')::uuid) then raise exception 'Cross-department helper allowed access'; end if;
+ if exists(select 1 from public.kpi_definitions where id=current_setting('test.kpi_id')::uuid)
+ or exists(select 1 from public.kpi_years where kpi_id=current_setting('test.kpi_id')::uuid)
+ or exists(select 1 from public.kpi_priorities where id=current_setting('test.kpi_priority')::uuid)
+ or exists(select 1 from public.kpi_actions where priority_id=current_setting('test.kpi_priority')::uuid) then raise exception 'Cross-department records were exposed'; end if;
+end $$;
+reset role;
 rollback;
-select 'Passed: HOD definitions/benchmarks, owner-only actions, denied owner KPI edits, immutable scope, date validation; test records rolled back.' as result;
+select 'Passed: HOD definitions/benchmarks, owner-only actions, denied owner KPI edits, immutable scope, date validation, optional category owner, ratio denominator, percentage range, department isolation; test records rolled back.' as result;

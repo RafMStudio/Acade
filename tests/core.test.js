@@ -272,3 +272,20 @@ test('KPI editing is HOD-only and action editing requires the actual assigned ow
   assert.equal(Core.canEditKpiAction({id:'quality',role:'APU'},k),false);
   assert.equal(Core.canEditKpiAction({id:'quality',role:'Coordinator',active:false},k),false);
 });
+
+test('KPI measurement requires a positive manual ratio denominator and validates percentages',()=>{
+ assert.deepEqual(Core.kpiMeasurement('ratio','5'),{unit:'ratio',ratio_out_of:5});
+ assert.deepEqual(Core.kpiMeasurement('%','5'),{unit:'%',ratio_out_of:null});
+ for(const value of ['',0,-1,'text'])assert.throws(()=>Core.kpiMeasurement('ratio',value));
+ assert.throws(()=>Core.kpiMeasurement('other',5));
+ assert.throws(()=>Core.kpiBenchmark(101,{unit:'%'}));
+ assert.equal(Core.kpiBenchmark(0,{unit:'%'}),0);
+ assert.equal(Core.kpiBenchmark('',{unit:'ratio',ratio_out_of:5}),null);
+});
+test('KPI categories can await registration and department scope applies to supervisors too',()=>{
+ assert.equal(Core.canEditKpiAction({id:'hod',role:'HOD'},{owner_category:'Academic',owner_user_id:null}),false);
+ assert.equal(Core.kpiDepartmentAccess({id:'a',role:'APU',department:'Health'},'Health'),true);
+ assert.equal(Core.kpiDepartmentAccess({id:'a',role:'APU',department:'Health'},'Nursing'),false);
+ assert.equal(Core.kpiDepartmentAccess({id:'h',role:'HOD',department:'Health'},'Nursing'),false);
+ assert.equal(Core.kpiDepartmentAccess({id:'h',role:'HOD',department:''},''),false);
+});

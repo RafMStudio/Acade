@@ -31,6 +31,20 @@
  assert(!document.querySelector('[data-kpi-action]'),'Unassigned instructor cannot edit owner action plan');
  $('signOutBtn').click();await wait(()=>!$('authScreen').classList.contains('hidden'));await login('TestAPU');
  assert(!$('newKpi')&&!document.querySelector('[data-kpi-action]'),'APU sees read-only KPI and action plan');
+ $('signOutBtn').click();await wait(()=>!$('authScreen').classList.contains('hidden'));await login('TestHOD');
+ $('newKpi').click();await wait(()=>$('kOwner'));
+ $('kCode').value='KPI-RATIO';$('kName').value='Student satisfaction';change('kUnit','ratio');$('kRatioOutOf').value='5';change('kCategory','Research');
+ assert(!$('kOwner').required,'Registered owner is optional');await submit();
+ assert(document.querySelectorAll('.kpi-card').length===2,'Ratio KPI saved with category and no registered user');
+ document.querySelectorAll('[data-kpi-year]')[1].click();$('kb_actual').value='3.5';$('kb_target').value='4';await submit();
+ assert(document.querySelectorAll('.kpi-card')[1].textContent.includes('3.5 / 5'),'Ratio benchmark displays manually entered denominator');
+ document.querySelectorAll('[data-kpi-definition]')[1].click();await wait(()=>$('kUnit'));assert($('kUnit').disabled&&$('kRatioOutOf').disabled,'Recorded measurements preserve historical comparability');await submit();
+ document.querySelector('[data-view="dashboard"]').click();
+ assert(!!document.querySelector('.dashboard-hero')&&!!document.querySelector('.dashboard-kpis'),'Professional dashboard includes KPI overview');
+ assert(document.querySelector('.dashboard-kpis').textContent.includes('3.5 / 5')&&document.querySelector('.dashboard-kpis').textContent.includes('85%'),'Dashboard displays ratio and percentage results without mixing units');
+ document.querySelector('[data-dashboard-kpi]').click();assert(!!document.querySelector('.kpi-card'),'Dashboard KPI opens detailed record');
+ document.querySelector('[data-view="dashboard"]').click();
+ assert(document.documentElement.scrollWidth<=window.innerWidth+1,'Dashboard fits the viewport without page overflow');
  const out=document.createElement('pre');out.id='kpi-test-result';out.textContent=JSON.stringify({passed:true,results});document.body.append(out);
  }catch(error){const out=document.createElement('pre');out.id='kpi-test-result';out.textContent=JSON.stringify({passed:false,error:error.stack,results});document.body.append(out);}
 })();

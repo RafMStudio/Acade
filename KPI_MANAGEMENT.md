@@ -1,9 +1,10 @@
 # Annual Key Performance Indicators
 
 The Key Performance Indicators navigation section is available to HOD, Coordinator,
-Instructor, APU and VDAA users within their existing program access scope.
+Instructor, APU and VDAA users within their existing program access scope and their own department only.
+Global supervisor access does not bypass KPI department isolation.
 
-Only the HOD creates or edits KPI definitions, assigns an owner category and active
+Only the HOD creates or edits KPI definitions, assigns an owner category and optionally links an active
 program user, enters annual benchmarks and analysis, and sets improvement priorities.
 Owner categories: Academic, Quality, Extracurricular, Research and HOD.
 
@@ -29,3 +30,15 @@ add a priority, then sign out and select Coordinator in the same browser.
 
 Verification: npm test; tests/kpi-browser.js executed in an isolated browser using the
 built HTML; tests/kpi-rls.sql executed against Supabase with rollback-only test rows.
+
+Measurement is Percentage (%) or Ratio. Ratios require a positive manually entered
+"out of" denominator, shown in benchmarks, charts and action-plan targets. Percentages
+are validated between 0 and 100. Once numeric records exist, measurement is fixed to
+preserve year-to-year comparability.
+
+An owner category can be assigned without a registered user. Action-plan writes remain
+unavailable until the HOD links an active user in the same department and program.
+
+The redesigned dashboard includes a KPI overview with counts, actual/target values,
+three-year actual trends, owner categories and direct links to individual KPI records.
+It does not aggregate mixed-unit benchmark values or infer achievement direction.
