@@ -223,6 +223,9 @@ nav{display:grid;gap:4px}.nav-item{border:0;background:transparent;border-radius
 .program-access-list{display:grid;gap:7px;margin-top:7px}.program-access-option{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:9px;padding:9px 10px;background:#fafafa;cursor:pointer}.program-access-option input{width:16px;height:16px}.program-access-option span{display:flex;flex-direction:column;gap:2px}.program-access-option strong{font-size:11px}.program-access-option small{font-size:9px;color:var(--muted)}.access-limit-toggle{display:flex!important;align-items:center;gap:8px}.access-limit-toggle input{width:16px;height:16px}
 
 
+/* Annual KPI records and their owner action plans. */
+.kpi-card{margin:20px 0;padding:24px}.kpi-card .section-title{flex-wrap:wrap;gap:12px}.kpi-benchmarks{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:24px 0 8px}.kpi-benchmarks>div{background:#f3f7fb;border:1px solid #dce5ef;border-radius:12px;padding:16px}.kpi-benchmarks dt{font-size:12px;color:#526278}.kpi-benchmarks dd{font-size:21px;font-weight:700;margin:8px 0 0;overflow-wrap:anywhere}.kpi-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin:24px 0}.kpi-detail-grid h4{margin:14px 0 6px}.kpi-narrative{white-space:pre-wrap;overflow-wrap:anywhere}.kpi-chart{margin:0;padding:20px;background:#f8fafc;border-radius:12px}.kpi-chart figcaption{font-weight:600}.kpi-bars{height:220px;display:flex;gap:22px;align-items:stretch;margin-top:24px}.kpi-bar-column{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0}.kpi-bar-column>span{font-size:11px}.kpi-bar-column>strong{font-size:13px}.kpi-bar-space{flex:1;width:100%;display:flex;align-items:flex-end;border-bottom:1px solid #b8c9d9}.kpi-bar{width:75%;margin:0 auto;background:#99b9da;border-radius:6px 6px 0 0}.kpi-bar.current{background:#2463a7}.kpi-priorities{padding-left:24px}.kpi-priorities li{padding:8px 0}.kpi-priorities li>span{white-space:pre-wrap}.kpi-priorities button{margin-left:12px}.kpi-table-wrap{overflow-x:auto}.kpi-table-wrap table{min-width:1100px}.kpi-table-wrap td{max-width:300px;vertical-align:top;overflow-wrap:anywhere}#kpiError{color:#b42318;white-space:pre-wrap}@media(max-width:900px){.kpi-benchmarks{grid-template-columns:repeat(2,minmax(0,1fr))}.kpi-detail-grid{grid-template-columns:1fr}}@media(max-width:500px){.kpi-card{padding:16px}.kpi-benchmarks dd{font-size:18px}.kpi-bars{gap:12px}}
+
 </style></head>
 <body>
 <section class="auth-screen" id="authScreen">
@@ -280,6 +283,7 @@ nav{display:grid;gap:4px}.nav-item{border:0;background:transparent;border-radius
 <button class="nav-item" data-view="course-portfolios" type="button"><span class="nav-icon">▣</span>Course Portfolios <span class="nav-badge" id="navPortfolioCount">0</span></button>
 <button class="nav-item" data-view="plo" type="button"><span class="nav-icon">◎</span>PLO Attainment</button>
 <button class="nav-item" data-view="apr" type="button"><span class="nav-icon">◫</span>Annual Program Report</button>
+<button class="nav-item" data-view="kpis" type="button"><span class="nav-icon">▥</span>Key Performance Indicators</button>
 <button class="nav-item" data-view="operational" type="button"><span class="nav-icon">✓</span>Operational Plan</button>
 <button class="nav-item" data-view="automations" type="button"><span class="nav-icon">↯</span>Automations</button>
 <div class="nav-separator"></div>
@@ -774,7 +778,30 @@ nav{display:grid;gap:4px}.nav-item{border:0;background:transparent;border-radius
     return [...new Set(errors)];
   }
 
+  // Academic years are keyed by their starting year, independent of dash style.
+  function kpiYearStart(label){
+    const match=String(label||'').trim().match(/^(\d{4})(?:\s*[-–—/]\s*\d{4})?$/);
+    return match?Number(match[1]):null;
+  }
+  function kpiYearLabel(start, reference){return /^\d{4}$/.test(String(reference))?String(start):`${start}–${start+1}`;}
+  function kpiNumber(value){
+    if(value==null||String(value).trim()==='')return null;
+    const number=Number(value);
+    if(!Number.isFinite(number)||number<0||number>1e12)throw new Error('Benchmarks must be numbers between 0 and 1,000,000,000,000.');
+    return number;
+  }
+  function kpiInternal(records,kpiId,year,fallback=null){
+    const previous=records.find(r=>r.kpi_id===kpiId&&Number(r.year_start)===Number(year)-1);
+    return previous?.actual!=null?{value:kpiNumber(previous.actual),automatic:true}:{value:kpiNumber(fallback),automatic:false};
+  }
+  function kpiTrend(records,kpiId,year){
+    return [Number(year)-2,Number(year)-1,Number(year)].map(y=>({year:y,actual:kpiNumber(records.find(r=>r.kpi_id===kpiId&&Number(r.year_start)===y)?.actual)}));
+  }
+  function canEditKpi(user){return !!user&&user.active!==false&&['HOD','Head of Department'].includes(user.role);}
+  function canEditKpiAction(user,kpi){return !!user&&user.active!==false&&['HOD','Head of Department','Coordinator','Instructor'].includes(user.role)&&user.id===kpi?.owner_user_id;}
+
   return Object.freeze({
+    kpiYearStart, kpiYearLabel, kpiNumber, kpiInternal, kpiTrend, canEditKpi, canEditKpiAction,
     TERMS,
     LETTER_GRADE_LABELS,
     GRADE_DEFS,
@@ -1180,23 +1207,23 @@ window.ACADELOOP_SEED = {
       dashboard:'Acadeloop Administration', description:'Manage academic programs, appoint HODs, control users, and back up the complete Acadeloop system.'
     },
     'Instructor': {
-      views:['dashboard','course-reports','course-portfolios'], label:'Instructor workspace', avatar:'IN',
+      views:['dashboard','course-reports','course-portfolios','kpis'], label:'Instructor workspace', avatar:'IN',
       dashboard:'My Course Quality', description:'Create course reports by reporting period and section, then submit them for coordinator approval.'
     },
     'Coordinator': {
-      views:['dashboard','course-reports','course-portfolios','plo','apr','operational','automations'], label:'Quality coordination', avatar:'CO',
+      views:['dashboard','course-reports','course-portfolios','plo','apr','kpis','operational','automations'], label:'Quality coordination', avatar:'CO',
       dashboard:'Quality Approval Center', description:'Review submitted reports exactly as entered, return them for revision, or approve them into official program calculations.'
     },
     'Head of Department': {
-      views:['dashboard','course-reports','course-portfolios','plo','apr','operational','users','setup'], label:'Executive oversight', avatar:'HD',
+      views:['dashboard','course-reports','course-portfolios','plo','apr','kpis','operational','users','setup'], label:'Executive oversight', avatar:'HD',
       dashboard:'Department Quality Overview', description:'View approved quality results and control who is allowed to access Acadeloop.'
     },
     'APU': {
-      views:['dashboard','course-reports','plo','apr','operational'], label:'Institution supervision', avatar:'AP',
+      views:['dashboard','course-reports','plo','apr','kpis','operational'], label:'Institution supervision', avatar:'AP',
       dashboard:'APU Supervision Dashboard', description:'Read-only oversight across all academic programs, academic years, and semesters.'
     },
     'VDAA': {
-      views:['dashboard','course-reports','plo','apr','operational'], label:'Institution supervision', avatar:'VD',
+      views:['dashboard','course-reports','plo','apr','kpis','operational'], label:'Institution supervision', avatar:'VD',
       dashboard:'VDAA Supervision Dashboard', description:'Read-only oversight across all academic programs, academic years, and semesters.'
     }
   };
@@ -1341,11 +1368,6 @@ window.ACADELOOP_SEED = {
     if(!backendEnabled)return;
     for(const p of state.plos){await Backend.insert('plos',{program_id:activeProgramId,code:p.code,name:p.name,target:Number(p.target),active:true,data:{}},{onConflict:'program_id,code',upsert:true});}
   }
-  async function persistOperational(){
-    if(!backendEnabled)return;
-    const year=state.program.academicYear;
-    await Backend.insert('operational_plans',{program_id:activeProgramId,academic_year:year,data:{items:clone(state.operational)},updated_by:currentUser?.id||null},{onConflict:'program_id,academic_year',upsert:true});
-  }
   function normalizeState(s){
     s = s && typeof s === 'object' ? s : JSON.parse(JSON.stringify(seed));
     s.program = s.program || JSON.parse(JSON.stringify(seed.program));
@@ -1354,6 +1376,7 @@ window.ACADELOOP_SEED = {
     if(s.program.academicYear&&!s.academicYears.includes(s.program.academicYear)) s.academicYears.unshift(s.program.academicYear);
     s.reports = Array.isArray(s.reports) ? s.reports : [];
     s.plos = Array.isArray(s.plos) ? s.plos : [];
+    for(const key of ['kpiDefinitions','kpiYears','kpiPriorities','kpiActions'])s[key]=Array.isArray(s[key])?s[key]:[];
     s.operational = Array.isArray(s.operational) ? s.operational : [];
     s.automations = Array.isArray(s.automations) ? s.automations : [];
     s.audit = Array.isArray(s.audit) ? s.audit : [];
@@ -1469,11 +1492,11 @@ window.ACADELOOP_SEED = {
 
   function render(){
     if(!roleCanView(currentView)) currentView='dashboard';
-    const titles={dashboard:[roleConfig().label,roleConfig().dashboard],'course-reports':[state.role==='Instructor'?'My reporting':'Quality cycle',state.role==='Instructor'?'My Course Reports':state.role==='Coordinator'?'Course Report Approval':'Course Reports'],'course-portfolios':['Portfolio builder','Course Portfolios'],plo:['Outcome analytics','PLO Attainment'],apr:['Program reporting','Annual Program Report'],operational:['Execution','Operational Plan'],automations:['Workflow engine','Automations'],users:['Access control','Users'],setup:['Administration','Program Setup']};
+    const titles={dashboard:[roleConfig().label,roleConfig().dashboard],'course-reports':[state.role==='Instructor'?'My reporting':'Quality cycle',state.role==='Instructor'?'My Course Reports':state.role==='Coordinator'?'Course Report Approval':'Course Reports'],'course-portfolios':['Portfolio builder','Course Portfolios'],plo:['Outcome analytics','PLO Attainment'],apr:['Program reporting','Annual Program Report'],kpis:['Performance management','Key Performance Indicators'],operational:['Execution','Operational Plan'],automations:['Workflow engine','Automations'],users:['Access control','Users'],setup:['Administration','Program Setup']};
     if(currentView==='course-portfolios'&&currentPortfolioId){const g=portfolioGroupsForRole().find(x=>x.key===currentPortfolioId);if(g)titles['course-portfolios']=['Course portfolio',g.courseCode];}
     $('pageKicker').textContent=titles[currentView][0];$('pageTitle').textContent=titles[currentView][1];
     document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===currentView));
-    const map={dashboard:renderDashboard,'course-reports':renderCourseReports,'course-portfolios':renderCoursePortfolios,plo:renderPlo,apr:renderApr,operational:renderOperational,automations:renderAutomations,users:renderUsers,setup:renderSetup};
+    const map={dashboard:renderDashboard,'course-reports':renderCourseReports,'course-portfolios':renderCoursePortfolios,plo:renderPlo,apr:renderApr,kpis:renderKpis,operational:renderOperational,automations:renderAutomations,users:renderUsers,setup:renderSetup};
     $('content').innerHTML=map[currentView](); syncRoleUI(); bindViewEvents();
   }
 
@@ -1659,9 +1682,84 @@ window.ACADELOOP_SEED = {
       <div class="section"><div class="section-title"><div><h2>Annual PLO table</h2><p>Weighted by completed students across all approved semesters.</p></div></div><div class="table-card"><table class="data-table"><thead><tr><th>PLO</th><th>Target</th><th>S1</th><th>S2</th><th>Summer</th><th>Annual</th><th>Status</th></tr></thead><tbody>${annual.map(p=>`<tr><td><strong>${esc(p.code)}</strong><div class="tiny">${esc(p.name)}</div></td><td>${p.target}%</td>${TERMS.map(t=>{const q=ploRollups(year,t).find(z=>z.code===p.code);return `<td>${q?.actual==null?'—':formatPct(q.actual)}</td>`}).join('')}<td><strong>${p.actual==null?'—':formatPct(p.actual)}</strong></td><td>${p.actual==null?'<span class="tag">No data</span>':p.met?'<span class="tag blue">Achieved</span>':'<span class="status-pill status-ReturnedforRevision">Below target</span>'}</td></tr>`).join('')}</tbody></table></div></div>`;
   }
 
+  const KPI_OWNERS=['Academic','Quality','Extracurricular','Research','HOD'];
+  const kpiValue=(v,unit='')=>v==null?'Not entered':`${esc(v)}${unit?` ${esc(unit)}`:''}`;
+  function kpiCurrentYear(){return Core.kpiYearStart(ploYear);}
+  function kpiYearRecord(k){return state.kpiYears.find(r=>r.kpi_id===k.id&&Number(r.year_start)===kpiCurrentYear())||{};}
+  function kpiField(id,label,value='',type='text',extra=''){return `<div class="field f6"><label for="${id}">${esc(label)}</label><input id="${id}" type="${type}" value="${esc(value??'')}" ${extra}></div>`;}
+  function kpiText(id,label,value=''){return `<div class="field f12"><label for="${id}">${esc(label)}</label><textarea id="${id}" rows="3" maxlength="10000">${esc(value||'')}</textarea></div>`;}
+  function kpiChart(k,year){
+    const points=Core.kpiTrend(state.kpiYears,k.id,year),max=Math.max(1,...points.map(p=>p.actual??0));
+    return `<figure class="kpi-chart"><figcaption>Actual benchmark · three-year trend (${esc(k.unit)})</figcaption><div class="kpi-bars" role="img" aria-label="${esc(points.map(p=>`${Core.kpiYearLabel(p.year,ploYear)}: ${p.actual??'No data'}`).join('; '))}">${points.map(p=>`<div class="kpi-bar-column"><strong>${p.actual==null?'No data':esc(p.actual)}</strong><div class="kpi-bar-space"><div class="kpi-bar ${p.year===year?'current':''}" style="height:${p.actual==null?0:p.actual/max*100}%"></div></div><span>${esc(Core.kpiYearLabel(p.year,ploYear))}</span></div>`).join('')}</div><p class="tiny">Scale starts at 0. Missing values are not plotted.</p></figure>`;
+  }
+  function renderKpis(){
+    const editable=Core.canEditKpi(currentUser),year=kpiCurrentYear();
+    const years=[...new Set([...state.academicYears,...state.kpiYears.map(r=>Core.kpiYearLabel(r.year_start,ploYear)),... (year==null?[]:[-2,-1,0,1].map(n=>Core.kpiYearLabel(year+n,ploYear)))])].filter(y=>Core.kpiYearStart(y)!=null).sort((a,b)=>Core.kpiYearStart(b)-Core.kpiYearStart(a));
+    const head=pageHead('Performance management','Key Performance Indicators','The HOD sets KPIs, benchmarks, analysis and improvement priorities. Assigned owners complete their action plans.',`<label class="inline-select-label"><span>Academic year</span><select id="kpiYear" aria-label="KPI academic year">${years.map(y=>`<option ${Core.kpiYearStart(y)===year?'selected':''}>${esc(y)}</option>`).join('')}</select></label>${editable?'<button class="btn btn-primary" id="newKpi">＋ New KPI</button>':''}`);
+    if(year==null)return head+'<div class="card">The HOD must configure an academic year such as 2026–2027 in Program Setup.</div>';
+    const cards=state.kpiDefinitions.map(k=>{
+      const r=kpiYearRecord(k),internal=Core.kpiInternal(state.kpiYears,k.id,year,r.internal),priorities=state.kpiPriorities.filter(p=>p.kpi_id===k.id&&Number(p.year_start)===year);
+      return `<article class="card kpi-card"><div class="section-title"><div><span class="eyebrow">${esc(k.code)}</span><h2>${esc(k.name)}</h2><p>Owner: <strong>${esc(k.owner_category)}</strong> · ${esc(k.owner_name)}</p></div>${editable?`<button class="btn btn-ghost" data-kpi-definition="${esc(k.id)}">Edit KPI / owner</button><button class="btn btn-primary" data-kpi-year="${esc(k.id)}">Edit annual record</button>`:'<span class="tag">Read-only KPI</span>'}</div><dl class="kpi-benchmarks">${[['Internal Benchmark',internal.value],['Target Benchmark',r.target],['External Benchmark',r.external],['Actual Benchmark',r.actual],['New Target Benchmark',r.new_target]].map(([label,v])=>`<div><dt>${label}</dt><dd>${kpiValue(v,k.unit)}</dd></div>`).join('')}</dl><p class="tiny">${internal.automatic?'Internal benchmark automatically uses the previous year’s actual.':'No previous-year actual is available. The HOD can enter an internal benchmark.'}</p><div class="kpi-detail-grid">${kpiChart(k,year)}<section><h3>Analysis</h3>${[['Strengths',r.strengths],['Weaknesses',r.weaknesses],['Comparisons',r.comparisons]].map(([label,v])=>`<h4>${label}</h4><p class="kpi-narrative">${esc(v||'Not entered')}</p>`).join('')}</section></div><section><div class="section-title"><h3>Priorities for Improvement</h3>${editable?`<button class="btn btn-ghost" data-kpi-priority-new="${esc(k.id)}">＋ Add priority</button>`:''}</div>${priorities.length?`<ul class="kpi-priorities">${priorities.map(p=>`<li><span>${esc(p.priority)}</span>${editable?`<button class="btn btn-ghost" data-kpi-priority="${esc(p.id)}">Edit priority</button>`:''}</li>`).join('')}</ul>`:'<p class="tiny">No priorities entered for this year.</p>'}</section></article>`;
+    }).join('');
+    const priorities=state.kpiPriorities.filter(p=>Number(p.year_start)===year);
+    return head+(cards||'<div class="card"><h2>No KPIs yet</h2><p>The HOD can add the first KPI and assign its owner.</p></div>')+`<section class="section"><h2>Priorities for Improvement · Action Plan</h2><p>Priorities and KPI names are linked to the records above. Only the assigned KPI owner can edit the remaining fields.</p><div class="table-card kpi-table-wrap"><table class="data-table"><thead><tr>${['Priorities for improvement','Actions','Responsible','Start Date','End Date','KPI','Target Benchmark',''].map(t=>`<th>${t}</th>`).join('')}</tr></thead><tbody>${priorities.map(p=>{const k=state.kpiDefinitions.find(k=>k.id===p.kpi_id);if(!k)return '';const a=state.kpiActions.find(a=>a.priority_id===p.id)||{};return `<tr><td class="kpi-narrative">${esc(p.priority)}</td><td class="kpi-narrative">${esc(a.actions||'Awaiting owner')}</td><td>${esc(a.responsible||'—')}</td><td>${esc(a.start_date||'—')}</td><td>${esc(a.end_date||'—')}</td><td><strong>${esc(k.code)}</strong><div>${esc(k.name)}</div><div class="tiny">${esc(k.owner_category)} · ${esc(k.owner_name)}</div></td><td>${kpiValue(a.target,k.unit)}</td><td>${Core.canEditKpiAction(currentUser,k)?`<button class="btn btn-ghost" data-kpi-action="${esc(p.id)}">Edit action plan</button>`:'Owner only'}</td></tr>`;}).join('')||'<tr><td colspan="8">No improvement priorities for this year.</td></tr>'}</tbody></table></div></section>`;
+  }
+  async function saveKpiRow(table,key,row,identity='id'){
+    const existing=state[key].find(r=>r[identity]===row[identity]);
+    let saved=row;
+    if(backendEnabled){
+      let result;
+      if(existing){const changes={...row};for(const field of [identity,'program_id','kpi_id','year_start'])delete changes[field];result=await Backend.patch(table,`${identity}=eq.${encodeURIComponent(row[identity])}`,changes);}
+      else result=await Backend.insert(table,row);
+      if(!result?.[0])throw new Error('Save was not permitted or the record changed. Refresh and try again.');
+      saved=result[0];
+    }
+    if(existing)Object.assign(existing,saved);else state[key].push(saved);
+    saveState();
+  }
+  function kpiSubmit(handler){
+    $('kpiForm').addEventListener('submit',async e=>{e.preventDefault();const b=$('saveKpi');b.disabled=true;try{await handler();hideModal();render();toast('KPI changes saved.');}catch(error){$('kpiError').textContent=error.message||'Could not save. Please try again.';}finally{b.disabled=false;}});
+  }
+  function kpiModal(title,fields){$('modalTitle').textContent=title;$('modalBody').innerHTML=`<form id="kpiForm" class="form-grid">${fields}<p id="kpiError" class="f12" role="alert"></p><div class="field f12"><button id="saveKpi" class="btn btn-primary" type="submit">Save</button></div></form>`;showModal();}
+  async function editKpiDefinition(id){
+    if(!Core.canEditKpi(currentUser)||kpiCurrentYear()==null)return;
+    await loadUsers();
+    const k=state.kpiDefinitions.find(k=>k.id===id)||{};
+    const owners=userDirectory.filter(u=>u.active!==false&&['Head of Department','Instructor','Coordinator'].includes(canonicalUiRole(u.role))&&(!backendEnabled||(u.programIds||[]).includes(activeProgramId)));
+    kpiModal(id?'Edit KPI and owner':'New Key Performance Indicator',kpiField('kCode','KPI code',k.code,'text','required maxlength="60"')+kpiField('kName','KPI name',k.name,'text','required maxlength="500"')+kpiField('kUnit','Measurement unit',k.unit||'%','text','required maxlength="40"')+`<div class="field f6"><label for="kCategory">Owner category</label><select id="kCategory">${KPI_OWNERS.map(c=>`<option ${c===k.owner_category?'selected':''}>${c}</option>`).join('')}</select></div><div class="field f12"><label for="kOwner">Assigned KPI owner</label><select id="kOwner" required><option value="">Select a user</option>${owners.map(u=>`<option value="${esc(u.id)}" ${u.id===k.owner_user_id?'selected':''}>${esc(displayUserName(u))} (${esc(u.role)})</option>`).join('')}</select></div>`);
+    kpiSubmit(async()=>{if(!Core.canEditKpi(currentUser))throw new Error('HOD access required.');const owner=owners.find(u=>u.id===$('kOwner').value),code=$('kCode').value.trim(),name=$('kName').value.trim(),unit=$('kUnit').value.trim();if(!owner||!code||!name||!unit)throw new Error('Complete the KPI details and owner.');if($('kCategory').value==='HOD'&&canonicalUiRole(owner.role)!=='Head of Department')throw new Error('Select an HOD user for the HOD category.');if(state.kpiDefinitions.some(other=>other.id!==k.id&&other.code.toLowerCase()===code.toLowerCase()))throw new Error('This KPI code already exists.');await saveKpiRow('kpi_definitions','kpiDefinitions',{id:k.id||uid(),program_id:activeProgramId,code,name,unit,owner_category:$('kCategory').value,owner_user_id:owner.id,owner_name:displayUserName(owner)});});
+  }
+  function editKpiYear(id){
+    if(!Core.canEditKpi(currentUser))return;
+    const k=state.kpiDefinitions.find(k=>k.id===id);if(!k)return;
+    const r=kpiYearRecord(k),internal=Core.kpiInternal(state.kpiYears,id,kpiCurrentYear(),r.internal);
+    kpiModal(`${k.code} · ${ploYear}`,`<p class="f12">Benchmarks use ${esc(k.unit)}. Leave unknown values blank.</p>`+[['internal','Internal Benchmark',internal.value],['target','Target Benchmark',r.target],['external','External Benchmark',r.external],['actual','Actual Benchmark',r.actual],['new_target','New Target Benchmark',r.new_target]].map(([key,label,value])=>kpiField('kb_'+key,label,value,'number',`min="0" max="1000000000000" step="any" ${key==='internal'&&internal.automatic?'readonly aria-describedby="internalSource"':''}`)).join('')+`<p id="internalSource" class="f12 tiny">${internal.automatic?'Internal benchmark is linked to last year’s actual and cannot be overridden.':'No prior actual: enter an internal benchmark if available.'}</p>`+kpiText('kStrengths','Analysis: Strengths',r.strengths)+kpiText('kWeaknesses','Analysis: Weaknesses',r.weaknesses)+kpiText('kComparisons','Analysis: Comparisons',r.comparisons));
+    kpiSubmit(async()=>{if(!Core.canEditKpi(currentUser))throw new Error('HOD access required.');const row={id:r.id||uid(),program_id:activeProgramId,kpi_id:id,year_start:kpiCurrentYear(),strengths:$('kStrengths').value.trim(),weaknesses:$('kWeaknesses').value.trim(),comparisons:$('kComparisons').value.trim()};for(const key of ['internal','target','external','actual','new_target'])row[key]=key==='internal'&&internal.automatic?(r.internal??null):Core.kpiNumber($('kb_'+key).value);await saveKpiRow('kpi_years','kpiYears',row);});
+  }
+  function editKpiPriority(kpiId,id){
+    if(!Core.canEditKpi(currentUser))return;
+    const p=state.kpiPriorities.find(p=>p.id===id)||{},k=state.kpiDefinitions.find(k=>k.id===(p.kpi_id||kpiId));if(!k)return;
+    kpiModal('Priority for Improvement',`<p class="f12">${esc(k.code)} · ${esc(ploYear)}</p>`+kpiText('kPriority','Priority for improvement',p.priority));$('kPriority').required=true;
+    kpiSubmit(async()=>{if(!Core.canEditKpi(currentUser))throw new Error('HOD access required.');const priority=$('kPriority').value.trim();if(!priority)throw new Error('Enter a priority.');await saveKpiRow('kpi_priorities','kpiPriorities',{id:p.id||uid(),program_id:activeProgramId,kpi_id:k.id,year_start:kpiCurrentYear(),priority});});
+  }
+  function editKpiAction(id){
+    const p=state.kpiPriorities.find(p=>p.id===id),k=state.kpiDefinitions.find(k=>k.id===p?.kpi_id);if(!p||!Core.canEditKpiAction(currentUser,k))return;
+    const a=state.kpiActions.find(a=>a.priority_id===id)||{},r=kpiYearRecord(k);
+    kpiModal('KPI improvement action plan',`<p class="f12"><strong>${esc(k.code)} · ${esc(k.name)}</strong><br>${esc(p.priority)}</p>`+kpiText('kActions','Actions',a.actions)+kpiField('kResponsible','Responsible',a.responsible,'text','maxlength="500"')+kpiField('kStart','Start Date',a.start_date,'date')+kpiField('kEnd','End Date',a.end_date,'date')+kpiField('kActionTarget',`Target Benchmark (${k.unit})`,a.target??r.new_target??r.target,'number','min="0" max="1000000000000" step="any"')+'<p class="f12 tiny">The suggested target comes from the KPI’s new target (or target). The owner may change it for this action plan.</p>');
+    kpiSubmit(async()=>{if(!Core.canEditKpiAction(currentUser,k))throw new Error('Only the assigned KPI owner can edit this action plan.');const start=$('kStart').value||null,end=$('kEnd').value||null;if(start&&end&&end<start)throw new Error('End Date must be on or after Start Date.');await saveKpiRow('kpi_actions','kpiActions',{priority_id:id,program_id:activeProgramId,actions:$('kActions').value.trim(),responsible:$('kResponsible').value.trim(),start_date:start,end_date:end,target:Core.kpiNumber($('kActionTarget').value)},'priority_id');});
+  }
+  function bindKpiEvents(){
+    $('newKpi')?.addEventListener('click',()=>editKpiDefinition());
+    $('kpiYear')?.addEventListener('change',e=>{ploYear=e.target.value;render();});
+    document.querySelectorAll('[data-kpi-definition]').forEach(b=>b.addEventListener('click',()=>editKpiDefinition(b.dataset.kpiDefinition)));
+    document.querySelectorAll('[data-kpi-year]').forEach(b=>b.addEventListener('click',()=>editKpiYear(b.dataset.kpiYear)));
+    document.querySelectorAll('[data-kpi-priority-new]').forEach(b=>b.addEventListener('click',()=>editKpiPriority(b.dataset.kpiPriorityNew)));
+    document.querySelectorAll('[data-kpi-priority]').forEach(b=>b.addEventListener('click',()=>editKpiPriority(null,b.dataset.kpiPriority)));
+    document.querySelectorAll('[data-kpi-action]').forEach(b=>b.addEventListener('click',()=>editKpiAction(b.dataset.kpiAction)));
+  }
+
   function renderOperational(){
-    const editable=state.role==='Coordinator';
-    return roleHero()+pageHead('Execution','Operational Plan','Track objectives and KPIs separately from Course Report approval. Approved course-report and PLO data can be cited as evidence.',editable?'<button class="btn btn-primary" data-new="plan">＋ New KPI</button>':'')+`
+    return roleHero()+pageHead('Execution','Operational Plan','Existing operational records. Manage annual KPI benchmarks and owner improvement actions in Key Performance Indicators.','<button class="btn btn-primary" data-go="kpis">Open Key Performance Indicators</button>')+`
       <div class="table-card"><table class="data-table"><thead><tr><th>Objective</th><th>KPI</th><th>Target</th><th>Actual</th><th>Owner</th><th>Due</th><th>Status</th></tr></thead><tbody>${state.operational.map(x=>`<tr><td><strong>${esc(x.objective)}</strong></td><td>${esc(x.kpi)}</td><td>${x.target}${esc(x.unit||'%')}</td><td>${x.actual}${esc(x.unit||'%')}</td><td>${esc(x.owner)}</td><td>${esc(x.due||'—')}</td><td>${statusPill(x.status)}</td></tr>`).join('')}</tbody></table></div>`;
   }
   function renderAutomations(){return roleHero()+pageHead('Workflow engine','Automations','Core controls that prevent unapproved data from entering official program quality results.')+`<div class="grid grid-2">${state.automations.map(a=>`<div class="card automation-card"><div class="automation-icon">${esc(a.icon)}</div><div><strong>${esc(a.name)}</strong><p>${esc(a.description)}</p></div><span class="tag blue">Active</span></div>`).join('')}</div>`}
@@ -1934,16 +2032,11 @@ window.ACADELOOP_SEED = {
   }
 
 
-  function openNewPlan(){
-    $('modalTitle').textContent='New operational KPI';$('modalBody').innerHTML=`<div class="form-grid"><div class="field f12"><label>Objective</label><input id="npObjective"></div><div class="field f12"><label>KPI</label><input id="npKpi"></div><div class="field f4"><label>Target (%)</label><input type="number" id="npTarget" value="100"></div><div class="field f4"><label>Current actual (%)</label><input type="number" id="npActual" value="0"></div><div class="field f4"><label>Due date</label><input type="date" id="npDue"></div><div class="field f6"><label>Owner</label><input id="npOwner"></div><div class="field f6"><label>Evidence source</label><input id="npEvidence"></div><div class="field f12"><button class="btn btn-primary" id="createPlan" style="width:100%">Add KPI</button></div></div>`;showModal();
-    $('createPlan').addEventListener('click',async()=>{if(!$('npObjective').value.trim()||!$('npKpi').value.trim()){toast('Enter objective and KPI.');return;}const target=clamp($('npTarget').value),actual=clamp($('npActual').value);const item={id:uid(),objective:$('npObjective').value.trim(),kpi:$('npKpi').value.trim(),target,actual,unit:'%',owner:$('npOwner').value.trim()||'Unassigned',due:$('npDue').value||'',status:actual>=target?'On Track':'Needs Attention',evidence:$('npEvidence').value.trim()||'Not linked'};state.operational.push(item);try{await persistOperational();saveState();hideModal();render();toast('Operational KPI added.');}catch(e){state.operational=state.operational.filter(x=>x!==item);toast(e?.message||'Could not save the KPI.');}});
-  }
-
   function bindViewEvents(){
+    bindKpiEvents();
     if($('inflationOnlyCheck')){const applyInflationFilter=()=>{dashboardInflationOnly=$('inflationOnlyCheck').checked;document.querySelectorAll('[data-dashboard-course]').forEach(row=>{row.style.display=!dashboardInflationOnly||row.dataset.inflation==='1'?'':'none';});};$('inflationOnlyCheck').addEventListener('change',applyInflationFilter);applyInflationFilter();}
     document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));
     document.querySelectorAll('[data-new="report"]').forEach(b=>b.addEventListener('click',openNewReport));
-    document.querySelectorAll('[data-new="plan"]').forEach(b=>b.addEventListener('click',openNewPlan));
     document.querySelectorAll('[data-edit-report]').forEach(b=>b.addEventListener('click',()=>openReport(b.dataset.editReport)));
     document.querySelectorAll('[data-open-portfolio]').forEach(b=>b.addEventListener('click',()=>{currentPortfolioId=b.dataset.openPortfolio;currentView='course-portfolios';render();window.scrollTo({top:0,behavior:'smooth'});}));
     document.querySelectorAll('[data-plo]').forEach(c=>c.addEventListener('click',()=>{activePlo=c.dataset.plo;render();}));
@@ -2135,17 +2228,19 @@ window.ACADELOOP_SEED = {
     }
     const base=clone(seed);base.reports=[];base.operational=[];base.audit=[];base.academicYears=[];base.program={...base.program,academicYear:''};backendProgramSettingsId=null;
     const pid=encodeURIComponent(activeProgramId);
-    const [programRows,settingsRows,ploRows,operationalRows,reportRows]=await Promise.all([
+    const [programRows,settingsRows,ploRows,operationalRows,reportRows,kpiDefinitions,kpiYears,kpiPriorities,kpiActions]=await Promise.all([
       Backend.select('academic_programs',`id=eq.${pid}&select=*`),
       Backend.select('program_settings',`program_id=eq.${pid}&is_active=eq.true&select=*&order=updated_at.desc&limit=1`),
       Backend.select('plos',`program_id=eq.${pid}&active=eq.true&select=*&order=code.asc`),
       Backend.select('operational_plans',`program_id=eq.${pid}&select=*&order=updated_at.desc&limit=1`),
-      Backend.select('course_reports',`program_id=eq.${pid}&select=*&order=updated_at.desc`)
+      Backend.select('course_reports',`program_id=eq.${pid}&select=*&order=updated_at.desc`),
+      ...['kpi_definitions','kpi_years','kpi_priorities','kpi_actions'].map(table=>Backend.select(table,`program_id=eq.${pid}&select=*`))
     ]);
     const pg=programRows?.[0];if(pg){base.program={...base.program,name:pg.name,programType:programTypeLabel(pg),department:pg.department,college:pg.college,institution:pg.institution,academicYear:''};base.academicYears=[];}
     if(settingsRows?.[0]){const row=settingsRows[0];backendProgramSettingsId=row.id;base.program={...base.program,academicYear:String(row.academic_year||row.data?.academicYear||'').trim()};base.academicYears=Array.isArray(row.data?.academicYears)?row.data.academicYears.filter(Boolean):(base.program.academicYear?[base.program.academicYear]:[]);}
     if(ploRows?.length)base.plos=ploRows.map(p=>({code:p.code,name:p.name,target:Number(p.target)}));
     if(operationalRows?.[0]?.data?.items)base.operational=operationalRows[0].data.items;
+    Object.assign(base,{kpiDefinitions,kpiYears,kpiPriorities,kpiActions});
     base.reports=(reportRows||[]).map(reportFromDb);
     if(currentUser.role==='Head of Department'){try{const auditRows=await Backend.select('audit_log',`details->>program_id=eq.${pid}&select=*&order=created_at.desc&limit=50`);base.audit=(auditRows||[]).map(a=>({icon:'•',title:a.action,detail:`${a.entity_type}${a.entity_id?` · ${a.entity_id}`:''}`,time:String(a.created_at||'').slice(0,16).replace('T',' ')}));}catch{}}
     state=normalizeState(base);state.role=currentUser.role;ploYear=state.program.academicYear;ploTerm='Annual';

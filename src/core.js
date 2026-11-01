@@ -444,7 +444,30 @@
     return [...new Set(errors)];
   }
 
+  // Academic years are keyed by their starting year, independent of dash style.
+  function kpiYearStart(label){
+    const match=String(label||'').trim().match(/^(\d{4})(?:\s*[-–—/]\s*\d{4})?$/);
+    return match?Number(match[1]):null;
+  }
+  function kpiYearLabel(start, reference){return /^\d{4}$/.test(String(reference))?String(start):`${start}–${start+1}`;}
+  function kpiNumber(value){
+    if(value==null||String(value).trim()==='')return null;
+    const number=Number(value);
+    if(!Number.isFinite(number)||number<0||number>1e12)throw new Error('Benchmarks must be numbers between 0 and 1,000,000,000,000.');
+    return number;
+  }
+  function kpiInternal(records,kpiId,year,fallback=null){
+    const previous=records.find(r=>r.kpi_id===kpiId&&Number(r.year_start)===Number(year)-1);
+    return previous?.actual!=null?{value:kpiNumber(previous.actual),automatic:true}:{value:kpiNumber(fallback),automatic:false};
+  }
+  function kpiTrend(records,kpiId,year){
+    return [Number(year)-2,Number(year)-1,Number(year)].map(y=>({year:y,actual:kpiNumber(records.find(r=>r.kpi_id===kpiId&&Number(r.year_start)===y)?.actual)}));
+  }
+  function canEditKpi(user){return !!user&&user.active!==false&&['HOD','Head of Department'].includes(user.role);}
+  function canEditKpiAction(user,kpi){return !!user&&user.active!==false&&['HOD','Head of Department','Coordinator','Instructor'].includes(user.role)&&user.id===kpi?.owner_user_id;}
+
   return Object.freeze({
+    kpiYearStart, kpiYearLabel, kpiNumber, kpiInternal, kpiTrend, canEditKpi, canEditKpiAction,
     TERMS,
     LETTER_GRADE_LABELS,
     GRADE_DEFS,
@@ -483,3 +506,4 @@
     validateReport
   });
 });
+

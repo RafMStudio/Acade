@@ -252,3 +252,23 @@ test('Combined integrity remains stable across repeated recomputation', () => {
   assert.equal(combinedIntegrityAudit(r).ok, true);
 });
 
+
+
+test('KPI internal benchmark uses exactly the previous year, including a zero actual', () => {
+  const rows=[{kpi_id:'a',year_start:2024,actual:75},{kpi_id:'a',year_start:2025,actual:0},{kpi_id:'b',year_start:2025,actual:99}];
+  assert.deepEqual(Core.kpiInternal(rows,'a',2026,88),{value:0,automatic:true});
+  assert.deepEqual(Core.kpiInternal(rows,'a',2027,88),{value:88,automatic:false});
+  assert.deepEqual(Core.kpiTrend(rows,'a',2026),[{year:2024,actual:75},{year:2025,actual:0},{year:2026,actual:null}]);
+  assert.equal(Core.kpiYearStart('2026–2027'),Core.kpiYearStart('2026-2027'));
+  assert.equal(Core.kpiNumber(''),null);
+  assert.throws(()=>Core.kpiNumber(-1));
+});
+test('KPI editing is HOD-only and action editing requires the actual assigned owner', () => {
+  const k={owner_user_id:'quality'};
+  assert.equal(Core.canEditKpi({id:'hod',role:'Head of Department'}),true);
+  assert.equal(Core.canEditKpi({id:'quality',role:'Coordinator'}),false);
+  assert.equal(Core.canEditKpiAction({id:'quality',role:'Coordinator'},k),true);
+  assert.equal(Core.canEditKpiAction({id:'hod',role:'Head of Department'},k),false);
+  assert.equal(Core.canEditKpiAction({id:'quality',role:'APU'},k),false);
+  assert.equal(Core.canEditKpiAction({id:'quality',role:'Coordinator',active:false},k),false);
+});
