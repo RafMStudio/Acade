@@ -72,10 +72,6 @@
       panel.dataset.orn = '1';
       panel.insertAdjacentHTML('beforeend', `<div class="auth-ornament" aria-hidden="true">${ornament({ dots: 48, laurelLeaves: 13 })}</div>`);
     });
-    root.querySelectorAll('.page-head:not([data-orn])').forEach((head) => {
-      head.dataset.orn = '1';
-      head.insertAdjacentHTML('afterbegin', `<span class="page-head-orn" aria-hidden="true">${ornament({ dots: 18, laurelLeaves: 5, crescent: false })}</span>`);
-    });
     root.querySelectorAll('.portfolio-empty:not([data-orn]), div.empty:not([data-orn])').forEach((box) => {
       box.dataset.orn = '1';
       box.insertAdjacentHTML('afterbegin', emptyMark());
@@ -118,6 +114,43 @@
     orn.style.transform = `rotate(${r2(dx * 14)}deg) translate(${r2(dx * -10)}px, ${r2(dy * -8)}px)`;
   }
 
+  /* ---------- liquid navigation pill ---------- */
+  // One pill slides and stretches between nav items, so the selection reads as
+  // a single object moving rather than a highlight jumping.
+  function syncNavPill(animate = true) {
+    const nav = document.getElementById('nav');
+    if (!nav) return;
+    let pill = nav.querySelector('.nav-liquid');
+    if (!pill) { pill = document.createElement('span'); pill.className = 'nav-liquid'; pill.setAttribute('aria-hidden', 'true'); nav.prepend(pill); }
+    const active = nav.querySelector('.nav-item.active:not(.role-hidden)');
+    if (!active || !active.offsetParent) { pill.style.opacity = '0'; return; }
+    const horizontal = getComputedStyle(nav).display === 'flex';
+    if (!animate || reduceMotion()) pill.style.transition = 'none';
+    pill.style.opacity = '1';
+    if (horizontal) {
+      pill.style.insetInline = 'auto';
+      pill.style.left = '0px';
+      pill.style.width = `${active.offsetWidth}px`;
+      pill.style.height = `${active.offsetHeight}px`;
+      pill.style.transform = `translate(${active.offsetLeft}px, ${active.offsetTop}px)`;
+    } else {
+      pill.style.left = ''; pill.style.width = ''; pill.style.insetInline = '';
+      pill.style.height = `${active.offsetHeight}px`;
+      pill.style.transform = `translateY(${active.offsetTop}px)`;
+    }
+    if (pill.style.transition === 'none') requestAnimationFrame(() => { pill.style.transition = ''; });
+    if (horizontal) active.scrollIntoView({ block: 'nearest', inline: 'center', behavior: reduceMotion() ? 'auto' : 'smooth' });
+  }
+
+  /* ---------- specular light on glass ---------- */
+  function specular(e) {
+    const el = e.target.closest?.('.sidebar, .topbar, .auth-card, .dashboard-page .metric');
+    if (!el) return;
+    const box = el.getBoundingClientRect();
+    el.style.setProperty('--mx', `${Math.round(e.clientX - box.left)}px`);
+    el.style.setProperty('--my', `${Math.round(e.clientY - box.top)}px`);
+  }
+
   function init() {
     const splash = document.getElementById('entranceSplash');
     if (splash && !splash.querySelector('.ornament')) splash.querySelector('.splash-mark')?.insertAdjacentHTML('afterbegin', ornament({ dots: 40, laurelLeaves: 12 }));
@@ -134,11 +167,20 @@
       let wasHidden = shell.classList.contains('hidden');
       new MutationObserver(() => {
         const hidden = shell.classList.contains('hidden');
-        if (wasHidden && !hidden) playEntrance();
+        if (wasHidden && !hidden) { playEntrance(); requestAnimationFrame(() => syncNavPill(false)); }
         wasHidden = hidden;
       }).observe(shell, { attributes: true, attributeFilter: ['class'] });
     }
     window.addEventListener('pointermove', parallax, { passive: true });
+    window.addEventListener('pointermove', specular, { passive: true });
+    const nav = document.getElementById('nav');
+    if (nav) {
+      new MutationObserver(() => syncNavPill()).observe(nav, { subtree: true, attributes: true, attributeFilter: ['class'] });
+      window.addEventListener('resize', () => syncNavPill(false));
+      document.fonts?.ready?.then(() => syncNavPill(false));
+      new MutationObserver(() => syncNavPill(false)).observe(document.documentElement, { attributes: true, attributeFilter: ['dir'] });
+      syncNavPill(false);
+    }
   }
 
   window.AcadeloopVisuals = { ornament, decorate };

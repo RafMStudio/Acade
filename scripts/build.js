@@ -46,5 +46,6 @@ copy('robots.txt');
 copy('vendor/jszip.min.js');
 copy('templates/Course_Report_Placeholder.docx');
 for (const file of ['seal.png', 'seal-white.png', 'campus.jpg']) copy(`assets/brand/${file}`);
+for (const file of fs.readdirSync(path.join(root, 'assets/fonts'))) copy(`assets/fonts/${file}`);
 
 console.log('Built resilient deployment: dist/index.html has inline Acadeloop CSS/app code; vendor + DOCX stay separate.');
