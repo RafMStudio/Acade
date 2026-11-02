@@ -690,3 +690,10 @@ body{font-weight:400;letter-spacing:0;color:var(--ink);background:#e9eeee}
 }
 .dashboard-hero .page-actions{max-width:none;flex-wrap:wrap;gap:8px}
 .dashboard-page .metric .label{padding-inline-end:18px}
+
+/* Supervisor filters remain usable on narrow screens and in both languages. */
+.supervisor-filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:end}
+.supervisor-filters label{min-width:0;display:flex;flex-direction:column;gap:6px}
+.supervisor-filters select{width:100%;min-width:0;max-width:100%}
+@media(max-width:900px){.supervisor-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.supervisor-filters{grid-template-columns:minmax(0,1fr)}}

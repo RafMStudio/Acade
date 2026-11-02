@@ -106,3 +106,36 @@ test('every sample role requires the shared password before authentication', asy
   }
   assert.ok(!source.includes('const savedLogin=authToken()'),'Legacy passwordless session must not restore automatically');
 });
+
+function supervisorHarness(role='APU',enabled=false){
+  const c={supervisorData:null,supervisorError:'',currentUser:{role},backendEnabled:enabled,
+    state:{program:{name:'Sample',department:'Health'},reports:[{id:'r'}],plos:[],academicYears:['2026–2027']},
+    isSupervisorRole:r=>['APU','VDAA'].includes(r),programDirectory:[{id:'p'}],accessibleProgramIds:['p'],reportFromDb:r=>r,
+    Backend:{select:async()=>{throw Error('No sample network calls allowed');}}};
+  const start=app.indexOf('  async function loadSupervisorData()');
+  vm.runInNewContext(app.slice(start,app.indexOf('  function renderSupervisorDashboard()',start)),c);
+  return c;
+}
+test('APU and VDAA sample dashboards stay isolated from the backend',async()=>{
+  for(const role of ['APU','VDAA']){const c=supervisorHarness(role);await c.loadSupervisorData();assert.equal(c.supervisorData.programs.length,1);assert.equal(c.supervisorData.reports[0].programId,'sample-program');}
+  const c=supervisorHarness('Instructor');await c.loadSupervisorData();assert.equal(c.supervisorData,null);
+});
+test('supervisor loader paginates and does not present partial totals on failure',async()=>{
+  const c=supervisorHarness('APU',true),calls=[];
+  c.Backend.select=async(table,query)=>{calls.push([table,query]);const offset=Number(new URLSearchParams(query).get('offset'));return offset===0?[{id:'one',program_id:'p',academic_year:'2026–2027'}]:[];};
+  await c.loadSupervisorData();assert.equal(c.supervisorData.reports.length,1);assert.equal(calls.length,6);
+  assert.ok(calls.every(([,q])=>q.includes('order=id.asc&limit=500')));
+  c.Backend.select=async()=>{throw Error('Unavailable');};await c.loadSupervisorData();assert.equal(c.supervisorData,null);assert.match(c.supervisorError,/incomplete totals/);
+});
+test('supervisor dashboard renders filters, empty results and chosen sections for both roles',()=>{
+  for(const role of ['APU','VDAA']){
+    const c=supervisorHarness(role);Object.assign(c,{Core:require('../src/core.js'),TERMS:['S1','S2','Summer'],ploYear:'2026–2027',activeProgramId:null,
+      supervisorFilters:{department:'',program:'',year:'2026–2027',term:'Annual',status:'',view:'reports'},
+      supervisorData:{programs:[{id:'p',name:'Health',code:'H',department:'Health'}],reports:[],plos:[],years:['2026–2027']},
+      esc:v=>String(v??''),uniqueDepartments:ps=>[...new Set(ps.map(p=>p.department))],programDirectoryLabel:p=>p.name,
+      dashboardQualitySection:()=>{throw Error('Hidden performance section rendered');},dashboardKpis:()=>'',periodPill:()=>'',statusPill:()=>''});
+    c.state.role=role;
+    const start=app.indexOf('  function renderSupervisorDashboard()');vm.runInNewContext(app.slice(start,app.indexOf('  function renderDashboard()',start)),c);
+    const html=c.renderSupervisorDashboard();assert.match(html,/All departments/);assert.match(html,/All programs/);assert.match(html,/supervisorStatus/);assert.match(html,/No reports match these filters/);assert.doesNotMatch(html,/<h2>Program overview/);
+  }
+});

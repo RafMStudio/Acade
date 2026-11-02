@@ -360,6 +360,16 @@
     });
   }
 
+  // Keep identical PLO codes in different programs separate during supervision.
+  function supervisorScope(snapshot, filters) {
+    const programs=(snapshot.programs||[]).filter(p=>(!filters.department||p.department===filters.department)&&(!filters.program||p.id===filters.program));
+    const ids=new Set(programs.map(p=>p.id));
+    const periodReports=(snapshot.reports||[]).filter(r=>ids.has(r.programId)&&(!filters.year||r.academicYear===filters.year)&&(filters.term==='Annual'||r.semester===filters.term));
+    const reports=periodReports.filter(r=>!filters.status||r.status===filters.status);
+    const rollups=programs.flatMap(p=>calculatePloRollups(periodReports.filter(r=>r.programId===p.id),(snapshot.plos||[]).filter(x=>x.programId===p.id),filters.year,filters.term).map(x=>({...x,programId:p.id})));
+    return {programs,periodReports,reports,rollups};
+  }
+
   function validateSection(report, key, requireInflationNarrative) {
     const section = sectionSnapshot(report, key);
     const label = sectionLabel(key);
@@ -482,6 +492,7 @@
   function canEditKpiAction(user,kpi){return !!user&&user.active!==false&&!!kpi?.owner_user_id&&['HOD','Head of Department','Coordinator','Instructor'].includes(user.role)&&user.id===kpi.owner_user_id;}
 
   return Object.freeze({
+    supervisorScope,
     kpiMeasurement, kpiBenchmark, kpiDepartmentAccess, kpiYearStart, kpiYearLabel, kpiNumber, kpiInternal, kpiTrend, canEditKpi, canEditKpiAction,
     TERMS,
     LETTER_GRADE_LABELS,

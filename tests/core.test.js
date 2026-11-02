@@ -289,3 +289,19 @@ test('KPI categories can await registration and department scope applies to supe
  assert.equal(Core.kpiDepartmentAccess({id:'h',role:'HOD',department:'Health'},'Nursing'),false);
  assert.equal(Core.kpiDepartmentAccess({id:'h',role:'HOD',department:''},''),false);
 });
+
+test('supervisor all-department totals keep program PLO codes independent and approved-only',()=>{
+  const snapshot={programs:[{id:'a',department:'Health'},{id:'b',department:'Nursing'}],plos:[{programId:'a',code:'K1',target:70},{programId:'b',code:'K1',target:90}],reports:[report({id:'a1',programId:'a',status:'Approved'}),report({id:'b1',programId:'b',status:'Approved'}),report({id:'b2',programId:'b',status:'Draft'})]};
+  const filters={department:'',program:'',year:'2026–2027',term:'Annual',status:''};
+  const all=Core.supervisorScope(snapshot,filters);
+  assert.equal(all.reports.length,3);assert.equal(all.rollups.length,2);
+  assert.deepEqual(all.rollups.map(x=>x.met),[true,false]);
+  assert.ok(all.rollups.every(x=>x.rows.length===1));
+  const drafts=Core.supervisorScope(snapshot,{...filters,status:'Draft'});
+  assert.equal(drafts.reports.length,1);assert.deepEqual(drafts.rollups,all.rollups);
+  assert.equal(Core.supervisorScope(snapshot,{...filters,department:'Health'}).reports.length,1);
+  assert.equal(Core.supervisorScope(snapshot,{...filters,program:'b'}).reports.length,2);
+  assert.equal(Core.supervisorScope(snapshot,{...filters,department:'Health',program:'b'}).reports.length,0);
+  assert.equal(Core.supervisorScope(snapshot,{...filters,term:'S2'}).reports.length,0);
+  assert.equal(Core.supervisorScope(snapshot,{...filters,year:'2025–2026'}).reports.length,0);
+});

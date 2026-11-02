@@ -8,6 +8,20 @@
 window.ACADELOOP_AR = {
   title: 'أكاديلوب — جودة البرامج الأكاديمية',
   phrases: {
+    'All departments': 'جميع الأقسام',
+    'All programs': 'جميع البرامج',
+    'Show sections': 'عرض الأقسام',
+    'All sections': 'جميع الأقسام المعروضة',
+    'Program overview': 'نظرة عامة على البرامج',
+    'Reset filters': 'إعادة تعيين المرشحات',
+    'Refresh data': 'تحديث البيانات',
+    'Report status': 'حالة التقرير',
+    'Department / program': 'القسم / البرنامج',
+    'Choose departments, programs and reporting periods. All supervision is read-only.': 'اختر الأقسام والبرامج وفترات التقارير. جميع صلاحيات الإشراف للقراءة فقط.',
+    'No programs match these filters.': 'لا توجد برامج تطابق المرشحات.',
+    'No reports match these filters.': 'لا توجد تقارير تطابق المرشحات.',
+    'KPI access remains restricted to your department.': 'يبقى الوصول إلى مؤشرات الأداء مقصوراً على قسمك.',
+
     // Shell, navigation, brand
     'Acadeloop': 'أكاديلوب',
     'Prince Sultan Military College of Health Sciences, Dhahran': 'كلية الأمير سلطان العسكرية للعلوم الصحية بالظهران',

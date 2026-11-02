@@ -707,6 +707,13 @@ body{font-weight:400;letter-spacing:0;color:var(--ink);background:#e9eeee}
 .dashboard-hero .page-actions{max-width:none;flex-wrap:wrap;gap:8px}
 .dashboard-page .metric .label{padding-inline-end:18px}
 
+/* Supervisor filters remain usable on narrow screens and in both languages. */
+.supervisor-filters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:end}
+.supervisor-filters label{min-width:0;display:flex;flex-direction:column;gap:6px}
+.supervisor-filters select{width:100%;min-width:0;max-width:100%}
+@media(max-width:900px){.supervisor-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.supervisor-filters{grid-template-columns:minmax(0,1fr)}}
+
 </style></head>
 <body>
 <section class="auth-screen" id="authScreen" style="--campus:url('assets/brand/campus.jpg')">
@@ -1187,6 +1194,16 @@ body{font-weight:400;letter-spacing:0;color:var(--ink);background:#e9eeee}
     });
   }
 
+  // Keep identical PLO codes in different programs separate during supervision.
+  function supervisorScope(snapshot, filters) {
+    const programs=(snapshot.programs||[]).filter(p=>(!filters.department||p.department===filters.department)&&(!filters.program||p.id===filters.program));
+    const ids=new Set(programs.map(p=>p.id));
+    const periodReports=(snapshot.reports||[]).filter(r=>ids.has(r.programId)&&(!filters.year||r.academicYear===filters.year)&&(filters.term==='Annual'||r.semester===filters.term));
+    const reports=periodReports.filter(r=>!filters.status||r.status===filters.status);
+    const rollups=programs.flatMap(p=>calculatePloRollups(periodReports.filter(r=>r.programId===p.id),(snapshot.plos||[]).filter(x=>x.programId===p.id),filters.year,filters.term).map(x=>({...x,programId:p.id})));
+    return {programs,periodReports,reports,rollups};
+  }
+
   function validateSection(report, key, requireInflationNarrative) {
     const section = sectionSnapshot(report, key);
     const label = sectionLabel(key);
@@ -1309,6 +1326,7 @@ body{font-weight:400;letter-spacing:0;color:var(--ink);background:#e9eeee}
   function canEditKpiAction(user,kpi){return !!user&&user.active!==false&&!!kpi?.owner_user_id&&['HOD','Head of Department','Coordinator','Instructor'].includes(user.role)&&user.id===kpi.owner_user_id;}
 
   return Object.freeze({
+    supervisorScope,
     kpiMeasurement, kpiBenchmark, kpiDepartmentAccess, kpiYearStart, kpiYearLabel, kpiNumber, kpiInternal, kpiTrend, canEditKpi, canEditKpiAction,
     TERMS,
     LETTER_GRADE_LABELS,
@@ -1686,6 +1704,20 @@ window.ACADELOOP_SEED = {
 window.ACADELOOP_AR = {
   title: 'أكاديلوب — جودة البرامج الأكاديمية',
   phrases: {
+    'All departments': 'جميع الأقسام',
+    'All programs': 'جميع البرامج',
+    'Show sections': 'عرض الأقسام',
+    'All sections': 'جميع الأقسام المعروضة',
+    'Program overview': 'نظرة عامة على البرامج',
+    'Reset filters': 'إعادة تعيين المرشحات',
+    'Refresh data': 'تحديث البيانات',
+    'Report status': 'حالة التقرير',
+    'Department / program': 'القسم / البرنامج',
+    'Choose departments, programs and reporting periods. All supervision is read-only.': 'اختر الأقسام والبرامج وفترات التقارير. جميع صلاحيات الإشراف للقراءة فقط.',
+    'No programs match these filters.': 'لا توجد برامج تطابق المرشحات.',
+    'No reports match these filters.': 'لا توجد تقارير تطابق المرشحات.',
+    'KPI access remains restricted to your department.': 'يبقى الوصول إلى مؤشرات الأداء مقصوراً على قسمك.',
+
     // Shell, navigation, brand
     'Acadeloop': 'أكاديلوب',
     'Prince Sultan Military College of Health Sciences, Dhahran': 'كلية الأمير سلطان العسكرية للعلوم الصحية بالظهران',
@@ -2897,6 +2929,10 @@ window.ACADELOOP_AR = {
   const programDirectoryLabel = program => program ? `${program.name} (${program.code})` : '';
   const uniqueDepartments = programs => [...new Set((programs||[]).map(program=>String(program?.department||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
   let dashboardInflationOnly = false;
+  let supervisorData = null;
+  let supervisorError = '';
+  let supervisorFilters = {department:'',program:'',year:'',term:'Annual',status:'',view:'all'};
+
 
 
   const ROLE_CONFIG = {
@@ -3200,7 +3236,7 @@ window.ACADELOOP_AR = {
     $('content').innerHTML=map[currentView](); syncRoleUI(); bindViewEvents();
   }
 
-  function dashboardQualitySection(reports,year=ploYear,term=ploTerm){
+  function dashboardQualitySection(reports,year=ploYear,term=ploTerm,supervision=false){
     const rs=(reports||[]).filter(r=>r.academicYear===year&&(term==='Annual'||r.semester===term));
     const flagged=rs.map(r=>({r,flags:reportQualityFlags(r)}));
     const inflationCount=flagged.filter(x=>x.flags.inflation.inflated).length;
@@ -3210,7 +3246,7 @@ window.ACADELOOP_AR = {
     const rows=flagged.slice().sort((a,b)=>Number(b.flags.hasIssue)-Number(a.flags.hasIssue)||a.r.courseCode.localeCompare(b.r.courseCode)).map(({r,flags})=>{
       const inflation=flags.inflation.inflated?`<div class="signal-stack">${flags.inflation.flagged.map(x=>`<span class="signal-chip alert">${esc(x.label)} · ${esc(x.reasons.join(' / '))}</span>`).join('')}</div>`:'<span class="signal-chip ok">No inflation</span>';
       const gaps=flags.cloGaps.length?`<div class="signal-stack">${flags.cloGaps.slice(0,4).map(g=>`<span class="signal-chip bad">${esc(g.sectionLabel)} ${esc(g.code)} · ${formatPct(g.actual)} &lt; ${formatPct(g.target)}</span>`).join('')}${flags.cloGaps.length>4?`<span class="signal-chip bad">+${flags.cloGaps.length-4} more</span>`:''}</div>`:'<span class="signal-chip ok">Targets met</span>';
-      return `<tr data-dashboard-course data-inflation="${flags.inflation.inflated?'1':'0'}"><td><strong>${esc(r.courseCode)}</strong><div class="tiny">${esc(r.courseName)}</div></td><td>${periodPill(r)}</td><td>${inflation}</td><td>${gaps}</td><td>${statusPill(r.status)}</td><td><button class="btn btn-ghost" data-edit-report="${r.id}">View</button></td></tr>`;
+      return `<tr data-dashboard-course data-inflation="${flags.inflation.inflated?'1':'0'}"><td><strong>${esc(r.courseCode)}</strong><div class="tiny">${esc(r.courseName)}</div>${supervision?`<div class="tiny">${esc(supervisorData.programs.find(p=>p.id===r.programId)?.name||'')}</div>`:''}</td><td>${periodPill(r)}</td><td>${inflation}</td><td>${gaps}</td><td>${statusPill(r.status)}</td><td><button class="btn btn-ghost" ${supervision?`data-supervisor-report="${esc(r.id)}" data-program="${esc(r.programId)}"`:`data-edit-report="${r.id}"`}>View</button></td></tr>`;
     }).join('');
     return `<div class="section"><div class="section-title"><div><h2>Academic performance signals</h2><p>Grade inflation is detected when A+ is at least 20% of letter-graded students, or A and above is more than 60%. CLO alerts appear whenever an actual result is below its target.</p></div></div>
       <div class="quality-signal-grid"><div class="quality-signal-card"><div class="label">Courses with grade inflation</div><strong>${inflationCount}</strong><small>${rs.length} course report${rs.length===1?'':'s'} included</small></div><div class="quality-signal-card"><div class="label">Courses with CLO below target</div><strong>${cloCount}</strong><small>Any section/CLO actual below its target is flagged</small></div></div>
@@ -3224,38 +3260,71 @@ window.ACADELOOP_AR = {
     const admin=state.role==='System Administrator';
     return `<header class="dashboard-hero"><div class="dashboard-context"><span class="dashboard-role">${esc(state.role)}</span><span>${esc(admin?'Academic quality administration':state.program.department)}</span></div><div class="dashboard-hero-main"><div><span class="eyebrow">${esc(kicker)}</span><h1>${esc(title)}</h1><p>${esc(description)}</p></div><div class="page-actions">${actions}</div></div>${admin?'':`<div class="dashboard-program"><span>${esc(state.program.name)}</span><span>Academic year <strong>${esc(ploYear||state.program.academicYear||'Not set')}</strong></span></div>`}</header>`;
   }
-  function dashboardKpis(){
+  function dashboardKpis(yearLabel=ploYear){
     if(!kpiInDepartment())return '';
-    const year=kpiCurrentYear(),items=state.kpiDefinitions,annual=state.kpiYears.filter(r=>Number(r.year_start)===year);
+    const year=Core.kpiYearStart(yearLabel),items=state.kpiDefinitions,annual=state.kpiYears.filter(r=>Number(r.year_start)===year);
     const recorded=items.filter(k=>annual.some(r=>r.kpi_id===k.id&&r.actual!=null)).length;
     const priorities=state.kpiPriorities.filter(p=>Number(p.year_start)===year);
     const pending=priorities.filter(p=>{const a=state.kpiActions.find(a=>a.priority_id===p.id);return !a||!a.actions?.trim()||!a.responsible?.trim()||!a.start_date||!a.end_date||a.target==null;}).length;
     const rows=items.slice().sort((a,b)=>a.code.localeCompare(b.code)).slice(0,4).map(k=>{
       const r=annual.find(r=>r.kpi_id===k.id)||{},points=Core.kpiTrend(state.kpiYears,k.id,year),max=Math.max(1,...points.map(p=>p.actual??0));
-      return `<button type="button" class="dashboard-kpi-row" data-dashboard-kpi="${esc(k.id)}"><span class="dashboard-kpi-title"><span class="eyebrow">${esc(k.code)}</span><strong>${esc(k.name)}</strong><small>${esc(k.owner_category)}${k.owner_user_id?'':' · User not linked'}</small></span><span class="dashboard-kpi-number"><small>Actual</small><strong>${kpiValue(r.actual,k)}</strong><small>Target ${kpiValue(r.target,k)}</small></span><span class="dashboard-kpi-spark" role="img" aria-label="${esc(points.map(p=>`${Core.kpiYearLabel(p.year,ploYear)}: ${p.actual==null?'No data':p.actual+' '+kpiUnit(k)}`).join('; '))}">${points.map(p=>`<span title="${esc(Core.kpiYearLabel(p.year,ploYear))}: ${p.actual??'No data'}" style="height:${p.actual==null?0:Math.max(p.actual===0?2:0,p.actual/max*100)}%" class="${p.year===year?'current':''}"></span>`).join('')}</span><span class="dashboard-kpi-arrow" aria-hidden="true">↗</span></button>`;
+      return `<button type="button" class="dashboard-kpi-row" data-dashboard-kpi="${esc(k.id)}"><span class="dashboard-kpi-title"><span class="eyebrow">${esc(k.code)}</span><strong>${esc(k.name)}</strong><small>${esc(k.owner_category)}${k.owner_user_id?'':' · User not linked'}</small></span><span class="dashboard-kpi-number"><small>Actual</small><strong>${kpiValue(r.actual,k)}</strong><small>Target ${kpiValue(r.target,k)}</small></span><span class="dashboard-kpi-spark" role="img" aria-label="${esc(points.map(p=>`${Core.kpiYearLabel(p.year,yearLabel)}: ${p.actual==null?'No data':p.actual+' '+kpiUnit(k)}`).join('; '))}">${points.map(p=>`<span title="${esc(Core.kpiYearLabel(p.year,yearLabel))}: ${p.actual??'No data'}" style="height:${p.actual==null?0:Math.max(p.actual===0?2:0,p.actual/max*100)}%" class="${p.year===year?'current':''}"></span>`).join('')}</span><span class="dashboard-kpi-arrow" aria-hidden="true">↗</span></button>`;
     }).join('');
-    return `<section class="dashboard-kpis" aria-labelledby="dashboardKpiTitle"><div class="section-title"><div><span class="eyebrow">Department performance · Annual ${esc(ploYear)}</span><h2 id="dashboardKpiTitle">Key Performance Indicators</h2><p>Benchmarks, ownership and improvement actions in one place.</p></div><button class="btn btn-ghost" data-go="kpis">View all KPIs →</button></div><div class="dashboard-kpi-layout"><div class="dashboard-kpi-summary"><div class="dashboard-kpi-total"><span>Department KPIs</span><strong>${items.length}</strong><small>${recorded} with an actual result this year</small></div><dl><div><dt>Awaiting actual results</dt><dd>${items.length-recorded}</dd></div><div><dt>Action plans to complete</dt><dd>${pending}</dd></div><div><dt>Owners awaiting user links</dt><dd>${items.filter(k=>!k.owner_user_id).length}</dd></div></dl></div><div class="dashboard-kpi-list">${rows||`<div class="dashboard-kpi-empty"><span class="dashboard-empty-icon" aria-hidden="true">▥</span><h3>Your department’s performance starts here</h3><p>${canManageKpi()?'Add a KPI, choose its measurement and assign an owner category.':'Your HOD can add department KPIs and assign owner categories.'}</p>${canManageKpi()?'<button class="btn btn-primary" id="dashboardNewKpi">＋ Create first KPI</button>':''}</div>`}${rows?'<div class="dashboard-kpi-foot">Actual trends: selected year and previous two years. Select a KPI to open its record.</div>':''}</div></div></section>`;
+    return `<section class="dashboard-kpis" aria-labelledby="dashboardKpiTitle"><div class="section-title"><div><span class="eyebrow">Department performance · Annual ${esc(yearLabel)}</span><h2 id="dashboardKpiTitle">Key Performance Indicators</h2><p>Benchmarks, ownership and improvement actions in one place.</p></div><button class="btn btn-ghost" data-go="kpis">View all KPIs →</button></div><div class="dashboard-kpi-layout"><div class="dashboard-kpi-summary"><div class="dashboard-kpi-total"><span>Department KPIs</span><strong>${items.length}</strong><small>${recorded} with an actual result this year</small></div><dl><div><dt>Awaiting actual results</dt><dd>${items.length-recorded}</dd></div><div><dt>Action plans to complete</dt><dd>${pending}</dd></div><div><dt>Owners awaiting user links</dt><dd>${items.filter(k=>!k.owner_user_id).length}</dd></div></dl></div><div class="dashboard-kpi-list">${rows||`<div class="dashboard-kpi-empty"><span class="dashboard-empty-icon" aria-hidden="true">▥</span><h3>Your department’s performance starts here</h3><p>${canManageKpi()?'Add a KPI, choose its measurement and assign an owner category.':'Your HOD can add department KPIs and assign owner categories.'}</p>${canManageKpi()?'<button class="btn btn-primary" id="dashboardNewKpi">＋ Create first KPI</button>':''}</div>`}${rows?'<div class="dashboard-kpi-foot">Actual trends: selected year and previous two years. Select a KPI to open its record.</div>':''}</div></div></section>`;
   }
 
+  async function loadSupervisorData(){
+    supervisorData=null;supervisorError='';
+    if(!isSupervisorRole(currentUser?.role))return;
+    if(!backendEnabled){
+      const id='sample-program';
+      supervisorData={programs:[{...state.program,id,code:'Sample',status:'Open'}],reports:state.reports.map(r=>({...r,programId:id})),plos:state.plos.map(p=>({...p,programId:id})),years:state.academicYears};
+      return;
+    }
+    // Use the signed-in reader and existing RLS. Paginate so institution totals are not capped.
+    const readAll=async(table,query)=>{
+      const rows=[];let offset=0;
+      while(true){const page=await Backend.select(table,`${query}&order=id.asc&limit=500&offset=${offset}`);rows.push(...(page||[]));if(!page?.length)break;offset+=page.length;}
+      return rows;
+    };
+    try{
+      const [reports,plos,settings]=await Promise.all([
+        readAll('course_reports','select=*'),readAll('plos','select=*&active=eq.true'),readAll('program_settings','select=*&is_active=eq.true')
+      ]);
+      if(!isSupervisorRole(currentUser?.role))return;
+      supervisorData={programs:programDirectory.filter(p=>accessibleProgramIds.includes(p.id)),reports:reports.map(reportFromDb),plos:plos.map(p=>({...p,programId:p.program_id,target:Number(p.target)})),years:[...new Set(settings.flatMap(p=>[p.academic_year,...(p.data?.academicYears||[])]).concat(reports.map(r=>r.academic_year)).filter(Boolean))].sort().reverse()};
+    }catch(e){supervisorError='Could not load institution data. Retry to avoid viewing incomplete totals.';}
+  }
   function renderSupervisorDashboard(){
-    const year=ploYear||state.program.academicYear||state.academicYears[0]||'';
-    const term=ploTerm||'Annual';
-    const periodReports=state.reports.filter(r=>(!year||r.academicYear===year)&&(term==='Annual'||r.semester===term));
-    const approved=periodReports.filter(r=>r.status==='Approved');
-    const waiting=periodReports.filter(r=>r.status==='Awaiting Quality Approval');
-    const returned=periodReports.filter(r=>r.status==='Returned for Revision');
-    const roll=year?ploRollups(year,term):[];
-    const program=programDirectory.find(p=>p.id===activeProgramId);
-    const programOptions=programDirectory.map(p=>`<option value="${esc(p.id)}" ${p.id===activeProgramId?'selected':''}>${esc(programDirectoryLabel(p))}${p.status==='Closed'?' · Closed':''}</option>`).join('');
-    const yearOptions=state.academicYears.map(y=>`<option value="${esc(y)}" ${y===year?'selected':''}>${esc(y)}</option>`).join('');
-    const termOptions=['Annual',...TERMS].map(t=>`<option value="${esc(t)}" ${t===term?'selected':''}>${esc(t)}</option>`).join('');
-    return dashboardHead('Institution-wide supervision',`${state.role} Supervision Dashboard`,'Read-only oversight across every Acadeloop academic program. Filter by program, academic year, and semester; no data can be edited or deleted from this role.')+`
-      <div class="period-filter"><label><span>Academic program</span><select id="supervisorProgram">${programOptions}</select></label><label><span>Academic year</span><select id="supervisorYear">${yearOptions}</select></label><label><span>Semester</span><select id="supervisorTerm">${termOptions}</select></label></div>
-      <div class="user-directory-note"><div class="automation-icon">◉</div><div><strong>Read-only supervision</strong><span>${esc(program?.name||'Academic program')} · ${esc(year||'No academic year')} · ${esc(term)}. APU/VDAA can inspect all available quality data but cannot create, edit, approve, return, delete, or change settings.</span></div></div>
-      <div class="grid grid-4"><div class="card metric"><div class="label">Reports</div><div class="value">${periodReports.length}</div><div class="sub">All statuses in selected period</div></div><div class="card metric"><div class="label">Quality approved</div><div class="value">${approved.length}</div><div class="sub">Official program data</div></div><div class="card metric"><div class="label">In workflow</div><div class="value">${waiting.length+returned.length}</div><div class="sub">${waiting.length} awaiting · ${returned.length} returned</div></div><div class="card metric"><div class="label">PLOs meeting target</div><div class="value">${roll.filter(x=>x.met).length}/${roll.length}</div><div class="sub">Approved CLO evidence only</div></div></div>
-      ${dashboardKpis()}
-      ${dashboardQualitySection(periodReports,year,term)}
-      ${reportBoard(periodReports,'Program reporting oversight')}`;
+    const f=supervisorFilters;
+    const head=`<header class="dashboard-hero"><span class="eyebrow">Institution-wide supervision</span><h1>${esc(state.role)} Supervision Dashboard</h1><p>Choose departments, programs and reporting periods. All supervision is read-only.</p></header>`;
+    if(!supervisorData)return head+`<div class="card"><p role="alert">${esc(supervisorError||'Loading institution data…')}</p><button class="btn btn-primary" id="supervisorRefresh">Retry</button></div>`;
+    const data=supervisorData;
+    const options=(values,value,all)=>`${all?`<option value="">${esc(all)}</option>`:''}${values.map(x=>{const v=typeof x==='string'?x:x.id;return `<option value="${esc(v)}" ${v===value?'selected':''}>${esc(typeof x==='string'?x:programDirectoryLabel(x))}</option>`;}).join('')}`;
+    const availablePrograms=data.programs.filter(p=>!f.department||p.department===f.department);
+    const years=[...new Set([...data.years,...data.reports.map(r=>r.academicYear)].filter(Boolean))].sort().reverse();
+    if(!years.includes(f.year))f.year=years.includes(ploYear)?ploYear:years[0]||'';
+    const scope=Core.supervisorScope(data,f), rs=scope.reports;
+    const approved=rs.filter(r=>r.status==='Approved'),waiting=rs.filter(r=>r.status==='Awaiting Quality Approval'),returned=rs.filter(r=>r.status==='Returned for Revision');
+    const show=part=>f.view==='all'||f.view===part;
+    const summary=`<div class="grid grid-4"><div class="card metric"><div class="label">Reports</div><div class="value">${rs.length}</div><div class="sub">${scope.programs.length} academic programs</div></div><div class="card metric"><div class="label">Quality approved</div><div class="value">${approved.length}</div><div class="sub">Official program data</div></div><div class="card metric"><div class="label">In workflow</div><div class="value">${waiting.length+returned.length}</div><div class="sub">${waiting.length} awaiting · ${returned.length} returned</div></div><div class="card metric"><div class="label">PLOs meeting target</div><div class="value">${scope.rollups.filter(x=>x.met).length}/${scope.rollups.length}</div><div class="sub">Approved evidence; independent of status filter</div></div></div>`;
+    const programRows=scope.programs.map(p=>{const reports=rs.filter(r=>r.programId===p.id),roll=scope.rollups.filter(r=>r.programId===p.id);return `<tr><td>${esc(p.department)}</td><td>${esc(programDirectoryLabel(p))}</td><td>${reports.length}</td><td>${reports.filter(r=>r.status==='Approved').length}</td><td>${roll.filter(x=>x.met).length}/${roll.length}</td></tr>`;}).join('');
+    const reportRows=rs.map(r=>{const p=scope.programs.find(p=>p.id===r.programId);return `<tr><td>${esc(p.department)}<div class="tiny">${esc(programDirectoryLabel(p))}</div></td><td><strong>${esc(r.courseCode)}</strong><div class="tiny">${esc(r.courseName)}</div></td><td>${periodPill(r)}</td><td>${statusPill(r.status)}</td><td><button class="btn btn-ghost" data-supervisor-report="${esc(r.id)}" data-program="${esc(r.programId)}">View</button></td></tr>`;}).join('');
+    const kpis=f.program&&(f.program===activeProgramId||!backendEnabled)?(dashboardKpis(f.year)||'<div class="card"><p>KPI access remains restricted to your department.</p></div>'):`<div class="card"><h2>Key Performance Indicators</h2><p>Select a program to view its permitted department KPIs. KPI access remains restricted to your department.</p>${f.program?`<button class="btn btn-ghost" data-supervisor-workspace="${esc(f.program)}">Open selected program KPIs</button>`:''}</div>`;
+    return head+`<div class="period-filter supervisor-filters" aria-label="Dashboard filters">
+      <label><span>Department</span><select id="supervisorDepartment">${options(uniqueDepartments(data.programs),f.department,'All departments')}</select></label>
+      <label><span>Academic program</span><select id="supervisorProgram">${options(availablePrograms,f.program,'All programs')}</select></label>
+      <label><span>Academic year</span><select id="supervisorYear">${options(years,f.year,years.length?'':'No academic years')}</select></label>
+      <label><span>Semester</span><select id="supervisorTerm">${options(['Annual',...TERMS],f.term)}</select></label>
+      <label><span>Report status</span><select id="supervisorStatus">${options(['Draft','Awaiting Quality Approval','Returned for Revision','Approved'],f.status,'All statuses')}</select></label>
+      <label><span>Show sections</span><select id="supervisorView">${[['all','All sections'],['overview','Program overview'],['performance','Academic performance signals'],['reports','Course reports'],['kpis','Key Performance Indicators']].map(([v,t])=>`<option value="${v}" ${v===f.view?'selected':''}>${esc(t)}</option>`).join('')}</select></label>
+      <button class="btn btn-ghost" id="supervisorReset">Reset filters</button><button class="btn btn-ghost" id="supervisorRefresh">Refresh data</button></div>
+      <p class="tiny" role="status">${esc(f.department||'All departments')} · ${esc(f.year||'No academic years')} · ${esc(f.term)} · ${rs.length} reports${backendEnabled?'':' · Sample workspace only'}</p>
+      ${summary}
+      ${show('overview')?`<section class="section"><h2>Program overview</h2><div class="table-card"><table class="data-table"><thead><tr><th>Department</th><th>Academic program</th><th>Reports</th><th>Quality approved</th><th>PLOs meeting target</th></tr></thead><tbody>${programRows||'<tr><td colspan="5" class="empty">No programs match these filters.</td></tr>'}</tbody></table></div></section>`:''}
+      ${show('performance')?dashboardQualitySection(rs,f.year,f.term,true):''}
+      ${show('reports')?`<section class="section"><h2>Course reports</h2><div class="table-card"><table class="data-table"><thead><tr><th>Department / program</th><th>Course</th><th>Period</th><th>Status</th><th></th></tr></thead><tbody>${reportRows||'<tr><td colspan="5" class="empty">No reports match these filters.</td></tr>'}</tbody></table></div></section>`:''}
+      ${show('kpis')?kpis:''}`;
   }
 
   function renderDashboard(){
@@ -3479,7 +3548,7 @@ window.ACADELOOP_AR = {
   }
   function bindKpiEvents(){
     $('dashboardNewKpi')?.addEventListener('click',()=>{go('kpis');editKpiDefinition();});
-    document.querySelectorAll('[data-dashboard-kpi]').forEach(b=>b.addEventListener('click',()=>{const id=b.dataset.dashboardKpi;go('kpis');document.getElementById('kpi-'+id)?.scrollIntoView({block:'start',behavior:'smooth'});}));
+    document.querySelectorAll('[data-dashboard-kpi]').forEach(b=>b.addEventListener('click',()=>{const id=b.dataset.dashboardKpi;if(isSupervisorRole(state.role))ploYear=supervisorFilters.year;go('kpis');document.getElementById('kpi-'+id)?.scrollIntoView({block:'start',behavior:'smooth'});}));
     $('newKpi')?.addEventListener('click',()=>editKpiDefinition());
     $('kpiYear')?.addEventListener('change',e=>{ploYear=e.target.value;render();});
     document.querySelectorAll('[data-kpi-definition]').forEach(b=>b.addEventListener('click',()=>editKpiDefinition(b.dataset.kpiDefinition)));
@@ -3777,9 +3846,17 @@ window.ACADELOOP_AR = {
     }
     if($('periodYear'))$('periodYear').addEventListener('change',()=>{ploYear=$('periodYear').value;activePlo=null;render();});
     if($('periodTerm'))$('periodTerm').addEventListener('change',()=>{ploTerm=$('periodTerm').value;activePlo=null;render();});
-    if($('supervisorProgram'))$('supervisorProgram').addEventListener('change',e=>switchActiveProgram(e.target.value));
-    if($('supervisorYear'))$('supervisorYear').addEventListener('change',()=>{ploYear=$('supervisorYear').value;activePlo=null;render();});
-    if($('supervisorTerm'))$('supervisorTerm').addEventListener('change',()=>{ploTerm=$('supervisorTerm').value;activePlo=null;render();});
+    for(const [id,key] of [['supervisorDepartment','department'],['supervisorProgram','program'],['supervisorYear','year'],['supervisorTerm','term'],['supervisorStatus','status'],['supervisorView','view']]){
+      $(id)?.addEventListener('change',e=>{supervisorFilters[key]=e.target.value;if(key==='department')supervisorFilters.program='';render();});
+    }
+    $('supervisorReset')?.addEventListener('click',()=>{supervisorFilters={department:'',program:'',year:ploYear,term:'Annual',status:'',view:'all'};dashboardInflationOnly=false;render();});
+    $('supervisorRefresh')?.addEventListener('click',async()=>{const pending=loadSupervisorData();render();await pending;render();});
+    document.querySelectorAll('[data-supervisor-report]').forEach(b=>b.addEventListener('click',async()=>{
+      if(!isSupervisorRole(state.role))return;
+      if(backendEnabled&&b.dataset.program!==activeProgramId)await switchActiveProgram(b.dataset.program);
+      if(!backendEnabled||activeProgramId===b.dataset.program)openReport(b.dataset.supervisorReport);
+    }));
+    document.querySelectorAll('[data-supervisor-workspace]').forEach(b=>b.addEventListener('click',async()=>{await switchActiveProgram(b.dataset.supervisorWorkspace);ploYear=supervisorFilters.year;render();}));
     if($('aprYear'))$('aprYear').addEventListener('change',()=>{ploYear=$('aprYear').value;render();});
     if($('portfolioBack'))$('portfolioBack').addEventListener('click',()=>{currentPortfolioId=null;render();});
     document.querySelectorAll('[data-portfolio-term]').forEach(b=>b.addEventListener('click',()=>{const g=portfolioGroupsForRole().find(x=>x.key===currentPortfolioId);if(!g)return;portfolioActiveTerms.set(g.key,b.dataset.portfolioTerm);render();}));
@@ -3979,8 +4056,9 @@ window.ACADELOOP_AR = {
 
   async function switchActiveProgram(programId){
     if(!backendEnabled||!accessibleProgramIds.includes(programId)||programId===activeProgramId)return;
+    const previousProgramId=activeProgramId;
     activeProgramId=programId;currentReportId=null;currentPortfolioId=null;activePlo=null;
-    try{await hydrateSharedState();render();toast(`Switched to ${state.program.name}.`);}catch(e){toast(e?.message||'Could not switch academic program.');}
+    try{await hydrateSharedState();render();toast(`Switched to ${state.program.name}.`);}catch(e){activeProgramId=previousProgramId;toast(e?.message||'Could not switch academic program.');}
   }
 
   async function onAuthenticated(user){
@@ -3994,6 +4072,8 @@ window.ACADELOOP_AR = {
     state.role=role;
     if(['Head of Department','System Administrator'].includes(state.role))await loadUsers();
     if(state.role==='System Administrator')await loadKeepaliveStatus();
+    supervisorFilters={department:'',program:'',year:ploYear,term:'Annual',status:'',view:'all'};
+    await loadSupervisorData();
     currentView='dashboard';currentPortfolioId=null;activePlo=null;
     $('authScreen')?.classList.add('hidden');$('appShell')?.classList.remove('hidden');
     syncChrome();render();window.__ACADELOOP_READY__=true;
@@ -4039,6 +4119,7 @@ window.ACADELOOP_AR = {
     finally{btn.disabled=false;btn.textContent='Sign in';$('testSignInBtn').disabled=false;}
   }
   async function signOut(){
+    supervisorData=null;supervisorError='';
     portfolioUploadFiles.clear();portfolioActiveTerms.clear();hideDrawer();hideModal();
     if(Backend?.adminOnly){await Backend.signOut();setAuthToken('');location.assign(location.pathname);return;}
     if($('testRoleSelect'))$('testRoleSelect').value='';
