@@ -9,7 +9,7 @@
   const clamp = (n,min=0,max=100) => Math.max(min,Math.min(max,Number(n)||0));
   const Core = window.AcadeloopCore;
   const Backend = window.AcadeloopBackend;
-  if(!Core) throw new Error('Acadeloop core failed to load.');
+  if(!Core) throw new Error('Itqan core failed to load.');
   const {
     TERMS, LETTER_GRADE_LABELS, GRADE_DEFS: gradeDefs,
     sectionLabel, blankSectionFor, ensureSectionModel, effectiveSectionKey, activeSectionKeys,
@@ -37,7 +37,7 @@
   const ROLE_CONFIG = {
     'System Administrator': {
       views:['dashboard','users','setup'], label:'System administration', avatar:'SA',
-      dashboard:'Acadeloop Administration', description:'Manage academic programs, appoint HODs, control users, and back up the complete Acadeloop system.'
+      dashboard:'Itqan Administration', description:'Manage academic programs, appoint HODs, control users, and back up the complete Itqan system.'
     },
     'Instructor': {
       views:['dashboard','course-reports','course-portfolios','kpis'], label:'Instructor workspace', avatar:'IN',
@@ -49,7 +49,7 @@
     },
     'Head of Department': {
       views:['dashboard','course-reports','course-portfolios','plo','apr','kpis','operational','users','setup'], label:'Executive oversight', avatar:'HD',
-      dashboard:'Department Quality Overview', description:'View approved quality results and control who is allowed to access Acadeloop.'
+      dashboard:'Department Quality Overview', description:'View approved quality results and control who is allowed to access Itqan.'
     },
     'APU': {
       views:['dashboard','course-reports','plo','apr','kpis','operational'], label:'Institution supervision', avatar:'AP',
@@ -233,7 +233,7 @@
     return s;
   }
 
-  const UNKNOWN_ROLE_CONFIG = {views:['dashboard'],label:'Account access',avatar:'?',dashboard:'Account access unavailable',description:'This account does not have a supported Acadeloop role.'};
+  const UNKNOWN_ROLE_CONFIG = {views:['dashboard'],label:'Account access',avatar:'?',dashboard:'Account access unavailable',description:'This account does not have a supported Itqan role.'};
   function roleConfig(){return ROLE_CONFIG[canonicalUiRole(state.role)] || UNKNOWN_ROLE_CONFIG}
   function roleCanView(view){return roleConfig().views.includes(view)}
   function canCreateReport(){return state.role==='Instructor'}
@@ -311,6 +311,7 @@
     if($('avatarLabel')){$('avatarLabel').textContent=currentUserInitials();$('avatarLabel').title=currentUserName();}
     if($('currentUserName'))$('currentUserName').textContent=currentUserName();
     if($('currentUserRole'))$('currentUserRole').textContent=state.role;
+    document.body.dataset.role=state.role||''; // lets the visual layer pick role-specific imagery
     if($('quickAdd')){$('quickAdd').style.display=canCreateReport()?'inline-flex':'none';$('quickAdd').textContent='+ New report';}
   }
   function syncChrome(){
@@ -526,7 +527,7 @@
       portfolioAssessmentRow(g,`${assessment}/Final Exam/Practical`,'Final · Practical'),
       portfolioAssessmentRow(g,`${assessment}/Final Exam/Clinical`,'Final · Clinical')
     ].join('');
-    return `<section class="portfolio-panel"><div class="portfolio-panel-head"><div><h2>${semesterFolderName(term)} uploads</h2><p>Upload assessment evidence and survey files for this semester. Acadeloop puts each file in its correct portfolio folder when you download.</p></div><span class="portfolio-file-count">${portfolioSelectedCount(g,base)} selected</span></div>
+    return `<section class="portfolio-panel"><div class="portfolio-panel-head"><div><h2>${semesterFolderName(term)} uploads</h2><p>Upload assessment evidence and survey files for this semester. Itqan puts each file in its correct portfolio folder when you download.</p></div><span class="portfolio-file-count">${portfolioSelectedCount(g,base)} selected</span></div>
       <div class="portfolio-assessment-wrap"><div class="portfolio-subhead"><strong>Assessments</strong><span>Questions/answer keys and student samples</span></div><div class="portfolio-matrix"><div class="portfolio-matrix-header"><span>Assessment</span><span>Questions + key</span><span>Excellent</span><span>Average</span><span>Poor</span></div>${rows}</div>${portfolioUploadRow(g,'Other assessment files',`${assessment}/Others`,'Any assessment material that does not fit the categories above')}</div>
       <div class="portfolio-survey-wrap"><div class="portfolio-subhead"><strong>Reports and surveys</strong><span>Semester-specific supporting documents</span></div><div class="portfolio-two-col">${portfolioUploadRow(g,'Course Evaluation Survey',`${base}/Reports and Surveys/Course Evaluation Survey`)}${portfolioUploadRow(g,'Informal feedback',`${base}/Reports and Surveys/Informal feedback`)}</div></div>
       <div class="portfolio-generated-strip"><div><span class="portfolio-generated-icon">DOCX</span><p><strong>Course Report</strong><small>${approved.length?'Automatically generated from Coordinator-approved report data.':'Waiting for Coordinator approval; the folder will still be created.'}</small></p><b class="${approved.length?'ready':'waiting'}">${approved.length?'Generated':'Waiting'}</b></div><div><span class="portfolio-generated-icon">CSV</span><p><strong>CLOs Assessment Report</strong><small>${approved.length?'Automatically generated from approved CLO results.':'Waiting for Coordinator approval; the folder will still be created.'}</small></p><b class="${approved.length?'ready':'waiting'}">${approved.length?'Generated':'Waiting'}</b></div></div>
@@ -536,7 +537,7 @@
     const groups=portfolioGroupsForRole();
     if(currentPortfolioId){const g=groups.find(x=>x.key===currentPortfolioId);if(g)return renderCoursePortfolioDetail(g);currentPortfolioId=null;}
     const approvedGroups=groups.filter(g=>portfolioApprovedReports(g).length>0).length;
-    return roleHero()+pageHead('Generate on demand','Course Portfolios','Open a course, add the portfolio documents into the sections provided, then download the generated portfolio ZIP. Files selected here are temporary and are never saved by Acadeloop.',``)+`
+    return roleHero()+pageHead('Generate on demand','Course Portfolios','Open a course, add the portfolio documents into the sections provided, then download the generated portfolio ZIP. Files selected here are temporary and are never saved by Itqan.',``)+`
       <div class="portfolio-summary-strip"><div><span>Course portfolios</span><strong>${groups.length}</strong><small>course + academic year</small></div><div><span>With approved reports</span><strong>${approvedGroups}</strong><small>Course Report and CLO files auto-generate</small></div><div><span>Reporting periods</span><strong>S1 · S2 · Summer</strong><small>upload sections kept separate</small></div><div><span>Uploaded files</span><strong>Temporary</strong><small>used only for the current download session</small></div></div>
       <div class="table-card section portfolio-board"><table class="data-table"><thead><tr><th>Course</th><th>Academic year</th><th>S1</th><th>S2</th><th>Summer</th><th>Approval</th><th></th></tr></thead><tbody>${groups.map(g=>`<tr><td><strong>${esc(g.courseCode)}</strong><div class="tiny">${esc(g.courseName)}</div></td><td><strong>${esc(g.academicYear)}</strong></td><td>${periodStatusHtml(g,'S1')}</td><td>${periodStatusHtml(g,'S2')}</td><td>${periodStatusHtml(g,'Summer')}</td><td>${progressHtml(portfolioOfficialPercent(g))}<div class="tiny" style="margin-top:4px">${esc(portfolioStatusText(g))}</div></td><td><button class="btn btn-ghost" data-open-portfolio="${esc(g.key)}">Build portfolio →</button></td></tr>`).join('')}</tbody></table></div>`;
   }
@@ -545,7 +546,7 @@
     const term=portfolioActiveTerms.get(g.key)||g.reports.find(r=>r.semester)?.semester||'S1';portfolioActiveTerms.set(g.key,term);
     const selected=portfolioSelectedCount(g);
     return `<button class="btn btn-ghost" id="portfolioBack">← Course Portfolios</button>
-      <div class="portfolio-detail-hero"><div class="portfolio-title-line"><div><span class="eyebrow">Course portfolio builder</span><h1>${esc(g.courseCode)} <span>— ${esc(g.courseName)}</span></h1><p>Add documents to the sections below, then download the portfolio. Acadeloop uses the files only to build the ZIP; it does not save or upload them anywhere.</p></div><div class="page-actions"><button class="btn btn-primary" id="downloadPortfolioZip">Download portfolio ZIP</button></div></div>
+      <div class="portfolio-detail-hero"><div class="portfolio-title-line"><div><span class="eyebrow">Course portfolio builder</span><h1>${esc(g.courseCode)} <span>— ${esc(g.courseName)}</span></h1><p>Add documents to the sections below, then download the portfolio. Itqan uses the files only to build the ZIP; it does not save or upload them anywhere.</p></div><div class="page-actions"><button class="btn btn-primary" id="downloadPortfolioZip">Download portfolio ZIP</button></div></div>
       <div class="portfolio-meta-row"><div><span>Academic year</span><strong>${esc(g.academicYear)}</strong></div><div><span>Instructors</span><strong>${esc(instructors.join(', ')||'—')}</strong></div><div><span>Files selected</span><strong>${selected}</strong></div><div><span>Approved reports</span><strong>${approved.length}</strong></div></div></div>
       <div class="portfolio-session-notice"><div><strong>Files are temporary</strong><span>Selected documents remain only in this open browser session. Refreshing or closing the page clears them.</span></div><span class="portfolio-session-pill">Not stored</span></div>
       ${portfolioCourseDocumentsHtml(g)}
@@ -673,8 +674,8 @@
     const heartbeatHealthy=!!pingedAt&&ageDays<6;
     const heartbeatState=keepaliveStatus?.error?'Unavailable':heartbeatHealthy?'Healthy':pingedAt?'Overdue':'Waiting for first heartbeat';
     const heartbeatClass=heartbeatHealthy?'text-good':keepaliveStatus?.error||pingedAt?'text-warn':'';
-    const heartbeatPanel=`<div class="section"><div class="section-title"><div><h2>Supabase project heartbeat</h2><p>A lightweight scheduled database heartbeat records one row approximately every five days. This table is isolated from Acadeloop business data and visible only to System Administrators.</p></div><span class="tag blue">Scheduled</span></div><div class="grid grid-3"><div class="card"><span class="eyebrow">Status</span><div class="big ${heartbeatClass}" style="margin:10px 0 4px">${esc(heartbeatState)}</div><div class="tiny">Cron checks daily and inserts only after five days have elapsed.</div></div><div class="card"><span class="eyebrow">Last heartbeat</span><div style="font-weight:760;margin:12px 0 5px">${pingedAt?esc(pingedAt.toLocaleString()):'—'}</div><div class="tiny">Source: ${esc(keepaliveStatus?.source||'—')}</div></div><div class="card"><span class="eyebrow">Next expected</span><div style="font-weight:760;margin:12px 0 5px">${nextAt?esc(nextAt.toLocaleString()):'—'}</div><div class="tiny">Approximately five days after the latest successful heartbeat.</div></div></div></div>`;
-    return dashboardHead('Platform control','Acadeloop Administration','System-wide control for academic programs and authorized users.',backendEnabled?'<button class="btn btn-ghost" id="backupAllData">Backup Entire System (.xlsx)</button>':'')+`
+    const heartbeatPanel=`<div class="section"><div class="section-title"><div><h2>Supabase project heartbeat</h2><p>A lightweight scheduled database heartbeat records one row approximately every five days. This table is isolated from Itqan business data and visible only to System Administrators.</p></div><span class="tag blue">Scheduled</span></div><div class="grid grid-3"><div class="card"><span class="eyebrow">Status</span><div class="big ${heartbeatClass}" style="margin:10px 0 4px">${esc(heartbeatState)}</div><div class="tiny">Cron checks daily and inserts only after five days have elapsed.</div></div><div class="card"><span class="eyebrow">Last heartbeat</span><div style="font-weight:760;margin:12px 0 5px">${pingedAt?esc(pingedAt.toLocaleString()):'—'}</div><div class="tiny">Source: ${esc(keepaliveStatus?.source||'—')}</div></div><div class="card"><span class="eyebrow">Next expected</span><div style="font-weight:760;margin:12px 0 5px">${nextAt?esc(nextAt.toLocaleString()):'—'}</div><div class="tiny">Approximately five days after the latest successful heartbeat.</div></div></div></div>`;
+    return dashboardHead('Platform control','Itqan Administration','System-wide control for academic programs and authorized users.',backendEnabled?'<button class="btn btn-ghost" id="backupAllData">Backup Entire System (.xlsx)</button>':'')+`
       <div class="grid grid-4"><div class="card metric"><div class="label">Academic programs</div><div class="value">${programDirectory.length}</div><div class="sub">${open} currently open</div></div><div class="card metric"><div class="label">Authorized users</div><div class="value">${activeUsers}</div><div class="sub">Across all programs</div></div><div class="card metric"><div class="label">Heads of Department</div><div class="value">${hods}</div><div class="sub">Program leadership assignments</div></div><div class="card metric"><div class="label">System backup</div><div class="value">XLSX</div><div class="sub">All structured data; no generated DOCX stored</div></div></div>${heartbeatPanel}
       <div class="section"><div class="section-title"><div><h2>Academic programs</h2><p>Open and closed program workspaces managed by the System Administrator.</p></div><button class="btn btn-primary" data-go="setup">Manage programs</button></div>${programTableHtml()}</div>`;
   }
@@ -742,7 +743,7 @@
       ${review?'<div class="approval-gate-note"><strong>Quality approval gate</strong><span>You are reviewing the exact instructor-entered data. Fields are read-only. Approve to release CLOs to PLO/APR/HOD, or return with a revision reason.</span></div>':''}
       ${r.status==='Returned for Revision'&&r.revisionNote?`<div class="revision-note"><strong>Coordinator revision request</strong><span>${esc(r.revisionNote)}</span></div>`:''}
       <div class="form-grid"><div class="field f3"><label>Course code</label><input id="rfCode" value="${esc(r.courseCode)}" ${dis}></div><div class="field f9"><label>Course title</label><input id="rfName" value="${esc(r.courseName)}" ${dis}></div><div class="field f4"><label>Academic year</label><select id="rfYear" ${dis}>${state.academicYears.map(y=>`<option ${y===r.academicYear?'selected':''}>${esc(y)}</option>`).join('')}</select></div><div class="field f4"><label>Semester</label><select id="rfSemester" ${dis}>${TERMS.map(t=>`<option ${t===r.semester?'selected':''}>${t}</option>`).join('')}</select></div><div class="field f4"><label>Report date</label><input type="date" id="rfDate" value="${esc(r.reportDate||nowDate())}" ${dis}></div><div class="field f6"><label>Instructor</label><input id="rfInstructor" value="${esc(r.instructor)}" disabled></div><div class="field f6"><label>Coordinator</label><input id="rfCoordinator" value="${esc(r.coordinator||r.instructor)}" ${dis}></div></div>
-      <div class="drawer-section"><div class="drawer-section-head"><h3>Section reporting scope</h3><span>${sectionPill(r.sectionMode)}</span></div>${editable?`<div class="scope-selector">${[['male','Male','Male section only'],['female','Female','Female section only'],['combined','Combined','Combined result only'],['all','All','Enter Male + Female together; Combined auto-calculates']].map(([k,l,d])=>`<div class="scope-option"><input type="radio" name="reportScope" id="scope_${k}" value="${k}" ${r.sectionMode===k?'checked':''}><label for="scope_${k}"><strong>${l}</strong><span>${d}</span></label></div>`).join('')}</div>`:`<p class="tiny">${esc(sectionLabel(r.sectionMode))} section reporting scope</p>`}${r.sectionMode==='all'?`<div class="auto-combine-banner"><div><strong>Combined is calculated automatically and cannot be edited</strong><span>Student counts and every grade/status count are added Male + Female. CLO actuals are weighted by completed students. Acadeloop verifies the arithmetic again before save, submission, approval, PLO calculation, and export.</span></div><span class="tag blue">Calculation locked</span></div>`:''}</div>
+      <div class="drawer-section"><div class="drawer-section-head"><h3>Section reporting scope</h3><span>${sectionPill(r.sectionMode)}</span></div>${editable?`<div class="scope-selector">${[['male','Male','Male section only'],['female','Female','Female section only'],['combined','Combined','Combined result only'],['all','All','Enter Male + Female together; Combined auto-calculates']].map(([k,l,d])=>`<div class="scope-option"><input type="radio" name="reportScope" id="scope_${k}" value="${k}" ${r.sectionMode===k?'checked':''}><label for="scope_${k}"><strong>${l}</strong><span>${d}</span></label></div>`).join('')}</div>`:`<p class="tiny">${esc(sectionLabel(r.sectionMode))} section reporting scope</p>`}${r.sectionMode==='all'?`<div class="auto-combine-banner"><div><strong>Combined is calculated automatically and cannot be edited</strong><span>Student counts and every grade/status count are added Male + Female. CLO actuals are weighted by completed students. Itqan verifies the arithmetic again before save, submission, approval, PLO calculation, and export.</span></div><span class="tag blue">Calculation locked</span></div>`:''}</div>
       <div class="drawer-section"><div class="drawer-section-head"><h3>Course Learning Outcomes</h3><span class="tiny">Mapping and assessment definition</span></div><div class="clo-master">${(r.clos||[]).map((c,i)=>`<div class="clo-master-row"><span class="cm-code">${esc(c.code)}</span><input data-clo-text="${i}" value="${esc(c.text)}" ${dis}><select data-clo-domain="${i}" ${dis}>${['K','S','V'].map(d=>`<option ${d===c.domain?'selected':''}>${d}</option>`).join('')}</select><input data-clo-method="${i}" value="${esc(c.method||'')}" placeholder="Assessment method" ${dis}><select data-clo-plo="${i}" ${dis}>${state.plos.map(p=>`<option value="${esc(p.code)}" ${p.code===c.plo?'selected':''}>${esc(p.code)}</option>`).join('')}</select><input data-clo-target="${i}" type="number" min="0" max="100" value="${esc(c.target)}" ${dis}></div>`).join('')}</div>${editable?'<button class="btn btn-ghost" id="addClo" style="margin-top:8px">＋ Add CLO</button>':''}</div>
       <div class="drawer-section"><div class="drawer-section-head"><h3>Section results</h3><span class="tiny">All sections can be entered on the same screen</span></div><div class="report-section-stack">${activeSectionKeys(r).map(k=>sectionEditorHtml(r,k,editable)).join('')}</div></div>
       <div class="drawer-section"><div class="drawer-section-head"><h3>Course Improvement Plan</h3><span class="tiny">Generated into report and portfolio</span></div><div id="improvementList">${(r.improvements||[]).map((x,i)=>improvementRowHtml(x,i,editable)).join('')}</div>${editable?'<button class="btn btn-ghost" id="addImprovement">＋ Add improvement action</button>':''}</div>
@@ -925,7 +926,7 @@
   async function backupAllData(){
     if(!backendEnabled)return;
     const btn=$('backupAllData');if(btn){btn.disabled=true;btn.textContent='Preparing backup…'}
-    try{const body=state.role==='System Administrator'?{}:{program_id:activeProgramId};const blob=await Backend.invoke('export-backup-xlsx',body,'blob');const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`Acadeloop_Backup_${nowDate()}.xlsx`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('Excel backup downloaded.');}
+    try{const body=state.role==='System Administrator'?{}:{program_id:activeProgramId};const blob=await Backend.invoke('export-backup-xlsx',body,'blob');const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`Itqan_Backup_${nowDate()}.xlsx`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('Excel backup downloaded.');}
     catch(e){toast(e?.message||'Could not export backup.');}
     finally{if(btn){btn.disabled=false;btn.textContent=state.role==='System Administrator'?'Backup Entire System (.xlsx)':'Backup Program (.xlsx)'}}
   }
@@ -961,7 +962,7 @@
     document.querySelectorAll('[data-portfolio-term]').forEach(b=>b.addEventListener('click',()=>{const g=portfolioGroupsForRole().find(x=>x.key===currentPortfolioId);if(!g)return;portfolioActiveTerms.set(g.key,b.dataset.portfolioTerm);render();}));
     document.querySelectorAll('input[data-portfolio-upload]').forEach(input=>input.addEventListener('change',()=>{const g=portfolioGroupsForRole().find(x=>x.key===currentPortfolioId);if(!g||!input.files?.length)return;addPortfolioFiles(g,input.dataset.portfolioUpload,Array.from(input.files));render();toast(`${input.files.length} file${input.files.length===1?'':'s'} added to this portfolio session.`);}));
     document.querySelectorAll('[data-portfolio-clear]').forEach(b=>b.addEventListener('click',()=>{const g=portfolioGroupsForRole().find(x=>x.key===currentPortfolioId);if(!g)return;clearPortfolioFiles(g,b.dataset.portfolioClear);render();toast('Selected files cleared from this portfolio section.');}));
-    const runPortfolioDownload=async(btn)=>{const g=portfolioGroupsForRole().find(x=>x.key===currentPortfolioId);if(!g)return;const buttons=[$('downloadPortfolioZip'),$('downloadPortfolioZipBottom')].filter(Boolean);buttons.forEach(x=>{x.disabled=true;x.textContent='Generating…'});try{await downloadCoursePortfolioZip(g);toast('Course Portfolio downloaded. Selected files were placed into their required sections and were not saved by Acadeloop.');}catch(e){console.error(e);toast(e?.message||'Could not generate Course Portfolio.');}finally{buttons.forEach(x=>{x.disabled=false;x.textContent='Download portfolio ZIP'});}};
+    const runPortfolioDownload=async(btn)=>{const g=portfolioGroupsForRole().find(x=>x.key===currentPortfolioId);if(!g)return;const buttons=[$('downloadPortfolioZip'),$('downloadPortfolioZipBottom')].filter(Boolean);buttons.forEach(x=>{x.disabled=true;x.textContent='Generating…'});try{await downloadCoursePortfolioZip(g);toast('Course Portfolio downloaded. Selected files were placed into their required sections and were not saved by Itqan.');}catch(e){console.error(e);toast(e?.message||'Could not generate Course Portfolio.');}finally{buttons.forEach(x=>{x.disabled=false;x.textContent='Download portfolio ZIP'});}};
     if($('downloadPortfolioZip'))$('downloadPortfolioZip').addEventListener('click',()=>runPortfolioDownload($('downloadPortfolioZip')));
     if($('downloadPortfolioZipBottom'))$('downloadPortfolioZipBottom').addEventListener('click',()=>runPortfolioDownload($('downloadPortfolioZipBottom')));
     if($('exportAprCsv'))$('exportAprCsv').addEventListener('click',exportAprCsv);
@@ -1031,7 +1032,7 @@
     }
   }
   function zipApi(){
-    if(!window.JSZip)throw new Error('Export component is missing. Upload vendor/jszip.min.js beside index.html, then refresh Acadeloop.');
+    if(!window.JSZip)throw new Error('Export component is missing. Upload vendor/jszip.min.js beside index.html, then refresh Itqan.');
     return window.JSZip;
   }
 
@@ -1072,7 +1073,7 @@
         .catch((error) => {
           templateBufferPromise = null;
           const hint = location.protocol === 'file:'
-            ? ' Open Acadeloop through a web host (for example Acadeloop.com); browsers block this binary template when the page is opened with file://.'
+            ? ' Open Itqan through a web host (for example Acadeloop.com); browsers block this binary template when the page is opened with file://.'
             : '';
           throw new Error(`Could not load ${COURSE_REPORT_TEMPLATE_URL}.${hint}`, { cause: error });
         });
@@ -1162,7 +1163,7 @@
 
   async function onAuthenticated(user){
     const role=canonicalUiRole(user?.role);
-    if(!role) throw new Error('Your Acadeloop account has an unsupported role. Contact the System Administrator.');
+    if(!role) throw new Error('Your Itqan account has an unsupported role. Contact the System Administrator.');
     if(role==='System Administrator'&&(!backendEnabled||normalizeLoginEmail(user.email)!==Backend.adminEmail))throw new Error('System Administrator requires verified login as '+Backend.adminEmail+'.');
     if(Backend?.adminOnly&&role!=='System Administrator')throw new Error('This account is not the System Administrator.');
     currentUser={...user,role};state.role=role;
@@ -1185,7 +1186,7 @@
       await Backend.requestOtp(email);
       sessionStorage.setItem('acadeloop_pending_email',email);
       showCodeStep(email);
-      setAuthStatus('If this is an authorized Acadeloop account, a six-digit sign-in code has been sent.','ok');
+      setAuthStatus('If this is an authorized Itqan account, a six-digit sign-in code has been sent.','ok');
     }
     catch(e){setAuthStatus('Unable to send a sign-in code. Check the email and try again.','error');}
     finally{btn.disabled=false;btn.textContent='Send one-time code';}
@@ -1201,7 +1202,7 @@
       const authUser=await Backend.currentAuthUser();
       if(!authUser?.id||normalizeLoginEmail(authUser.email)!==requestedEmail||verified?.user?.id!==authUser.id)throw new Error('Verified identity mismatch.');
       const p=await Backend.profile();
-      if(!p||p.active===false||p.id!==authUser.id||normalizeLoginEmail(p.email)!==requestedEmail)throw new Error('This account is not authorized for Acadeloop.');
+      if(!p||p.active===false||p.id!==authUser.id||normalizeLoginEmail(p.email)!==requestedEmail)throw new Error('This account is not authorized for Itqan.');
       sessionStorage.removeItem('acadeloop_pending_email');
       await onAuthenticated({id:p.id,email:p.email,titlePrefix:normalizeTitlePrefix(p.title_prefix),firstName:p.first_name,lastName:p.last_name,department:p.department,role:dbRoleToUi(p.role),active:p.active,defaultProgramId:p.default_program_id||null,limitProgramAccess:!!p.limit_program_access});
     }
@@ -1237,7 +1238,7 @@
         $('authTitle').textContent='System Administrator sign in';
         $('authMessage').textContent='Sign in as '+Backend.adminEmail+' using the one-time code sent to your email.';
         emailInput.value=Backend.adminEmail;emailInput.readOnly=true;
-        $('authProductionNote').textContent='Verified System Administrator access. This workspace uses live Acadeloop data.';
+        $('authProductionNote').textContent='Verified System Administrator access. This workspace uses live Itqan data.';
         $('backToRoles')?.classList.remove('hidden');
       }
       if(emailInput)emailInput.disabled=true;if(sendBtn){sendBtn.disabled=true;sendBtn.textContent='Checking session…';}if(verifyBtn)verifyBtn.disabled=true;
@@ -1250,11 +1251,11 @@
       }catch(e){console.warn('Session restore failed',e);Backend.discardSession?.();}
       sessionStorage.removeItem('acadeloop_pending_email');
       showLoginStep();if(emailInput)emailInput.disabled=false;if(sendBtn){sendBtn.disabled=false;sendBtn.textContent='Send one-time code';}if(verifyBtn)verifyBtn.disabled=false;
-      setAuthStatus('Enter your complete authorized Acadeloop email address.','');return;
+      setAuthStatus('Enter your complete authorized Itqan email address.','');return;
     }
     loadLocalUsers();$('authTestPanel')?.classList.remove('hidden');$('authProductionNote')?.classList.add('hidden');
     $('authEyebrow').textContent='Temporary testing access';
-    $('authTitle').textContent='Choose a role to explore Acadeloop';
+    $('authTitle').textContent='Choose a role to explore Itqan';
     $('authMessage').textContent='Select a role and enter its testing password. System Administrator requires verified email login.';
     $('testModeBadge')?.classList.remove('hidden');
     $('localTestControls')?.classList.toggle('hidden',!Backend?.localTestMode);

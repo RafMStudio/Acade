@@ -20,14 +20,14 @@ function buildHtml() {
     '<script src="src/vendor/jszip.min.js"></script>',
     '<script src="vendor/jszip.min.js"></script>'
   );
-  for (const file of ['src/core.js', 'src/seed.js', 'src/backend.js', 'src/i18n-ar.js', 'src/i18n.js', 'src/visuals.js', 'src/app.js']) {
+  for (const file of ['src/core.js', 'src/seed.js', 'src/backend.js', 'src/i18n-ar.js', 'src/i18n.js', 'src/visuals.js', 'src/home.js', 'src/app.js']) {
     html = html.replace(
       `<script src="${file}"></script>`,
       // Function replacement: source code may contain `$'`/`$``, which String.replace would expand.
       () => `<script data-source="${file}">\n${escapeScript(read(file))}\n</script>`
     );
   }
-  const banner = `<!--\n  Acadeloop deployment bundle.\n  Editable source: index.source.html + src/*.js + src/styles.css\n  The DOCX template remains a normal binary file under templates/.\n  No Base64 Word template is embedded here.\n-->\n`;
+  const banner = `<!--\n  Itqan deployment bundle.\n  Editable source: index.source.html + src/*.js + src/styles.css\n  The DOCX template remains a normal binary file under templates/.\n  No Base64 Word template is embedded here.\n-->\n`;
   return html.replace('<!DOCTYPE html>\n', `<!DOCTYPE html>\n${banner}`);
 }
 
@@ -47,6 +47,11 @@ const copy = (from, to = from) => {
 copy('robots.txt');
 copy('vendor/jszip.min.js');
 copy('templates/Course_Report_Placeholder.docx');
+for (const file of fs.readdirSync(path.join(root, 'assets/brand'))) copy(`assets/brand/${file}`);
+// Photos are optional: any .jpg/.webp in assets/photos/ is published and replaces the generated artwork in its slot.
+if (fs.existsSync(path.join(root, 'assets/photos'))) {
+  for (const file of fs.readdirSync(path.join(root, 'assets/photos'))) if (/\.(jpe?g|webp)$/i.test(file)) copy(`assets/photos/${file}`);
+}
 for (const file of fs.readdirSync(path.join(root, 'assets/fonts'))) copy(`assets/fonts/${file}`);
 
-console.log('Built resilient deployment: dist/index.html has inline Acadeloop CSS/app code; vendor + DOCX stay separate.');
+console.log('Built resilient deployment: dist/index.html has inline Itqan CSS/app code; vendor + DOCX stay separate.');

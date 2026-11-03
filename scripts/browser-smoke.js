@@ -148,7 +148,7 @@ async function main() {
     throw new Error('Timed out waiting for generated download');
   };
 
-  await expect('Acadeloop branding', "document.title.startsWith('Acadeloop')", true);
+  await expect('Itqan branding', "document.title.startsWith('Itqan')", true);
   await expect('preset test users', "document.querySelectorAll('[data-test-login]').length", 4);
   await expect('template fetch mock works', "fetch('templates/Course_Report_Placeholder.docx').then(r=>r.ok)", true);
 
