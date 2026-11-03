@@ -1,5 +1,14 @@
 # Changelog
 
+### 1.4.0 — Itqan
+- Platform renamed to Itqan (إتقان) in the app and on the public homepage. Storage keys, code namespaces and the contact address are unchanged, so saved data and sessions carry over.
+- Logo traced from the supplied artwork into clean SVG (`assets/brand/itqan-*.svg`) and an inline sprite with separate book pages and wordmarks.
+- Palette from the logo: ink #1F404B, sage #8EAB9D, paper #F8F4ED; bento layout on warm paper. Homepage recoloured to match.
+- Photos supplied by the project owner in `assets/photos/`: sign-in, a dashboard scene per role, and a gallery on the homepage. Missing photos fall back to artwork generated from the logo.
+- App motion: the logo assembles on entry and the screen opens from the spine; pages open like a book, titles rise from a mask, a hand-drawn check underlines the dashboard title, numbers count up, sections rise on scroll, the top bar hides while scrolling down.
+- Homepage motion (`src/home.js`): headings rise word by word, blocks spring into view, a hand-drawn loop circles the hero result, chart bars grow, photos drift with the scroll, the header hides while scrolling down.
+- All motion is off under reduced-motion.
+
 ### 1.3.0 — Ministry of Defense identity, liquid glass interface and Arabic
 - Colours from the Ministry of Defense identity guide v3.0: dark green #29504D, light green #00A05A, grey #B2BEC4.
 - Typeface: FS Albert Arabic when installed on the device (Light / Regular / Bold / ExtraBold); self-hosted Readex Pro (OFL) otherwise. Google Fonts dependency removed.

@@ -1,13 +1,18 @@
 /*
-  Arabic interface text for Acadeloop.
+  Arabic interface text for Itqan.
   Keys are the exact English text the app renders; values are the Arabic shown instead.
   Codes such as S1/S2 (semesters, and also PLO codes) stay as written.
   Terminology follows NCAAA usage: نواتج التعلم، تقرير المقرر، ملف المقرر، التقرير السنوي للبرنامج.
   Data (course names, people, codes) is intentionally not listed here.
 */
 window.ACADELOOP_AR = {
-  title: 'أكاديلوب — جودة البرامج الأكاديمية',
+  title: 'إتقان | من القياس إلى التحسين المستمر',
   phrases: {
+    "Itqan": "إتقان",
+    "Academic program quality": "جودة البرامج الأكاديمية",
+    "Sign in to Itqan": "تسجيل الدخول إلى إتقان",
+    "Choose a role to explore Itqan": "اختر دورًا لاستكشاف إتقان",
+    "Home": "الصفحة الرئيسية",
     'Academic Quality Management': 'إدارة الجودة الأكاديمية',
     'All departments': 'جميع الأقسام',
     'All programs': 'جميع البرامج',
@@ -24,7 +29,7 @@ window.ACADELOOP_AR = {
     'KPI access remains restricted to your department.': 'يبقى الوصول إلى مؤشرات الأداء مقصوراً على قسمك.',
 
     // Shell, navigation, brand
-    'Acadeloop': 'أكاديلوب',
+    'Itqan': 'إتقان',
     'Program Quality': 'جودة البرامج',
     'Academic Program Quality': 'جودة البرامج الأكاديمية',
     'Overview': 'نظرة عامة',
@@ -42,7 +47,7 @@ window.ACADELOOP_AR = {
     'Program workspace': 'مساحة عمل البرنامج',
     'Workspace': 'مساحة العمل',
     'Loading': 'جارٍ التحميل',
-    'Loading Acadeloop…': 'جارٍ تحميل أكاديلوب…',
+    'Loading Itqan…': 'جارٍ تحميل إتقان…',
     'The application is starting in your browser.': 'يجري تشغيل التطبيق في متصفحك.',
     'Open navigation menu': 'فتح قائمة التنقل',
     'Sign out': 'تسجيل الخروج',
@@ -62,10 +67,10 @@ window.ACADELOOP_AR = {
 
     // Auth
     'Secure access': 'دخول آمن',
-    'Sign in to Acadeloop': 'تسجيل الدخول إلى أكاديلوب',
-    'Use the email address authorized by your Head of Department. Acadeloop will send a one-time sign-in code. There is no public registration.': 'استخدم البريد الإلكتروني المعتمد من رئيس القسم، وسيرسل لك أكاديلوب رمز دخول لمرة واحدة. لا يوجد تسجيل عام.',
+    'Sign in to Itqan': 'تسجيل الدخول إلى إتقان',
+    'Use the email address authorized by your Head of Department. Itqan will send a one-time sign-in code. There is no public registration.': 'استخدم البريد الإلكتروني المعتمد من رئيس القسم، وسيرسل لك إتقان رمز دخول لمرة واحدة. لا يوجد تسجيل عام.',
     'Temporary testing access': 'دخول تجريبي مؤقت',
-    'Choose a role to explore Acadeloop': 'اختر دورًا لاستكشاف أكاديلوب',
+    'Choose a role to explore Itqan': 'اختر دورًا لاستكشاف إتقان',
     'Select a role and enter its testing password. System Administrator requires verified email login.': 'اختر الدور وأدخل كلمة المرور التجريبية. دخول مدير النظام يتطلب التحقق عبر البريد الإلكتروني.',
     'Account role': 'دور الحساب',
     'Select a role to sign in…': 'اختر دورًا لتسجيل الدخول…',
@@ -84,7 +89,7 @@ window.ACADELOOP_AR = {
     'Use a different email': 'استخدم بريدًا آخر',
     'Back to role selection': 'العودة لاختيار الدور',
     'Authorized users only.': 'للمستخدمين المعتمدين فقط.',
-    'Accounts are created by the HOD. Course Report documents are generated on demand; Acadeloop stores the structured data, not DOCX files.': 'ينشئ رئيس القسم الحسابات. تُولَّد مستندات تقارير المقررات عند الطلب، ويحفظ أكاديلوب البيانات المنظمة لا ملفات Word.',
+    'Accounts are created by the HOD. Course Report documents are generated on demand; Itqan stores the structured data, not DOCX files.': 'ينشئ رئيس القسم الحسابات. تُولَّد مستندات تقارير المقررات عند الطلب، ويحفظ إتقان البيانات المنظمة لا ملفات Word.',
     'Local test mode: these preset accounts appear only when the project is opened on this computer or by the automated tests.': 'وضع الاختبار المحلي: تظهر هذه الحسابات الجاهزة فقط عند فتح المشروع على هذا الجهاز أو في الاختبارات الآلية.',
     'Test changes stay in this browser. Live university data is not accessed.': 'تبقى تغييرات التجربة في هذا المتصفح، ولا يتم الوصول إلى بيانات الكلية الفعلية.',
     'Every course report, one approval away from the program record.': 'كل تقرير مقرر على بُعد اعتماد واحد من سجل البرنامج.',
@@ -98,20 +103,20 @@ window.ACADELOOP_AR = {
     'Unknown test user. Use TestHOD, TestI, TestQ, TestI2, or an email added by the HOD.': 'مستخدم تجريبي غير معروف. استخدم TestHOD أو TestI أو TestQ أو TestI2 أو بريدًا أضافه رئيس القسم.',
     'Unable to sign in.': 'تعذّر تسجيل الدخول.',
     'System Administrator sign in': 'دخول مدير النظام',
-    'Verified System Administrator access. This workspace uses live Acadeloop data.': 'دخول مدير نظام موثّق. تستخدم مساحة العمل هذه بيانات أكاديلوب الفعلية.',
+    'Verified System Administrator access. This workspace uses live Itqan data.': 'دخول مدير نظام موثّق. تستخدم مساحة العمل هذه بيانات إتقان الفعلية.',
     'Checking session…': 'جارٍ التحقق من الجلسة…',
-    'Enter your complete authorized Acadeloop email address.': 'أدخل بريدك الإلكتروني المعتمد في أكاديلوب كاملًا.',
+    'Enter your complete authorized Itqan email address.': 'أدخل بريدك الإلكتروني المعتمد في إتقان كاملًا.',
     'Enter your complete authorized email address.': 'أدخل بريدك الإلكتروني المعتمد كاملًا.',
     'Sending code…': 'جارٍ إرسال الرمز…',
-    'If this is an authorized Acadeloop account, a six-digit sign-in code has been sent.': 'إذا كان هذا حسابًا معتمدًا في أكاديلوب فقد أُرسل رمز دخول من ست خانات.',
+    'If this is an authorized Itqan account, a six-digit sign-in code has been sent.': 'إذا كان هذا حسابًا معتمدًا في إتقان فقد أُرسل رمز دخول من ست خانات.',
     'Unable to send a sign-in code. Check the email and try again.': 'تعذّر إرسال رمز الدخول. تحقق من البريد وحاول مرة أخرى.',
     'Start a new sign-in with your full authorized email address.': 'ابدأ تسجيل دخول جديد ببريدك المعتمد كاملًا.',
     'Enter the six-digit code from your email.': 'أدخل الرمز المكوّن من ست خانات من بريدك.',
     'Verifying…': 'جارٍ التحقق…',
     'Verified identity mismatch.': 'الهوية الموثّقة غير مطابقة.',
-    'This account is not authorized for Acadeloop.': 'هذا الحساب غير مصرّح له باستخدام أكاديلوب.',
+    'This account is not authorized for Itqan.': 'هذا الحساب غير مصرّح له باستخدام إتقان.',
     'This account is not the System Administrator.': 'هذا الحساب ليس حساب مدير النظام.',
-    'Your Acadeloop account has an unsupported role. Contact the System Administrator.': 'دور حسابك في أكاديلوب غير مدعوم. تواصل مع مدير النظام.',
+    'Your Itqan account has an unsupported role. Contact the System Administrator.': 'دور حسابك في إتقان غير مدعوم. تواصل مع مدير النظام.',
     'Your account is not assigned to an academic program. Contact the System Administrator or HOD.': 'حسابك غير مرتبط ببرنامج أكاديمي. تواصل مع مدير النظام أو رئيس القسم.',
     'No academic programs are available for supervision.': 'لا توجد برامج أكاديمية متاحة للإشراف.',
 
@@ -130,7 +135,7 @@ window.ACADELOOP_AR = {
     'Executive oversight': 'الإشراف التنفيذي',
     'Institution supervision': 'إشراف المؤسسة',
     'Institution-wide supervision': 'إشراف على مستوى المؤسسة',
-    'Acadeloop Administration': 'إدارة أكاديلوب',
+    'Itqan Administration': 'إدارة إتقان',
     'My Course Quality': 'جودة مقرراتي',
     'Quality Approval Center': 'مركز اعتماد الجودة',
     'Department Quality Overview': 'نظرة عامة على جودة القسم',
@@ -224,7 +229,7 @@ window.ACADELOOP_AR = {
     'Submitted reports appear here exactly as the instructor entered them. Only your approval releases CLO data to PLO calculations and the HOD dashboard.': 'تظهر التقارير المرسلة هنا كما أدخلها عضو هيئة التدريس تمامًا، ولا تصل بيانات نواتج المقرر إلى حسابات نواتج البرنامج ولوحة رئيس القسم إلا باعتمادك.',
     'Awaiting approval': 'بانتظار الاعتماد',
     'Action needed': 'يلزم إجراء',
-    'Read-only oversight across every Acadeloop academic program. Filter by program, academic year, and semester; no data can be edited or deleted from this role.': 'اطلاع فقط على جميع البرامج الأكاديمية في أكاديلوب. صفِّ حسب البرنامج والعام والفصل، ولا يمكن تعديل أو حذف أي بيانات من هذا الدور.',
+    'Read-only oversight across every Itqan academic program. Filter by program, academic year, and semester; no data can be edited or deleted from this role.': 'اطلاع فقط على جميع البرامج الأكاديمية في إتقان. صفِّ حسب البرنامج والعام والفصل، ولا يمكن تعديل أو حذف أي بيانات من هذا الدور.',
     'Program': 'البرنامج',
     'Official program data': 'بيانات البرنامج الرسمية',
     'Official results': 'النتائج الرسمية',
@@ -299,7 +304,7 @@ window.ACADELOOP_AR = {
     'Calculated automatically from Male + Female': 'تُحسب تلقائيًا من الطلاب والطالبات',
     'Combined is calculated automatically and cannot be edited': 'تُحسب النتيجة المجمّعة تلقائيًا ولا يمكن تعديلها',
     'Calculation locked': 'الحساب مقفل',
-    'Student counts and every grade/status count are added Male + Female. CLO actuals are weighted by completed students. Acadeloop verifies the arithmetic again before save, submission, approval, PLO calculation, and export.': 'تُجمع أعداد الطلاب وكل تقدير وحالة من شعبتي الطلاب والطالبات، وتُوزن نتائج نواتج المقرر بعدد المكملين. يعيد أكاديلوب التحقق من الحساب قبل الحفظ والإرسال والاعتماد وحساب النواتج والتصدير.',
+    'Student counts and every grade/status count are added Male + Female. CLO actuals are weighted by completed students. Itqan verifies the arithmetic again before save, submission, approval, PLO calculation, and export.': 'تُجمع أعداد الطلاب وكل تقدير وحالة من شعبتي الطلاب والطالبات، وتُوزن نتائج نواتج المقرر بعدد المكملين. يعيد إتقان التحقق من الحساب قبل الحفظ والإرسال والاعتماد وحساب النواتج والتصدير.',
     'Verified sum: Combined counts = Male + Female. Example: 20 A+ + 15 A+ = 35 A+.': 'جمع موثّق: أعداد المجمّع = الطلاب + الطالبات. مثال: 20 +A و15 +A = ‏35 +A.',
     'Teaching sections': 'الشعب التدريسية',
     'Students starting': 'الطلاب في بداية الفصل',
@@ -380,7 +385,7 @@ window.ACADELOOP_AR = {
     'Informal feedback': 'تغذية راجعة غير رسمية',
 
     // Portfolios
-    'Open a course, add the portfolio documents into the sections provided, then download the generated portfolio ZIP. Files selected here are temporary and are never saved by Acadeloop.': 'افتح مقررًا، وأضف مستندات الملف في أقسامها، ثم نزّل الملف المضغوط المولّد. الملفات المختارة هنا مؤقتة ولا يحفظها أكاديلوب.',
+    'Open a course, add the portfolio documents into the sections provided, then download the generated portfolio ZIP. Files selected here are temporary and are never saved by Itqan.': 'افتح مقررًا، وأضف مستندات الملف في أقسامها، ثم نزّل الملف المضغوط المولّد. الملفات المختارة هنا مؤقتة ولا يحفظها إتقان.',
     'Course portfolios': 'ملفات المقررات',
     'course + academic year': 'مقرر + عام أكاديمي',
     'With approved reports': 'مع تقارير معتمدة',
@@ -396,7 +401,7 @@ window.ACADELOOP_AR = {
     'Build portfolio →': 'إنشاء الملف ←',
     '← Course Portfolios': '→ ملفات المقررات',
     'Course portfolio builder': 'منشئ ملف المقرر',
-    'Add documents to the sections below, then download the portfolio. Acadeloop uses the files only to build the ZIP; it does not save or upload them anywhere.': 'أضف المستندات إلى الأقسام أدناه ثم نزّل الملف. يستخدم أكاديلوب الملفات لإنشاء الملف المضغوط فقط، ولا يحفظها أو يرفعها.',
+    'Add documents to the sections below, then download the portfolio. Itqan uses the files only to build the ZIP; it does not save or upload them anywhere.': 'أضف المستندات إلى الأقسام أدناه ثم نزّل الملف. يستخدم إتقان الملفات لإنشاء الملف المضغوط فقط، ولا يحفظها أو يرفعها.',
     'Course documents': 'مستندات المقرر',
     'Add the course-level documents that will be placed into the generated portfolio.': 'أضف مستندات المقرر التي ستوضع في الملف المولّد.',
     'Course Specification (CS)': 'توصيف المقرر',
@@ -413,7 +418,7 @@ window.ACADELOOP_AR = {
     'Any assessment material that does not fit the categories above': 'أي مواد تقييم لا تندرج تحت الفئات السابقة',
     'Reports and surveys': 'التقارير والاستبانات',
     'Semester-specific supporting documents': 'مستندات داعمة خاصة بالفصل',
-    'Upload assessment evidence and survey files for this semester. Acadeloop puts each file in its correct portfolio folder when you download.': 'ارفع شواهد التقييم وملفات الاستبانات لهذا الفصل، وسيضع أكاديلوب كل ملف في مجلده الصحيح عند التنزيل.',
+    'Upload assessment evidence and survey files for this semester. Itqan puts each file in its correct portfolio folder when you download.': 'ارفع شواهد التقييم وملفات الاستبانات لهذا الفصل، وسيضع إتقان كل ملف في مجلده الصحيح عند التنزيل.',
     'Semester 1 uploads': 'ملفات الفصل الأول',
     'Semester 2 uploads': 'ملفات الفصل الثاني',
     'Add files': 'إضافة ملفات',
@@ -433,10 +438,10 @@ window.ACADELOOP_AR = {
     'Waiting for approval': 'بانتظار الاعتماد',
     'Waiting for Coordinator approval; the folder will still be created.': 'بانتظار اعتماد المنسق، وسيُنشأ المجلد على أي حال.',
     'Download portfolio ZIP': 'تنزيل الملف المضغوط',
-    'Course Portfolio files are generated on demand from Acadeloop data plus session-only document selections. Selected files are never stored by Acadeloop.': 'تُولَّد ملفات ملف المقرر عند الطلب من بيانات أكاديلوب ومستندات الجلسة المختارة، ولا يحفظ أكاديلوب الملفات المختارة.',
+    'Course Portfolio files are generated on demand from Itqan data plus session-only document selections. Selected files are never stored by Itqan.': 'تُولَّد ملفات ملف المقرر عند الطلب من بيانات إتقان ومستندات الجلسة المختارة، ولا يحفظ إتقان الملفات المختارة.',
     'Selected files cleared from this portfolio section.': 'أُزيلت الملفات المختارة من هذا القسم.',
-    'Course Portfolio downloaded. Selected files were placed into their required sections and were not saved by Acadeloop.': 'نُزّل ملف المقرر، ووُضعت الملفات المختارة في أقسامها دون أن يحفظها أكاديلوب.',
-    'Export component is missing. Upload vendor/jszip.min.js beside index.html, then refresh Acadeloop.': 'مكوّن التصدير مفقود. ارفع vendor/jszip.min.js بجانب index.html ثم حدّث الصفحة.',
+    'Course Portfolio downloaded. Selected files were placed into their required sections and were not saved by Itqan.': 'نُزّل ملف المقرر، ووُضعت الملفات المختارة في أقسامها دون أن يحفظها إتقان.',
+    'Export component is missing. Upload vendor/jszip.min.js beside index.html, then refresh Itqan.': 'مكوّن التصدير مفقود. ارفع vendor/jszip.min.js بجانب index.html ثم حدّث الصفحة.',
     'Could not parse Word template XML.': 'تعذّرت قراءة قالب Word.',
 
     // PLO / APR
@@ -599,8 +604,8 @@ window.ACADELOOP_AR = {
     'Dr. Omar Khalid': 'د. عمر خالد',
 
     // Admin, KPI forms, errors and empty states
-    "A lightweight scheduled database heartbeat records one row approximately every five days. This table is isolated from Acadeloop business data and visible only to System Administrators.": "نبض مجدول خفيف لقاعدة البيانات يسجل صفًا واحدًا كل خمسة أيام تقريبًا. هذا الجدول معزول عن بيانات أكاديلوب ويظهر لمديري النظام فقط.",
-    "Acadeloop core failed to load.": "تعذّر تحميل نواة أكاديلوب.",
+    "A lightweight scheduled database heartbeat records one row approximately every five days. This table is isolated from Itqan business data and visible only to System Administrators.": "نبض مجدول خفيف لقاعدة البيانات يسجل صفًا واحدًا كل خمسة أيام تقريبًا. هذا الجدول معزول عن بيانات إتقان ويظهر لمديري النظام فقط.",
+    "Itqan core failed to load.": "تعذّر تحميل نواة إتقان.",
     "Academic": "أكاديمي",
     "Academic program *": "البرنامج الأكاديمي *",
     "Academic quality administration": "إدارة الجودة الأكاديمية",
@@ -680,7 +685,7 @@ window.ACADELOOP_AR = {
     "Internal benchmark automatically uses the previous year’s actual.": "تستخدم المقارنة الداخلية القيمة الفعلية للعام السابق تلقائيًا.",
     "Internal benchmark is linked to last year’s actual and cannot be overridden.": "المقارنة الداخلية مرتبطة بالقيمة الفعلية للعام الماضي ولا يمكن تغييرها.",
     "Last heartbeat": "آخر نبض",
-    "Manage academic programs, appoint HODs, control users, and back up the complete Acadeloop system.": "أدر البرامج الأكاديمية، وعيّن رؤساء الأقسام، وتحكم بالمستخدمين، وانسخ نظام أكاديلوب احتياطيًا.",
+    "Manage academic programs, appoint HODs, control users, and back up the complete Itqan system.": "أدر البرامج الأكاديمية، وعيّن رؤساء الأقسام، وتحكم بالمستخدمين، وانسخ نظام إتقان احتياطيًا.",
     "Manage programs": "إدارة البرامج",
     "Measurement": "القياس",
     "Measurement is fixed once benchmarks exist, so historical results stay comparable.": "يثبت نوع القياس بعد إدخال المستهدفات لتبقى النتائج التاريخية قابلة للمقارنة.",
@@ -754,7 +759,7 @@ window.ACADELOOP_AR = {
     "The HOD must configure an academic year such as 2026–2027 in Program Setup.": "يجب على رئيس القسم ضبط عام أكاديمي مثل 2026–2027 في إعداد البرنامج.",
     "The code is invalid or expired.": "الرمز غير صحيح أو منتهي الصلاحية.",
     "Theory": "نظري",
-    "This account does not have a supported Acadeloop role.": "لا يملك هذا الحساب دورًا مدعومًا في أكاديلوب.",
+    "This account does not have a supported Itqan role.": "لا يملك هذا الحساب دورًا مدعومًا في إتقان.",
     "This program belongs to another department. Select a program in your department to view its KPIs.": "هذا البرنامج تابع لقسم آخر. اختر برنامجًا من قسمك لعرض مؤشراته.",
     "Type": "النوع",
     "Unavailable": "غير متاح",
@@ -764,7 +769,7 @@ window.ACADELOOP_AR = {
     "User deactivated.": "عُطّل المستخدم.",
     "User not linked yet": "لم يُربط المستخدم بعد",
     "User reactivated.": "أُعيد تفعيل المستخدم.",
-    "View approved quality results and control who is allowed to access Acadeloop.": "اطلع على نتائج الجودة المعتمدة وتحكم بمن يُسمح له بالدخول إلى أكاديلوب.",
+    "View approved quality results and control who is allowed to access Itqan.": "اطلع على نتائج الجودة المعتمدة وتحكم بمن يُسمح له بالدخول إلى إتقان.",
     "Waiting for first heartbeat": "بانتظار أول نبض",
     "Weaknesses": "نقاط الضعف",
     "e.g. 5, 10 or 1": "مثال: 5 أو 10 أو 1",
