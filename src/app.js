@@ -1282,7 +1282,7 @@
   document.querySelectorAll('.nav-item[data-view]').forEach(b=>b.addEventListener('click',()=>{setSidebarOpen(false);go(b.dataset.view);}));
   $('quickAdd')?.addEventListener('click',openNewReport); $('drawerClose')?.addEventListener('click',hideDrawer); $('drawerBackdrop')?.addEventListener('click',hideDrawer); $('modalClose')?.addEventListener('click',hideModal); $('modalBackdrop')?.addEventListener('click',hideModal); $('menuBtn')?.addEventListener('click',()=>setSidebarOpen(!$('sidebar').classList.contains('open'))); $('sidebarScrim')?.addEventListener('click',()=>setSidebarOpen(false));
   window.addEventListener('keydown',e=>{if(e.key==='Escape'){hideDrawer();hideModal();}});
-  initAuth();
+  if(!document.documentElement.classList.contains('public-home'))initAuth();
 })();
 
   

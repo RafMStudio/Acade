@@ -15,6 +15,7 @@
 */
 (() => {
   'use strict';
+  if(document.documentElement.classList.contains('public-home'))return;
 
   const STORAGE_KEY = 'acadeloop_lang';
   const ATTRS = ['placeholder', 'title', 'aria-label'];

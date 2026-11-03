@@ -10,6 +10,8 @@ const escapeScript = (text) => text.replace(/<\/script/gi, '<\\/script');
 
 function buildHtml() {
   let html = read('index.source.html');
+  html = html.replace('<!-- ACADELOOP_HOME -->', () => read('src/home.html'));
+  html = html.replace('<link href="src/home.css" rel="stylesheet"/>', () => `<style id="acadeloop-home-styles">${read('src/home.css')}</style>`);
   html = html.replace(
     '<link href="src/styles.css" rel="stylesheet"/>',
     () => `<style id="acadeloop-styles">\n${read('src/styles.css')}\n</style>`

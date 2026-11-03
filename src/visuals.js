@@ -1,6 +1,7 @@
 /* Acadeloop decorative loops and optional reduced-motion-aware transitions. */
 (() => {
   'use strict';
+  if(document.documentElement.classList.contains('public-home'))return;
 
   const reduceMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   // Abstract overlapping loops for Acadeloop, unrelated to institutional emblems.

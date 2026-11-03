@@ -139,3 +139,16 @@ test('supervisor dashboard renders filters, empty results and chosen sections fo
     const html=c.renderSupervisorDashboard();assert.match(html,/All departments/);assert.match(html,/All programs/);assert.match(html,/supervisorStatus/);assert.match(html,/No reports match these filters/);assert.doesNotMatch(html,/<h2>Program overview/);
   }
 });
+
+test('public homepage and login routes remain separate without changing authentication',()=>{
+  const route=html.match(/<script>(if\(!new URLSearchParams[\s\S]*?)<\/script>/)[1];
+  for(const [search,expected] of [['',true],['?login=1',false],['?login=admin',false],['?campaign=demo',true]]){
+    const classes=new Set();const root={classList:{add:c=>classes.add(c)}};
+    vm.runInNewContext(route,{URLSearchParams,location:{search,protocol:'https:',hostname:'acadeloop.com'},document:{documentElement:root}});
+    assert.equal(classes.has('public-home'),expected);
+    if(expected){assert.equal(root.lang,'ar');assert.equal(root.dir,'rtl');}
+  }
+  const home=fs.readFileSync('src/home.html','utf8');
+  assert.match(home,/href="\?login=1"/);assert.match(home,/mailto:acadeloop@gmail.com/);
+  assert.match(home,/تصور توضيحي/);assert.match(home,/ليست جهة اعتماد/);
+});
