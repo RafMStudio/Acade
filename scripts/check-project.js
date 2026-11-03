@@ -117,3 +117,5 @@ for (const file of [
 }
 
 console.log('Static, branding, readability, build, and seed integrity checks passed.');
+
+assert.doesNotMatch(read("dist/index.html"), /Prince Sultan|PSMCHS|سلطان|العسكرية|assets\/brand\/(?:seal|campus)/i, "Institutional branding must not appear in the UI");

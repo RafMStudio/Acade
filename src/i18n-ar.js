@@ -8,6 +8,7 @@
 window.ACADELOOP_AR = {
   title: 'أكاديلوب — جودة البرامج الأكاديمية',
   phrases: {
+    'Academic Quality Management': 'إدارة الجودة الأكاديمية',
     'All departments': 'جميع الأقسام',
     'All programs': 'جميع البرامج',
     'Show sections': 'عرض الأقسام',
@@ -24,9 +25,6 @@ window.ACADELOOP_AR = {
 
     // Shell, navigation, brand
     'Acadeloop': 'أكاديلوب',
-    'Prince Sultan Military College of Health Sciences, Dhahran': 'كلية الأمير سلطان العسكرية للعلوم الصحية بالظهران',
-    'Prince Sultan Military College of Health Sciences seal': 'شعار كلية الأمير سلطان العسكرية للعلوم الصحية',
-    'PSMCHS, Dhahran': 'كلية الأمير سلطان العسكرية، الظهران',
     'Program Quality': 'جودة البرامج',
     'Academic Program Quality': 'جودة البرامج الأكاديمية',
     'Overview': 'نظرة عامة',

@@ -256,7 +256,7 @@ nav{display:grid;gap:4px}.nav-item{border:0;background:transparent;border-radius
 
 /* ==========================================================================
    Acadeloop identity 2.0
-   One bold move: the deep-teal sidebar with the college seal and a green rule on the active page.
+   One bold move: the deep-teal sidebar with the Acadeloop mark and a green rule on the active page.
    Everything else stays quiet: paper background, white surfaces, hairlines.
    ========================================================================== */
 body{background:var(--paper);font-size:14px;line-height:1.5;font-feature-settings:"tnum" 1}
@@ -354,7 +354,7 @@ body{background:var(--paper);font-size:14px;line-height:1.5;font-feature-setting
 .auth-screen{padding:0;background:var(--paper);place-items:stretch}
 .auth-shell{width:100%;min-height:100vh;display:grid;grid-template-columns:minmax(0,1fr) minmax(380px,520px)}
 .auth-brand{margin:0;color:#fff;padding:48px;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:32px;grid-row:1;position:relative;
-  background:linear-gradient(180deg,rgba(22,62,62,.55) 0%,rgba(22,62,62,.92) 55%,var(--brand-deep) 100%),var(--campus,none) center top/cover no-repeat,var(--brand-deep)}
+  background:linear-gradient(180deg,rgba(22,62,62,.55) 0%,rgba(22,62,62,.92) 55%,var(--brand-deep) 100%),var(--brand-deep)}
 .auth-brand::before{content:"";position:absolute;top:0;inset-inline:48px;height:6px;background:var(--signal)}
 .auth-brand .brand-mark{width:72px;height:72px}
 @media(max-width:900px){.auth-brand .brand-mark{width:52px;height:52px}.auth-brand::before{inset-inline:24px}}
@@ -407,7 +407,7 @@ body{background:var(--paper);font-size:14px;line-height:1.5;font-feature-setting
 [dir=rtl] .portfolio-back,[dir=rtl] .nav-item{text-align:right}
 [dir=rtl] input[type=email],[dir=rtl] input[type=password],[dir=rtl] #loginCode{direction:ltr;text-align:right}
 
-/* ---------- Seal-derived ornaments (src/visuals.js) ---------- */
+/* ---------- Abstract loop ornaments (src/visuals.js) ---------- */
 .ornament{display:block;width:100%;height:100%;overflow:visible;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
 .ornament .orn-ring{fill:none;stroke:currentColor;stroke-width:1}
 .ornament .orn-ring-1{stroke-width:2.2}
@@ -438,21 +438,21 @@ td.empty .empty-mark{display:none}
 .content.view-enter>*:nth-child(4){animation-delay:.15s}.content.view-enter>*:nth-child(n+5){animation-delay:.2s}
 @keyframes view-rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
-/* Entrance: the seal draws itself, then the workspace opens */
+/* Entrance: the Acadeloop mark appears, then the workspace opens */
 .entrance-splash{position:fixed;inset:0;z-index:200;display:grid;place-items:center;align-content:center;gap:18px;background:var(--brand-deep);color:#fff;pointer-events:none}
 .splash-mark{position:relative;width:190px;height:190px;display:grid;place-items:center}
 .splash-mark .ornament{position:absolute;inset:0;color:rgba(255,255,255,.55)}
-.splash-mark img{width:96px;height:96px;opacity:0;transform:scale(.85)}
+.splash-mark .acadeloop-monogram{width:96px;height:96px;opacity:0;transform:scale(.85)}
 .splash-word{font-size:20px;font-weight:600;opacity:0}
 .entrance-splash.play .orn-ring{stroke-dasharray:1;stroke-dashoffset:1;animation:draw-ring .9s cubic-bezier(.5,0,.2,1) forwards}
 .entrance-splash.play .orn-ring-1{animation-delay:.1s}.entrance-splash.play .orn-ring-2{animation-delay:.2s}
 .entrance-splash.play .orn-dot,.entrance-splash.play .orn-laurel,.entrance-splash.play .orn-crescent{opacity:0;animation:fade-in .5s .45s forwards}
-.entrance-splash.play img{animation:seal-in .6s .3s cubic-bezier(.2,.7,.2,1) forwards}
+.entrance-splash.play .acadeloop-monogram{animation:mark-in .6s .3s cubic-bezier(.2,.7,.2,1) forwards}
 .entrance-splash.play .splash-word{animation:fade-in .5s .55s forwards}
 .entrance-splash.leave{animation:splash-out .5s cubic-bezier(.6,0,.4,1) forwards}
 @keyframes draw-ring{to{stroke-dashoffset:0}}
 @keyframes fade-in{to{opacity:1}}
-@keyframes seal-in{to{opacity:1;transform:none}}
+@keyframes mark-in{to{opacity:1;transform:none}}
 @keyframes splash-out{to{clip-path:circle(0% at 50% 50%);opacity:.6}}
 
 /* Interaction details */
@@ -591,7 +591,7 @@ body{font-weight:400;letter-spacing:0;color:var(--ink);background:#e9eeee}
 
 /* ---------- Dashboard: photo hero, glass on top ---------- */
 .dashboard-hero{border:0;border-radius:var(--radius-xl);padding:34px 36px 92px;color:#fff;box-shadow:0 30px 60px -30px rgba(29,58,56,.55);
-  background:linear-gradient(180deg,rgba(29,58,56,.25),rgba(29,58,56,.78) 70%,rgba(29,58,56,.92)),var(--campus,none) center 35%/cover no-repeat,var(--brand);
+  background:linear-gradient(180deg,rgba(29,58,56,.25),rgba(29,58,56,.78) 70%,rgba(29,58,56,.92)),var(--brand);
   -webkit-backdrop-filter:none;backdrop-filter:none}
 .dashboard-hero::before{inset-inline-start:36px;width:56px;height:3px;border-radius:0 0 3px 3px}
 .dashboard-hero .hero-ornament{color:rgba(255,255,255,.09)}
@@ -633,9 +633,9 @@ body{font-weight:400;letter-spacing:0;color:var(--ink);background:#e9eeee}
 .drawer-backdrop,.modal-backdrop{background:rgba(20,41,42,.22);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .toast{border-radius:999px;background:var(--glass-fill-dark);color:#fff;border:1px solid rgba(255,255,255,.25);padding:12px 18px;font-size:13px}
 
-/* ---------- Sign in: the campus, one glass card ---------- */
+/* ---------- Sign in: a gradient and one glass card ---------- */
 .auth-screen{position:relative;display:grid;place-items:center;padding:24px;min-height:100vh;
-  background:linear-gradient(180deg,rgba(29,58,56,.55),rgba(29,58,56,.88)),var(--campus,none) center/cover no-repeat,var(--brand-deep)}
+  background:linear-gradient(180deg,rgba(29,58,56,.55),rgba(29,58,56,.88)),var(--brand-deep)}
 .auth-shell{display:block;width:min(440px,100%);min-height:0;grid-template-columns:none}
 .auth-brand{position:fixed;top:28px;inset-inline-start:32px;padding:0;background:none!important;flex-direction:row;align-items:center;gap:0;z-index:2}
 .auth-brand::before,.auth-ornament{display:none}
@@ -697,3 +697,6 @@ body{font-weight:400;letter-spacing:0;color:var(--ink);background:#e9eeee}
 .supervisor-filters select{width:100%;min-width:0;max-width:100%}
 @media(max-width:900px){.supervisor-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.supervisor-filters{grid-template-columns:minmax(0,1fr)}}
+
+.acadeloop-monogram{display:grid;place-items:center;width:100%;height:100%;font-size:40px;font-weight:700;line-height:1;color:currentColor;font-family:inherit}
+.splash-mark .acadeloop-monogram{font-size:64px}

@@ -272,7 +272,7 @@ nav{display:grid;gap:4px}.nav-item{border:0;background:transparent;border-radius
 
 /* ==========================================================================
    Acadeloop identity 2.0
-   One bold move: the deep-teal sidebar with the college seal and a green rule on the active page.
+   One bold move: the deep-teal sidebar with the Acadeloop mark and a green rule on the active page.
    Everything else stays quiet: paper background, white surfaces, hairlines.
    ========================================================================== */
 body{background:var(--paper);font-size:14px;line-height:1.5;font-feature-settings:"tnum" 1}
@@ -370,7 +370,7 @@ body{background:var(--paper);font-size:14px;line-height:1.5;font-feature-setting
 .auth-screen{padding:0;background:var(--paper);place-items:stretch}
 .auth-shell{width:100%;min-height:100vh;display:grid;grid-template-columns:minmax(0,1fr) minmax(380px,520px)}
 .auth-brand{margin:0;color:#fff;padding:48px;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:32px;grid-row:1;position:relative;
-  background:linear-gradient(180deg,rgba(22,62,62,.55) 0%,rgba(22,62,62,.92) 55%,var(--brand-deep) 100%),var(--campus,none) center top/cover no-repeat,var(--brand-deep)}
+  background:linear-gradient(180deg,rgba(22,62,62,.55) 0%,rgba(22,62,62,.92) 55%,var(--brand-deep) 100%),var(--brand-deep)}
 .auth-brand::before{content:"";position:absolute;top:0;inset-inline:48px;height:6px;background:var(--signal)}
 .auth-brand .brand-mark{width:72px;height:72px}
 @media(max-width:900px){.auth-brand .brand-mark{width:52px;height:52px}.auth-brand::before{inset-inline:24px}}
@@ -423,7 +423,7 @@ body{background:var(--paper);font-size:14px;line-height:1.5;font-feature-setting
 [dir=rtl] .portfolio-back,[dir=rtl] .nav-item{text-align:right}
 [dir=rtl] input[type=email],[dir=rtl] input[type=password],[dir=rtl] #loginCode{direction:ltr;text-align:right}
 
-/* ---------- Seal-derived ornaments (src/visuals.js) ---------- */
+/* ---------- Abstract loop ornaments (src/visuals.js) ---------- */
 .ornament{display:block;width:100%;height:100%;overflow:visible;transition:transform .6s cubic-bezier(.2,.7,.2,1)}
 .ornament .orn-ring{fill:none;stroke:currentColor;stroke-width:1}
 .ornament .orn-ring-1{stroke-width:2.2}
@@ -454,21 +454,21 @@ td.empty .empty-mark{display:none}
 .content.view-enter>*:nth-child(4){animation-delay:.15s}.content.view-enter>*:nth-child(n+5){animation-delay:.2s}
 @keyframes view-rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
-/* Entrance: the seal draws itself, then the workspace opens */
+/* Entrance: the Acadeloop mark appears, then the workspace opens */
 .entrance-splash{position:fixed;inset:0;z-index:200;display:grid;place-items:center;align-content:center;gap:18px;background:var(--brand-deep);color:#fff;pointer-events:none}
 .splash-mark{position:relative;width:190px;height:190px;display:grid;place-items:center}
 .splash-mark .ornament{position:absolute;inset:0;color:rgba(255,255,255,.55)}
-.splash-mark img{width:96px;height:96px;opacity:0;transform:scale(.85)}
+.splash-mark .acadeloop-monogram{width:96px;height:96px;opacity:0;transform:scale(.85)}
 .splash-word{font-size:20px;font-weight:600;opacity:0}
 .entrance-splash.play .orn-ring{stroke-dasharray:1;stroke-dashoffset:1;animation:draw-ring .9s cubic-bezier(.5,0,.2,1) forwards}
 .entrance-splash.play .orn-ring-1{animation-delay:.1s}.entrance-splash.play .orn-ring-2{animation-delay:.2s}
 .entrance-splash.play .orn-dot,.entrance-splash.play .orn-laurel,.entrance-splash.play .orn-crescent{opacity:0;animation:fade-in .5s .45s forwards}
-.entrance-splash.play img{animation:seal-in .6s .3s cubic-bezier(.2,.7,.2,1) forwards}
+.entrance-splash.play .acadeloop-monogram{animation:mark-in .6s .3s cubic-bezier(.2,.7,.2,1) forwards}
 .entrance-splash.play .splash-word{animation:fade-in .5s .55s forwards}
 .entrance-splash.leave{animation:splash-out .5s cubic-bezier(.6,0,.4,1) forwards}
 @keyframes draw-ring{to{stroke-dashoffset:0}}
 @keyframes fade-in{to{opacity:1}}
-@keyframes seal-in{to{opacity:1;transform:none}}
+@keyframes mark-in{to{opacity:1;transform:none}}
 @keyframes splash-out{to{clip-path:circle(0% at 50% 50%);opacity:.6}}
 
 /* Interaction details */
@@ -607,7 +607,7 @@ body{font-weight:400;letter-spacing:0;color:var(--ink);background:#e9eeee}
 
 /* ---------- Dashboard: photo hero, glass on top ---------- */
 .dashboard-hero{border:0;border-radius:var(--radius-xl);padding:34px 36px 92px;color:#fff;box-shadow:0 30px 60px -30px rgba(29,58,56,.55);
-  background:linear-gradient(180deg,rgba(29,58,56,.25),rgba(29,58,56,.78) 70%,rgba(29,58,56,.92)),var(--campus,none) center 35%/cover no-repeat,var(--brand);
+  background:linear-gradient(180deg,rgba(29,58,56,.25),rgba(29,58,56,.78) 70%,rgba(29,58,56,.92)),var(--brand);
   -webkit-backdrop-filter:none;backdrop-filter:none}
 .dashboard-hero::before{inset-inline-start:36px;width:56px;height:3px;border-radius:0 0 3px 3px}
 .dashboard-hero .hero-ornament{color:rgba(255,255,255,.09)}
@@ -649,9 +649,9 @@ body{font-weight:400;letter-spacing:0;color:var(--ink);background:#e9eeee}
 .drawer-backdrop,.modal-backdrop{background:rgba(20,41,42,.22);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .toast{border-radius:999px;background:var(--glass-fill-dark);color:#fff;border:1px solid rgba(255,255,255,.25);padding:12px 18px;font-size:13px}
 
-/* ---------- Sign in: the campus, one glass card ---------- */
+/* ---------- Sign in: a gradient and one glass card ---------- */
 .auth-screen{position:relative;display:grid;place-items:center;padding:24px;min-height:100vh;
-  background:linear-gradient(180deg,rgba(29,58,56,.55),rgba(29,58,56,.88)),var(--campus,none) center/cover no-repeat,var(--brand-deep)}
+  background:linear-gradient(180deg,rgba(29,58,56,.55),rgba(29,58,56,.88)),var(--brand-deep)}
 .auth-shell{display:block;width:min(440px,100%);min-height:0;grid-template-columns:none}
 .auth-brand{position:fixed;top:28px;inset-inline-start:32px;padding:0;background:none!important;flex-direction:row;align-items:center;gap:0;z-index:2}
 .auth-brand::before,.auth-ornament{display:none}
@@ -714,11 +714,14 @@ body{font-weight:400;letter-spacing:0;color:var(--ink);background:#e9eeee}
 @media(max-width:900px){.supervisor-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.supervisor-filters{grid-template-columns:minmax(0,1fr)}}
 
+.acadeloop-monogram{display:grid;place-items:center;width:100%;height:100%;font-size:40px;font-weight:700;line-height:1;color:currentColor;font-family:inherit}
+.splash-mark .acadeloop-monogram{font-size:64px}
+
 </style></head>
 <body>
-<section class="auth-screen" id="authScreen" style="--campus:url('assets/brand/campus.jpg')">
+<section class="auth-screen" id="authScreen">
 <div class="auth-shell">
-<div class="auth-brand"><div class="auth-brand-name"><div class="brand-mark"><img src="assets/brand/seal-white.png" alt="Prince Sultan Military College of Health Sciences seal" width="72" height="72"/></div><div><strong>Acadeloop</strong><span>Prince Sultan Military College of Health Sciences, Dhahran</span></div></div>
+<div class="auth-brand"><div class="auth-brand-name"><div class="brand-mark"><span class="acadeloop-monogram" aria-hidden="true">A</span></div><div><strong>Acadeloop</strong><span>Academic Quality Management</span></div></div>
 <p class="auth-motto">Academic program quality</p></div>
 <div class="auth-card">
 <button class="lang-toggle auth-lang" data-lang-toggle="" type="button" aria-label="Switch language">العربية</button>
@@ -767,11 +770,11 @@ body{font-weight:400;letter-spacing:0;color:var(--ink);background:#e9eeee}
 </div>
 </div>
 </section>
-<div class="app-shell hidden" id="appShell" style="--campus:url('assets/brand/campus.jpg')">
+<div class="app-shell hidden" id="appShell">
 <aside class="sidebar" id="sidebar">
 <div class="brand">
-<div class="brand-mark"><img src="assets/brand/seal-white.png" alt="Prince Sultan Military College of Health Sciences seal" width="72" height="72"/></div>
-<div><strong>Acadeloop</strong><span>PSMCHS, Dhahran</span></div>
+<div class="brand-mark"><span class="acadeloop-monogram" aria-hidden="true">A</span></div>
+<div><strong>Acadeloop</strong><span>Academic Quality Management</span></div>
 </div>
 <nav id="nav">
 <button class="nav-item active" data-view="dashboard" type="button"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="4.5" rx="1.5"/><rect x="13.5" y="11" width="7" height="9.5" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/></svg></span>Overview</button>
@@ -828,7 +831,7 @@ body{font-weight:400;letter-spacing:0;color:var(--ink);background:#e9eeee}
 <div class="modal-body" id="modalBody"></div>
 </div>
 <div class="toast" id="toast"></div>
-<div class="entrance-splash hidden" id="entranceSplash" aria-hidden="true"><div class="splash-mark"><img src="assets/brand/seal-white.png" alt="" width="96" height="96"/></div><div class="splash-word">Acadeloop</div></div>
+<div class="entrance-splash hidden" id="entranceSplash" aria-hidden="true"><div class="splash-mark"><span class="acadeloop-monogram" aria-hidden="true">A</span></div><div class="splash-word">Acadeloop</div></div>
 <noscript><div style="position:fixed;inset:0;background:#fff;z-index:99999;padding:40px;font:16px Segoe UI,Arial,sans-serif"><h1>JavaScript is disabled</h1><p>Acadeloop needs JavaScript enabled in the browser.</p></div></noscript>
 <script src="vendor/jszip.min.js"></script>
 <script data-source="src/core.js">
@@ -1704,6 +1707,7 @@ window.ACADELOOP_SEED = {
 window.ACADELOOP_AR = {
   title: 'أكاديلوب — جودة البرامج الأكاديمية',
   phrases: {
+    'Academic Quality Management': 'إدارة الجودة الأكاديمية',
     'All departments': 'جميع الأقسام',
     'All programs': 'جميع البرامج',
     'Show sections': 'عرض الأقسام',
@@ -1720,9 +1724,6 @@ window.ACADELOOP_AR = {
 
     // Shell, navigation, brand
     'Acadeloop': 'أكاديلوب',
-    'Prince Sultan Military College of Health Sciences, Dhahran': 'كلية الأمير سلطان العسكرية للعلوم الصحية بالظهران',
-    'Prince Sultan Military College of Health Sciences seal': 'شعار كلية الأمير سلطان العسكرية للعلوم الصحية',
-    'PSMCHS, Dhahran': 'كلية الأمير سلطان العسكرية، الظهران',
     'Program Quality': 'جودة البرامج',
     'Academic Program Quality': 'جودة البرامج الأكاديمية',
     'Overview': 'نظرة عامة',
@@ -2708,68 +2709,17 @@ window.ACADELOOP_AR = {
 
 </script>
 <script data-source="src/visuals.js">
-/*
-  Acadeloop visual layer — decorative only.
-
-  Ornaments are generated from the motifs of the college seal: concentric rings,
-  a ring of dots, a laurel wreath and a crescent. They are SVG strings drawn in
-  currentColor, marked aria-hidden, and never carry information.
-
-  Motion: one entrance moment (the seal draws itself when the workspace opens),
-  a short page change cue (a green signal line under the top bar and a content
-  reveal), and a gentle pointer parallax on the dashboard ornament.
-  Everything is skipped when the person prefers reduced motion.
-*/
+/* Acadeloop decorative loops and optional reduced-motion-aware transitions. */
 (() => {
   'use strict';
 
   const reduceMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-  const r2 = (n) => Math.round(n * 100) / 100;
-
-  // Laurel branch: leaves set along an arc, alternating sides of the stem.
-  function laurel(cx, cy, radius, startDeg, endDeg, leaves, mirror) {
-    const parts = [];
-    const toXY = (deg, r) => {
-      const a = (deg - 90) * Math.PI / 180;
-      return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
-    };
-    const [sx, sy] = toXY(startDeg, radius);
-    const [ex, ey] = toXY(endDeg, radius);
-    const sweep = endDeg > startDeg ? 1 : 0;
-    parts.push(`<path d="M${r2(sx)} ${r2(sy)} A${radius} ${radius} 0 0 ${sweep} ${r2(ex)} ${r2(ey)}" />`);
-    for (let i = 0; i < leaves; i++) {
-      const t = (i + 0.5) / leaves;
-      const deg = startDeg + (endDeg - startDeg) * t;
-      const side = i % 2 ? 1 : -1;
-      const [x, y] = toXY(deg, radius + side * 4.5);
-      const rot = deg + (mirror ? -1 : 1) * side * 35;
-      const size = 6.5 - t * 2.5;
-      parts.push(`<ellipse cx="${r2(x)}" cy="${r2(y)}" rx="${r2(size * 0.42)}" ry="${r2(size)}" transform="rotate(${r2(rot)} ${r2(x)} ${r2(y)})" />`);
-    }
-    return parts.join('');
+  // Abstract overlapping loops for Acadeloop, unrelated to institutional emblems.
+  function ornament() {
+    return '<svg class="ornament" viewBox="0 0 200 200" aria-hidden="true" focusable="false"><ellipse class="orn-ring orn-ring-0" cx="80" cy="100" rx="50" ry="75" transform="rotate(-30 80 100)" pathLength="1"/><ellipse class="orn-ring orn-ring-1" cx="120" cy="100" rx="50" ry="75" transform="rotate(30 120 100)" pathLength="1"/></svg>';
   }
-
-  // A seal-like ornament on a 200x200 canvas.
-  function ornament({ dots = 36, laurelLeaves = 11, crescent = true, rings = [96, 84, 62] } = {}) {
-    const c = 100;
-    const out = [];
-    rings.forEach((r, i) => out.push(`<circle class="orn-ring orn-ring-${i}" cx="${c}" cy="${c}" r="${r}" pathLength="1" />`));
-    const dotRing = (rings[0] + rings[1]) / 2;
-    for (let i = 0; i < dots; i++) {
-      const a = (i / dots) * Math.PI * 2;
-      out.push(`<circle class="orn-dot" cx="${r2(c + dotRing * Math.cos(a))}" cy="${r2(c + dotRing * Math.sin(a))}" r="${i % 6 === 0 ? 1.9 : 1.1}" />`);
-    }
-    const lr = rings[2] - 10;
-    out.push(`<g class="orn-laurel">${laurel(c, c, lr, 200, 330, laurelLeaves, false)}${laurel(c, c, lr, 160, 30, laurelLeaves, true)}</g>`);
-    if (crescent) {
-      out.push(`<path class="orn-crescent" d="M118 82a26 26 0 1 0 0 36a20 20 0 1 1 0-36Z" />`);
-    }
-    return `<svg class="ornament" viewBox="0 0 200 200" aria-hidden="true" focusable="false">${out.join('')}</svg>`;
-  }
-
-  // Dot lattice tile inspired by the seal's dotted ring, for empty states.
   function emptyMark() {
-    return `<span class="empty-mark" aria-hidden="true">${ornament({ dots: 24, laurelLeaves: 7, rings: [96, 86, 66] })}</span>`;
+    return `<span class="empty-mark" aria-hidden="true">${ornament()}</span>`;
   }
 
   /* ---------- placing ornaments ---------- */
