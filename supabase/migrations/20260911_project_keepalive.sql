@@ -23,7 +23,7 @@ select 'setup'
 where not exists (select 1 from public.project_keepalive);
 
 select cron.schedule(
-  'acadeloop-project-keepalive',
+  'eduitqan-project-keepalive',
   '17 6 * * *',
   $$
     insert into public.project_keepalive (source)

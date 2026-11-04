@@ -12,4 +12,6 @@ jobs:
           node-version: 22
       - run: npm run build
       - run: npm run test:core
+      - run: npm run test:security
+      - run: npm run test:i18n
       - run: npm run check
