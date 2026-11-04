@@ -1,11 +1,11 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
-const allowedOrigins=new Set(['https://acadeloop.com','https://www.acadeloop.com']);
+const allowedOrigins=new Set(['https://eduitqan.com','https://www.eduitqan.com']);
 const corsFor=(req:Request)=>{
   const origin=req.headers.get('Origin')||'';
   return {
-    'Access-Control-Allow-Origin':allowedOrigins.has(origin)?origin:'https://acadeloop.com',
+    'Access-Control-Allow-Origin':allowedOrigins.has(origin)?origin:'https://eduitqan.com',
     'Vary':'Origin',
     'Access-Control-Allow-Headers':'authorization, x-client-info, apikey, content-type',
     'Access-Control-Allow-Methods':'POST, OPTIONS'
@@ -47,7 +47,7 @@ Deno.serve(async(req:Request)=>{
   if(!email||!/^\S+@\S+\.\S+$/.test(email))return reply(req,400,{error:'A valid email is required'});
   if(!allowedPrefixes.includes(titlePrefix))return reply(req,400,{error:'Prefix must be Mr., Ms., or Dr.'});
   if(!firstName||!lastName)return reply(req,400,{error:'First name and last name are required'});
-  if(![...programRoles,...supervisorRoles].includes(role))return reply(req,400,{error:'Invalid Acadeloop role'});
+  if(![...programRoles,...supervisorRoles].includes(role))return reply(req,400,{error:'Invalid EduItqan role'});
   if(isSupervisor&&caller.role!=='SystemAdmin')return reply(req,403,{error:'Only the System Administrator can create APU or VDAA supervisors'});
   if(!isSupervisor&&!department)return reply(req,400,{error:'Department is required'});
   if(caller.role==='HOD'&&role==='HOD')return reply(req,403,{error:'Only System Administrator can appoint an HOD'});
@@ -84,10 +84,10 @@ Deno.serve(async(req:Request)=>{
     if(createError||!created.user)return reply(req,400,{error:createError?.message||'Could not create user'});
     userId=created.user.id;
     const {error:profileError}=await supabase.from('profiles').insert({id:userId,email,title_prefix:titlePrefix,first_name:firstName,last_name:lastName,department,role,active:true,default_program_id:defaultProgramId,limit_program_access:limitProgramAccess,created_by:caller.id});
-    if(profileError){await supabase.auth.admin.deleteUser(userId);return reply(req,500,{error:`Could not create Acadeloop profile: ${profileError.message}`});}
+    if(profileError){await supabase.auth.admin.deleteUser(userId);return reply(req,500,{error:`Could not create EduItqan profile: ${profileError.message}`});}
   }else{
     const {error:updateError}=await supabase.from('profiles').update({title_prefix:titlePrefix,first_name:firstName,last_name:lastName,department,role,active:true,default_program_id:defaultProgramId,limit_program_access:limitProgramAccess}).eq('id',userId);
-    if(updateError)return reply(req,500,{error:`Could not update Acadeloop profile: ${updateError.message}`});
+    if(updateError)return reply(req,500,{error:`Could not update EduItqan profile: ${updateError.message}`});
     const {error:authUpdateError}=await supabase.auth.admin.updateUserById(userId,{user_metadata:{title_prefix:titlePrefix,first_name:firstName,last_name:lastName,department},app_metadata:{role}});
     if(authUpdateError)return reply(req,500,{error:'Could not update user authentication record'});
   }

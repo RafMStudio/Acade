@@ -1,4 +1,4 @@
-name: Deploy Acadeloop
+name: Deploy EduItqan
 
 on:
   push:

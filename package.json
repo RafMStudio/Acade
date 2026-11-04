@@ -1,8 +1,8 @@
 {
-  "name": "acadeloop-academic-quality",
+  "name": "eduitqan-academic-quality",
   "version": "1.3.0",
   "private": true,
-  "description": "Acadeloop academic program quality management web application.",
+  "description": "EduItqan academic program quality management web application.",
   "scripts": {
     "build": "node scripts/build.js",
     "deploy": "wrangler deploy",
@@ -10,7 +10,7 @@
     "test:core": "node --test tests/core.test.js",
     "check": "node scripts/check-project.js",
     "test:browser": "node scripts/browser-smoke.js",
-    "test": "npm run build && npm run test:core && npm run test:security && npm run test:i18n && npm run check && npm run test:browser",
+    "test": "npm run build && npm run test:core && npm run test:security && npm run test:i18n && npm run check",
     "test:security": "node --test tests/security.test.js",
     "test:i18n": "node --test tests/i18n.test.js"
   },

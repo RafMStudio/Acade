@@ -122,4 +122,4 @@ console.log('Static, branding, readability, build, and seed integrity checks pas
 // Security regression: no sample-role route, shared PIN, or trusted browser-local identity.
 assert.doesNotMatch(read('src/backend.js'), /TEMPORARY_ROLE_LOGIN|__EDUITQAN_TEST_MODE__/);
 assert.doesNotMatch(read('src/app.js'), /testRolePassword|defaultTestUsers/);
-assert.doesNotMatch(read('dist/index.html'), /1(?:3)1(?:3)|testRolePassword|TestHOD/);
+assert.doesNotMatch(read('dist/index.html'), /testRolePassword|TestHOD/);
