@@ -1,0 +1,41 @@
+name: Prepare EduItqan SAIP source evidence
+
+on:
+  push:
+    paths:
+      - '.github/workflows/saip-evidence.yml'
+      - 'scripts/create_saip_evidence.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install PDF generator
+        run: python -m pip install reportlab==4.4.4
+      - name: Generate full original-code PDF, source ZIP, and checksums
+        run: python scripts/create_saip_evidence.py
+      - name: Verify PDF and source archive
+        run: |
+          python - <<'PY'
+          import json, pathlib, zipfile
+          p=pathlib.Path('saip_export')
+          m=json.loads((p/'EduItqan_Source_Manifest.json').read_text())
+          assert len(m['included_original_source_files']) >= 10
+          assert (p/'EduItqan_Complete_Original_Source.pdf').read_bytes().startswith(b'%PDF')
+          with zipfile.ZipFile(p/'EduItqan_Original_Source_Files.zip') as z:
+              assert len(z.namelist())>=len(m['included_original_source_files'])
+          print('SAIP evidence files verified')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: EduItqan-SAIP-Source-Evidence
+          path: saip_export/
+          retention-days: 90
