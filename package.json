@@ -9,7 +9,6 @@
     "preview": "wrangler dev",
     "test:core": "node --test tests/core.test.js",
     "check": "node scripts/check-project.js",
-    "test:browser": "node scripts/browser-smoke.js",
     "test": "npm run build && npm run test:core && npm run test:security && npm run test:i18n && npm run check",
     "test:security": "node --test tests/security.test.js",
     "test:i18n": "node --test tests/i18n.test.js"

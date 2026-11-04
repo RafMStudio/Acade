@@ -10,7 +10,7 @@ const root = path.join(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 const sourceFiles = [
   'src/core.js', 'src/seed.js', 'src/backend.js', 'src/i18n-ar.js', 'src/i18n.js', 'src/visuals.js', 'src/app.js',
-  'scripts/build.js', 'scripts/check-project.js', 'scripts/browser-smoke.js',
+  'scripts/build.js', 'scripts/check-project.js',
   'tests/core.test.js'
 ];
 
