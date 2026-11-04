@@ -1,4 +1,4 @@
-# Acadeloop engineering rules
+# EduItqan engineering rules
 
 Keep the code small, boring, and correct.
 

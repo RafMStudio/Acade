@@ -1,6 +1,6 @@
-# Acadeloop architecture
+# EduItqan architecture
 
-Acadeloop separates readable source, academic business rules, and deployment concerns.
+EduItqan separates readable source, academic business rules, and deployment concerns.
 
 ## Readable source
 
@@ -8,7 +8,7 @@ Acadeloop separates readable source, academic business rules, and deployment con
 
 ## Deployment `index.html`
 
-The build script generates a resilient `index.html` by inlining Acadeloop's own CSS and JavaScript. This removes the failure mode where a missing `src/` directory makes the site render as raw browser-default HTML.
+The build script generates a resilient `index.html` by inlining EduItqan's own CSS and JavaScript. This removes the failure mode where a missing `src/` directory makes the site render as raw browser-default HTML.
 
 The deployment bundle intentionally does **not** embed the Word template. It also keeps the third-party JSZip library separate.
 
@@ -43,7 +43,7 @@ vendor/jszip.min.js
 templates/Course_Report_Placeholder.docx
 ```
 
-Normal application rendering does not depend on either file. Export functions do. If JSZip is unavailable, Acadeloop now shows a specific deployment error instead of leaving the export button disabled.
+Normal application rendering does not depend on either file. Export functions do. If JSZip is unavailable, EduItqan now shows a specific deployment error instead of leaving the export button disabled.
 
 ## Approval invariant
 

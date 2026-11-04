@@ -1,4 +1,4 @@
-# Acadeloop 1.2.1 test results
+# EduItqan 1.2.1 test results
 
 Verification date: 2026-09-10
 

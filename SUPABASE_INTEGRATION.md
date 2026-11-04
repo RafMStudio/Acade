@@ -1,6 +1,6 @@
 # Supabase production integration
 
-Acadeloop production uses Supabase for authentication and data persistence.
+EduItqan production uses Supabase for authentication and data persistence.
 
 ## Data rule
 
@@ -24,7 +24,7 @@ The HOD Users page exposes **Backup & Export Data (.xlsx)**. The authenticated `
 
 The Supabase Management connector used during implementation does not expose hosted Auth configuration writes. In Supabase Dashboard set:
 
-1. Authentication → URL Configuration → Site URL = `https://acadeloop.com`
+1. Authentication → URL Configuration → Site URL = `https://eduitqan.com`
 2. Authentication → Email Templates → Magic Link → include `{{ .Token }}` so the email contains the six-digit OTP.
 
 No service-role key belongs in this repository or in browser JavaScript.
