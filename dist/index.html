@@ -1,20 +1,19 @@
 <!DOCTYPE html>
 <!--
-  Acadeloop deployment bundle.
+  EduItqan deployment bundle.
   Editable source: index.source.html + src/*.js + src/styles.css
   The DOCX template remains a normal binary file under templates/.
-  No Base64 Word template is embedded here.
 -->
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
-<meta content="AcadeLoop منصة لإدارة الجودة الأكاديمية: مخرجات التعلم ومؤشرات الأداء والتقارير وخطط التحسين في مكان واحد." name="description"/>
+<meta content="EduItqan منصة لإدارة الجودة الأكاديمية: مخرجات التعلم ومؤشرات الأداء والتقارير وخطط التحسين في مكان واحد." name="description"/>
 <meta content="noindex,nofollow" name="robots"/>
-<title>AcadeLoop | من القياس إلى التحسين المستمر</title>
+<title>EduItqan | من القياس إلى التحسين المستمر</title>
 <script>if(!new URLSearchParams(location.search).has('login')&&!['file:','about:'].includes(location.protocol)&&!['localhost','127.0.0.1'].includes(location.hostname)){document.documentElement.classList.add('public-home');document.documentElement.lang='ar';document.documentElement.dir='rtl';}</script>
 <link href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2216%22 fill=%22%2318171b%22/%3E%3Cpath d=%22M17 48 29 16h7l12 32h-8l-2.4-7H27.2L25 48h-8Zm12.4-14h6L32.3 25l-2.9 9Z%22 fill=%22white%22/%3E%3C/svg%3E" rel="icon"/>
-<style id="acadeloop-styles">
+<style id="eduitqan-styles">
 
 @font-face{font-family:"FS Albert Arabic";font-weight:300;font-display:swap;src:local("FS Albert Arabic Light"),local("FSAlbertArabic-Light")}
 @font-face{font-family:"FS Albert Arabic";font-weight:400;font-display:swap;src:local("FS Albert Arabic"),local("FS Albert Arabic Regular"),local("FSAlbertArabic-Regular")}
@@ -272,8 +271,8 @@ nav{display:grid;gap:4px}.nav-item{border:0;background:transparent;border-radius
 @media(max-width:480px){.dashboard-context{font-size:12.5px;gap:8px}.dashboard-hero h1{font-size:24px}.dashboard-program{gap:8px}.dashboard-kpis{padding:16px}.dashboard-kpi-summary{padding:16px;gap:12px}.dashboard-kpi-total>strong{font-size:38px}.dashboard-kpi-row{grid-template-columns:minmax(0,1fr) 88px 12px;padding:16px 0}.dashboard-kpi-spark{display:none}.dashboard-kpi-number>strong{font-size:16px}.dashboard-page .metric .value{font-size:28px}.dashboard-page .quality-signal-grid{grid-template-columns:1fr}.dashboard-page .grade-average-head{flex-direction:column}}
 
 /* ==========================================================================
-   Acadeloop identity 2.0
-   One bold move: the deep-teal sidebar with the Acadeloop mark and a green rule on the active page.
+   EduItqan identity 2.0
+   One bold move: the deep-teal sidebar with the EduItqan mark and a green rule on the active page.
    Everything else stays quiet: paper background, white surfaces, hairlines.
    ========================================================================== */
 body{background:var(--paper);font-size:14px;line-height:1.5;font-feature-settings:"tnum" 1}
@@ -455,16 +454,16 @@ td.empty .empty-mark{display:none}
 .content.view-enter>*:nth-child(4){animation-delay:.15s}.content.view-enter>*:nth-child(n+5){animation-delay:.2s}
 @keyframes view-rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
-/* Entrance: the Acadeloop mark appears, then the workspace opens */
+/* Entrance: the EduItqan mark appears, then the workspace opens */
 .entrance-splash{position:fixed;inset:0;z-index:200;display:grid;place-items:center;align-content:center;gap:18px;background:var(--brand-deep);color:#fff;pointer-events:none}
 .splash-mark{position:relative;width:190px;height:190px;display:grid;place-items:center}
 .splash-mark .ornament{position:absolute;inset:0;color:rgba(255,255,255,.55)}
-.splash-mark .acadeloop-monogram{width:96px;height:96px;opacity:0;transform:scale(.85)}
+.splash-mark .eduitqan-monogram{width:96px;height:96px;opacity:0;transform:scale(.85)}
 .splash-word{font-size:20px;font-weight:600;opacity:0}
 .entrance-splash.play .orn-ring{stroke-dasharray:1;stroke-dashoffset:1;animation:draw-ring .9s cubic-bezier(.5,0,.2,1) forwards}
 .entrance-splash.play .orn-ring-1{animation-delay:.1s}.entrance-splash.play .orn-ring-2{animation-delay:.2s}
 .entrance-splash.play .orn-dot,.entrance-splash.play .orn-laurel,.entrance-splash.play .orn-crescent{opacity:0;animation:fade-in .5s .45s forwards}
-.entrance-splash.play .acadeloop-monogram{animation:mark-in .6s .3s cubic-bezier(.2,.7,.2,1) forwards}
+.entrance-splash.play .eduitqan-monogram{animation:mark-in .6s .3s cubic-bezier(.2,.7,.2,1) forwards}
 .entrance-splash.play .splash-word{animation:fade-in .5s .55s forwards}
 .entrance-splash.leave{animation:splash-out .5s cubic-bezier(.6,0,.4,1) forwards}
 @keyframes draw-ring{to{stroke-dashoffset:0}}
@@ -492,7 +491,7 @@ td.empty .empty-mark{display:none}
 @media (prefers-reduced-motion:reduce){.entrance-splash{display:none!important}}
 
 /* ==========================================================================
-   Acadeloop 3.0 — Liquid glass on the Ministry of Defense palette
+   EduItqan 3.0 — Liquid glass on the neutral interface palette
    - Chrome (rail, top bar, hero, dialogs) is glass floating over a tinted field.
    - Type does the hierarchy: Light for large numbers and titles, Regular for
      reading, Bold only for small labels. Explanatory paragraphs are removed
@@ -715,10 +714,10 @@ body{font-weight:400;letter-spacing:0;color:var(--ink);background:#e9eeee}
 @media(max-width:900px){.supervisor-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.supervisor-filters{grid-template-columns:minmax(0,1fr)}}
 
-.acadeloop-monogram{display:grid;place-items:center;width:100%;height:100%;font-size:40px;font-weight:700;line-height:1;color:currentColor;font-family:inherit}
-.splash-mark .acadeloop-monogram{font-size:64px}
+.eduitqan-monogram{display:grid;place-items:center;width:100%;height:100%;font-size:40px;font-weight:700;line-height:1;color:currentColor;font-family:inherit}
+.splash-mark .eduitqan-monogram{font-size:64px}
 
-</style><style id="acadeloop-home-styles">#publicHome{display:none}.public-home #publicHome{display:block}.public-home #authScreen,.public-home #appShell,.public-home #entranceSplash{display:none!important}.public-home body{background:#f7f8f3;color:#203f3c;overflow:auto}.public-home{scroll-behavior:smooth;scroll-padding-top:30px}
+</style><style id="eduitqan-home-styles">#publicHome{display:none}.public-home #publicHome{display:block}.public-home #authScreen,.public-home #appShell,.public-home #entranceSplash{display:none!important}.public-home body{background:#f7f8f3;color:#203f3c;overflow:auto}.public-home{scroll-behavior:smooth;scroll-padding-top:30px}
 #publicHome{font-family:'Readex Pro',Arial,sans-serif;line-height:1.8;text-align:right;--home-green:#176b54;--home-ink:#203f3c;--home-lime:#def19c}#publicHome a{text-decoration:none;color:inherit}#publicHome h1,#publicHome h2,#publicHome h3,#publicHome p{margin:0}#publicHome a:focus-visible{outline:3px solid #268363;outline-offset:6px}#publicHome .home-wrap{width:min(1180px,calc(100% - 64px));margin-inline:auto}.home-nav{display:flex;align-items:center;justify-content:space-between;padding-block:30px;border-bottom:1px solid #dce3d9;gap:24px}.home-brand{display:flex;align-items:center;gap:12px;font-size:25px;font-weight:700;line-height:1.3}.home-brand-icon{display:grid;place-items:center;background:#203f3c;color:#eff5db;border-radius:15px;width:46px;height:46px;font-size:28px}.home-brand-caption{display:block;font-weight:400;font-size:9px;letter-spacing:.9px;margin-top:5px}.home-nav nav{display:flex;align-items:center;gap:32px;font-size:13px}.home-login{border:1px solid #bdccc0;border-radius:40px;padding:10px 22px}.home-login span{margin-inline-start:18px}.home-hero{display:grid;grid-template-columns:1.1fr 1fr;gap:70px;align-items:center;padding-block:90px 100px}.home-eyebrow{font-size:12px;font-weight:400;letter-spacing:.2px;color:#537063;margin-bottom:22px!important}.home-eyebrow>span{display:inline-block;width:7px;height:7px;border-radius:50%;background:#5b9957;margin-inline-end:7px}#publicHome h1{font-size:clamp(35px,4.15vw,56px);font-weight:400;line-height:1.45;letter-spacing:-1.5px}#publicHome h1 em{font-style:normal;color:var(--home-green)}.home-lead{font-size:15px;line-height:2.05;color:#62716a;max-width:490px;margin-top:25px!important}.home-actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:30px}.home-button{display:inline-flex;align-items:center;justify-content:center;gap:24px;padding:14px 23px;border-radius:8px;font-size:13px;font-weight:400;transition:transform .2s,background .2s}.home-button:hover{transform:translateY(-2px)}#publicHome .home-primary{background:#203f3c;color:white}#publicHome .home-secondary{border:1px solid #c9d5c9}.home-small{font-size:10px;color:#7c887e;margin-top:20px!important}.home-preview{position:relative;background:white;border:1px solid #dce5d6;border-radius:20px;padding:26px;box-shadow:0 28px 70px #243d3310;transform:rotate(-2deg)}.home-preview-top{display:flex;justify-content:space-between;align-items:center;font-size:12px;border-bottom:1px solid #edf0e8;padding-bottom:18px}.home-preview-top i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#83a15f;margin-inline-end:6px}.home-demo{font-size:9px;background:#f1f5eb;padding:3px 10px;border-radius:20px;color:#74816d}.home-preview-heading{display:flex;justify-content:space-between;align-items:center;margin-top:26px}.home-preview-heading p{font-size:11px;color:#7a8678}.home-preview-heading h2{font-size:23px;font-weight:400;line-height:1.6;margin-top:7px!important}.home-orbit{display:grid;place-items:center;border:1px solid #dce5d2;border-radius:50%;width:64px;height:64px;font-size:28px;color:#6e9146}.home-chart{height:180px;margin:20px 0 40px;display:flex;align-items:flex-end;justify-content:space-evenly;position:relative;direction:ltr;border-bottom:1px solid #dce4d6}.home-chart-grid{position:absolute;inset:0;background:repeating-linear-gradient(to top,transparent 0,transparent 44px,#f0f3eb 44px,#f0f3eb 45px)}.home-bar{height:var(--bar);width:23%;background:#cbdab8;border-radius:7px 7px 0 0;position:relative}.home-bar:nth-last-child(2){background:#658864}.home-bar.target{background:#eaf2d8;border:1px dashed #9caf82}.home-bar span{position:absolute;top:calc(100% + 8px);right:-10px;left:-10px;text-align:center;font-size:10px;color:#839075;white-space:nowrap}.home-preview-note{display:flex;align-items:center;gap:12px;background:#f4f7ee;border-radius:9px;padding:15px}.home-check{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#e1ebcc;color:#4f7552}.home-preview-note strong{font-size:12px;font-weight:400}.home-preview-note p{font-size:9px;color:#839075;margin-top:3px!important}.home-float{position:absolute;bottom:-22px;left:-28px;background:#203f3c;color:white;display:flex;gap:13px;align-items:center;padding:15px 20px;border-radius:10px;box-shadow:0 8px 24px #203f3c22;transform:rotate(2deg)}.home-float>span{font-size:29px;color:#d9edb4}.home-float strong{font-size:12px;font-weight:400}.home-float small{display:block;font-size:9px;color:#bacbc2}.home-value{border-block:1px solid #dce3d9;background:#eef2e7}.home-value>.home-wrap{display:flex;align-items:center;justify-content:space-around;padding-block:25px;font-size:14px}.home-value span{color:#98af77;font-size:16px}.home-features{padding-block:90px}.home-section-heading{max-width:650px}#publicHome .home-section-heading h2,#publicHome .home-accreditation h2{font-size:34px;font-weight:400;line-height:1.6;letter-spacing:-.7px}.home-section-heading>p:last-child{font-size:14px;color:#718073;margin-top:16px!important;max-width:550px}.home-feature-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:45px;border-block:1px solid #dce3d9}.home-feature-grid article{padding:30px 24px;border-inline-end:1px solid #dce3d9}.home-feature-grid article:first-child{padding-inline-start:0}.home-feature-grid article:last-child{border:0}.home-feature-number{font-size:11px;color:#93a57d}.home-feature-grid h3{font-size:17px;font-weight:400;line-height:1.8;margin-top:23px!important}.home-feature-grid p{font-size:12px;color:#718073;margin-top:14px!important;line-height:2;min-height:78px}.home-feature-tag{display:inline-block;font-size:9px;color:#5b7952;margin-top:24px;background:#eaf0df;padding:4px 9px;border-radius:4px}.home-accreditation{display:grid;grid-template-columns:1fr 1fr;gap:80px;padding-block:0 90px}.home-accreditation>div>p:last-child{font-size:14px;line-height:2;color:#718073;margin-top:15px!important}.home-accreditation-list>div{display:flex;gap:22px;align-items:center;padding:21px 0;border-bottom:1px solid #dce3d9}.home-accreditation-list>div>span{min-width:62px;font-size:19px;color:#4f7452}.home-accreditation-list p{font-size:13px;line-height:1.8}.home-accreditation-list small{display:block;font-size:10px;line-height:1.9;color:#7a8578;margin-top:18px}.home-contact{background:#203f3c;color:#f0f5e8;text-align:center;padding-block:65px}.home-contact .home-eyebrow{color:#b7d198}#publicHome .home-contact h2{font-size:38px;font-weight:400;line-height:1.6}.home-contact .home-wrap>p:not(.home-eyebrow){font-size:13px;color:#bfd0c4;margin-top:18px!important}#publicHome .home-contact .home-primary{background:#def19c;color:#203f3c;margin-top:28px}.home-email{display:flex;flex-direction:column;align-items:center;gap:5px}.home-email small{font-size:9px;opacity:.7}.home-footer{display:flex;align-items:center;justify-content:space-between;gap:24px;padding-block:30px}.home-footer .home-brand{font-size:21px}.home-footer p,.home-footer>a:last-child{font-size:10px;color:#6a7b6c}.home-skip{position:absolute;top:-100px;right:20px;z-index:999;background:#fff;padding:12px}.home-skip:focus{top:10px}
 @media(max-width:950px){.home-hero{gap:40px}.home-feature-grid{grid-template-columns:repeat(2,1fr)}.home-feature-grid article:first-child{padding-inline-start:24px}.home-feature-grid article:nth-child(2){border-inline-end:0}.home-feature-grid article:nth-child(-n+2){border-bottom:1px solid #dce3d9}.home-accreditation{gap:35px}.home-preview{padding:20px}}
 @media(max-width:700px){#publicHome .home-wrap{width:calc(100% - 36px)}.home-nav{padding-block:20px;gap:10px}.home-brand{font-size:20px;gap:8px}.home-brand-icon{width:36px;height:36px;border-radius:10px;font-size:24px}.home-brand-caption{font-size:7px}.home-nav nav{gap:10px}.home-nav nav>a:not(.home-login){display:none}.home-login{font-size:11px;padding:8px 12px}.home-login span{margin-inline-start:5px}.home-hero{grid-template-columns:1fr;padding-block:45px 65px;gap:45px}#publicHome h1{font-size:39px;letter-spacing:-1px}.home-lead{font-size:14px}.home-preview{margin-inline:9px;transform:none}.home-float{left:-10px;transform:none}.home-value>.home-wrap{font-size:10px;gap:8px;padding-block:18px}.home-value span{font-size:10px}.home-features{padding-block:55px}#publicHome .home-section-heading h2,#publicHome .home-accreditation h2{font-size:27px}.home-feature-grid{margin-top:28px}.home-feature-grid article,.home-feature-grid article:first-child{padding:22px 13px}.home-feature-grid h3{font-size:15px}.home-feature-grid p{min-height:0;font-size:11px}.home-feature-tag{font-size:8px}.home-accreditation{grid-template-columns:1fr;padding-block:0 55px;gap:20px}.home-contact{padding-block:48px}#publicHome .home-contact h2{font-size:29px}.home-footer{flex-wrap:wrap;padding-block:25px}.home-footer p{display:none}.home-button{padding:12px 16px;gap:13px;font-size:12px}}
@@ -727,7 +726,7 @@ body{font-weight:400;letter-spacing:0;color:var(--ink);background:#e9eeee}
 <body>
 <div id="publicHome" lang="ar" dir="rtl">
 <a class="home-skip" href="#homeMain">انتقل إلى المحتوى</a>
-<header class="home-nav home-wrap"><a class="home-brand" href="/" aria-label="AcadeLoop الرئيسية"><span class="home-brand-icon" aria-hidden="true">A</span><span dir="ltr">AcadeLoop<span class="home-brand-caption">Closing the Quality Loop</span></span></a><nav aria-label="التنقل الرئيسي"><a href="#homeFeatures">المنصة</a><a href="#homeAccreditation">الاعتماد</a><a class="home-login" href="?login=1">تسجيل الدخول <span aria-hidden="true">↗</span></a></nav></header>
+<header class="home-nav home-wrap"><a class="home-brand" href="/" aria-label="EduItqan الرئيسية"><span class="home-brand-icon" aria-hidden="true">E</span><span dir="ltr">EduItqan<span class="home-brand-caption">Closing the Quality Loop</span></span></a><nav aria-label="التنقل الرئيسي"><a href="#homeFeatures">المنصة</a><a href="#homeAccreditation">الاعتماد</a><a class="home-login" href="?login=1">تسجيل الدخول <span aria-hidden="true">↗</span></a></nav></header>
 <main id="homeMain">
 <section class="home-hero home-wrap">
 <div class="home-hero-copy"><p class="home-eyebrow"><span></span> إدارة الجودة الأكاديمية، برؤية أوضح</p><h1>الجودة لا تنتهي<br>بالتقرير.<br><em>بل تبدأ من نتائجه.</em></h1><p class="home-lead">اجمع مخرجات التعلم ومؤشرات الأداء والتقارير وخطط التحسين في منصة واحدة. حوّل النتائج إلى قرارات، والقرارات إلى إجراءات يمكن متابعتها.</p><div class="home-actions"><a class="home-button home-primary" href="#homeContact">اطلب عرضًا توضيحيًا <span aria-hidden="true">↖</span></a><a class="home-button home-secondary" href="?login=1">استكشف المنصة <span aria-hidden="true">←</span></a></div><p class="home-small">منصة واحدة. جودة مستمرة. قرارات مبنية على الأدلة.</p></div>
@@ -745,39 +744,23 @@ body{font-weight:400;letter-spacing:0;color:var(--ink);background:#e9eeee}
 <article><span class="home-feature-number">03</span><h3>مؤشرات تضع الأداء في سياقه</h3><p>قارن النتائج بالمستهدفات والمقارنات المرجعية، وتابع اتجاهات الأداء عبر الأعوام.</p><span class="home-feature-tag">المستهدف · الفعلي · المقارنة</span></article>
 <article><span class="home-feature-number">04</span><h3>تحسين بمسؤوليات محددة</h3><p>اربط أولويات التحسين بالإجراءات والمسؤولين والمواعيد، وتابعها من لوحات القيادة.</p><span class="home-feature-tag">أولوية · إجراء · متابعة</span></article>
 </div></section>
-<section class="home-accreditation home-wrap" id="homeAccreditation"><div><p class="home-eyebrow">جاهزية مستمرة</p><h2>اجعل الاستعداد للاعتماد<br>جزءًا من العمل اليومي.</h2><p>نظّم النتائج والتقارير وخطط التحسين لدعم الاستعداد لمتطلبات الاعتماد الأكاديمي والأكاديمي العسكري.</p></div><div class="home-accreditation-list"><div><span>اعتماد</span><p>المركز الوطني للتقويم والاعتماد الأكاديمي</p></div><div><span>درع</span><p>المركز الوطني للتقويم والاعتماد الأكاديمي العسكري</p></div><small>AcadeLoop منصة تقنية لدعم الجودة والاستعداد للاعتماد، وليست جهة اعتماد أو بديلًا عن متطلبات الجهات المختصة.</small></div></section>
-<section class="home-contact" id="homeContact"><div class="home-wrap"><p class="home-eyebrow">ابدأ بصورة أوضح</p><h2>لنناقش منظومة الجودة<br>في مؤسستك.</h2><p>تعرّف على المنصة وكيف يمكن أن تدعم احتياجات أقسامك وبرامجك الأكاديمية.</p><a class="home-button home-primary" href="mailto:acadeloop@gmail.com?subject=AcadeLoop%20Demo%20Request">تواصل لطلب عرض توضيحي <span aria-hidden="true">↖</span></a><p class="home-email"><a href="mailto:acadeloop@gmail.com" dir="ltr">acadeloop@gmail.com</a><small>يفتح تطبيق البريد الإلكتروني لديك</small></p></div></section>
-</main><footer class="home-footer home-wrap"><a class="home-brand" href="/" dir="ltr">AcadeLoop</a><p>منصة واحدة. جودة مستمرة.</p><a href="?login=1">الدخول إلى المنصة ←</a></footer>
+<section class="home-accreditation home-wrap" id="homeAccreditation"><div><p class="home-eyebrow">جاهزية مستمرة</p><h2>اجعل الاستعداد للاعتماد<br>جزءًا من العمل اليومي.</h2><p>نظّم النتائج والتقارير وخطط التحسين لدعم الاستعداد لمتطلبات الاعتماد الأكاديمي والأكاديمي العسكري.</p></div><div class="home-accreditation-list"><div><span>اعتماد</span><p>المركز الوطني للتقويم والاعتماد الأكاديمي</p></div><div><span>درع</span><p>المركز الوطني للتقويم والاعتماد الأكاديمي العسكري</p></div><small>EduItqan منصة تقنية لدعم الجودة والاستعداد للاعتماد، وليست جهة اعتماد أو بديلًا عن متطلبات الجهات المختصة.</small></div></section>
+<section class="home-contact" id="homeContact"><div class="home-wrap"><p class="home-eyebrow">ابدأ بصورة أوضح</p><h2>لنناقش منظومة الجودة<br>في مؤسستك.</h2><p>تعرّف على المنصة وكيف يمكن أن تدعم احتياجات أقسامك وبرامجك الأكاديمية.</p><a class="home-button home-primary" href="mailto:contact@eduitqan.com?subject=EduItqan%20Demo%20Request">تواصل لطلب عرض توضيحي <span aria-hidden="true">↖</span></a><p class="home-email"><a href="mailto:contact@eduitqan.com" dir="ltr">contact@eduitqan.com</a><small>يفتح تطبيق البريد الإلكتروني لديك</small></p></div></section>
+</main><footer class="home-footer home-wrap"><a class="home-brand" href="/" dir="ltr">EduItqan</a><p>منصة واحدة. جودة مستمرة.</p><a href="?login=1">الدخول إلى المنصة ←</a></footer>
 </div>
 
 <section class="auth-screen" id="authScreen">
 <div class="auth-shell">
-<div class="auth-brand"><div class="auth-brand-name"><div class="brand-mark"><span class="acadeloop-monogram" aria-hidden="true">A</span></div><div><strong>Acadeloop</strong><span>Academic Quality Management</span></div></div>
+<div class="auth-brand"><div class="auth-brand-name"><div class="brand-mark"><span class="eduitqan-monogram" aria-hidden="true">E</span></div><div><strong>EduItqan</strong><span>Academic Quality Management</span></div></div>
 <p class="auth-motto">Academic program quality</p><a href="/" class="btn btn-ghost" style="color:inherit">← الصفحة الرئيسية</a></div>
 <div class="auth-card">
 <button class="lang-toggle auth-lang" data-lang-toggle="" type="button" aria-label="Switch language">العربية</button>
 <div class="auth-card-inner">
 <span class="eyebrow" id="authEyebrow">Secure access</span>
-<h1 id="authTitle">Sign in to Acadeloop</h1>
-<p id="authMessage">Use the email address authorized by your Head of Department. Acadeloop will send a one-time sign-in code. There is no public registration.</p>
-<div class="hidden" id="authTestPanel">
-<label class="auth-field"><span>Account role</span><select id="testRoleSelect" aria-describedby="testRoleNote">
-<option value="">Select a role to sign in…</option>
-<option value="admin">System Administrator — email login</option>
-<option value="TestHOD">Head of Department (HOD)</option>
-<option value="TestQ">Coordinator</option>
-<option value="TestI">Instructor</option>
-<option value="TestAPU">APU</option>
-<option value="TestVDAA">VDAA</option>
-</select></label>
-<div id="testPasswordPanel" class="hidden">
-<label class="auth-field"><span>Password</span><input id="testRolePassword" type="password" autocomplete="off" placeholder="Enter password" aria-describedby="authStatus"/></label>
-<button class="btn btn-primary auth-submit" id="testSignInBtn" type="button">Sign in</button>
-</div>
-<div class="auth-note" id="testRoleNote"><strong>Testing only.</strong> Select a role and enter the testing password to open a sample workspace. Changes are saved in this browser only. Use Sign out to return here and try another role.</div>
-</div>
+<h1 id="authTitle">Sign in to EduItqan</h1>
+<p id="authMessage">Use the email address authorized by your Head of Department. EduItqan will send a one-time sign-in code. There is no public registration.</p>
 <div id="authEmailStep">
-<label class="auth-field"><span>Email address</span><input autocomplete="email" id="loginUser" placeholder="name@university.edu" type="email"/ maxlength="254" autocomplete="email" autocapitalize="none" spellcheck="false" disabled></label>
+<label class="auth-field"><span>Email address</span><input autocomplete="email" id="loginUser" placeholder="name@university.edu" type="email" maxlength="254" autocapitalize="none" spellcheck="false" disabled></label>
 <button class="btn btn-primary auth-submit" id="signInBtn" type="button" disabled>Send one-time code</button>
 </div>
 <div class="hidden" id="authCodeStep">
@@ -786,17 +769,9 @@ body{font-weight:400;letter-spacing:0;color:var(--ink);background:#e9eeee}
 <button class="btn btn-ghost auth-submit" id="backToEmail" type="button">Use a different email</button>
 </div>
 <div class="auth-status" id="authStatus"></div>
-<button class="btn btn-ghost auth-submit hidden" id="backToRoles" type="button">Back to role selection</button>
-<div class="auth-note" id="authProductionNote"><strong>Authorized users only.</strong> Accounts are created by the HOD. Course Report documents are generated on demand; Acadeloop stores the structured data, not DOCX files.</div>
-<div class="hidden" id="localTestControls" style="margin-top:12px">
-<div class="auth-note" style="margin-bottom:10px">Local test mode: these preset accounts appear only when the project is opened on this computer or by the automated tests.</div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-<button class="btn btn-ghost" data-test-login="TestHOD" type="button">TestHOD · HOD</button>
-<button class="btn btn-ghost" data-test-login="TestI" type="button">TestI · Instructor</button>
-<button class="btn btn-ghost" data-test-login="TestQ" type="button">TestQ · Coordinator</button>
-<button class="btn btn-ghost" data-test-login="TestI2" type="button">TestI2 · Instructor</button>
-</div>
-</div>
+
+<div class="auth-note" id="authProductionNote"><strong>Authorized users only.</strong> Accounts are created by the HOD. Course Report documents are generated on demand; EduItqan stores the structured data, not DOCX files.</div>
+
 </div>
 </div>
 </div>
@@ -804,8 +779,8 @@ body{font-weight:400;letter-spacing:0;color:var(--ink);background:#e9eeee}
 <div class="app-shell hidden" id="appShell">
 <aside class="sidebar" id="sidebar">
 <div class="brand">
-<div class="brand-mark"><span class="acadeloop-monogram" aria-hidden="true">A</span></div>
-<div><strong>Acadeloop</strong><span>Academic Quality Management</span></div>
+<div class="brand-mark"><span class="eduitqan-monogram" aria-hidden="true">E</span></div>
+<div><strong>EduItqan</strong><span>Academic Quality Management</span></div>
 </div>
 <nav id="nav">
 <button class="nav-item active" data-view="dashboard" type="button"><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="4.5" rx="1.5"/><rect x="13.5" y="11" width="7" height="9.5" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/></svg></span>Overview</button>
@@ -836,7 +811,7 @@ body{font-weight:400;letter-spacing:0;color:var(--ink);background:#e9eeee}
 <div class="breadcrumb"><span id="pageKicker">Program workspace</span><strong id="pageTitle">Overview</strong></div>
 <div class="top-actions">
 <button class="lang-toggle" data-lang-toggle="" type="button" aria-label="Switch language">العربية</button>
-<span class="hidden" id="testModeBadge" role="status">Testing · Sample data</span>
+
 <span class="role-context" id="roleContext"><span>Workspace</span><b>Loading</b></span>
 <div class="role-switch hidden" id="workspaceProgramWrap"><span>Program</span><select id="workspaceProgramSelect" aria-label="Academic program"></select></div>
 <button class="btn btn-ghost" id="quickAdd" type="button">＋ New</button>
@@ -844,7 +819,7 @@ body{font-weight:400;letter-spacing:0;color:var(--ink);background:#e9eeee}
 <button aria-label="Sign out" class="icon-btn" id="signOutBtn" title="Sign out" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4.5h4.5v15H14M10 8l-4 4 4 4M6 12h9"/></svg></button>
 </div>
 </header>
-<section class="content" id="content"><div class="card"><strong>Loading Acadeloop…</strong><p style="color:#71717a;margin-bottom:0">The application is starting in your browser.</p></div></section>
+<section class="content" id="content"><div class="card"><strong>Loading EduItqan…</strong><p style="color:#71717a;margin-bottom:0">The application is starting in your browser.</p></div></section>
 </main>
 </div>
 <div class="drawer-backdrop hidden" id="drawerBackdrop"></div>
@@ -862,14 +837,14 @@ body{font-weight:400;letter-spacing:0;color:var(--ink);background:#e9eeee}
 <div class="modal-body" id="modalBody"></div>
 </div>
 <div class="toast" id="toast"></div>
-<div class="entrance-splash hidden" id="entranceSplash" aria-hidden="true"><div class="splash-mark"><span class="acadeloop-monogram" aria-hidden="true">A</span></div><div class="splash-word">Acadeloop</div></div>
-<noscript><div style="position:fixed;inset:0;background:#fff;z-index:99999;padding:40px;font:16px Segoe UI,Arial,sans-serif"><h1>JavaScript is disabled</h1><p>Acadeloop needs JavaScript enabled in the browser.</p></div></noscript>
+<div class="entrance-splash hidden" id="entranceSplash" aria-hidden="true"><div class="splash-mark"><span class="eduitqan-monogram" aria-hidden="true">E</span></div><div class="splash-word">EduItqan</div></div>
+<noscript><div style="position:fixed;inset:0;background:#fff;z-index:99999;padding:40px;font:16px Segoe UI,Arial,sans-serif"><h1>JavaScript is disabled</h1><p>EduItqan needs JavaScript enabled in the browser.</p></div></noscript>
 <script src="vendor/jszip.min.js"></script>
 <script data-source="src/core.js">
 (function (root, factory) {
   const api = factory();
   if (typeof module === 'object' && module.exports) module.exports = api;
-  root.AcadeloopCore = api;
+  root.EduItqanCore = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
 
@@ -1404,7 +1379,7 @@ body{font-weight:400;letter-spacing:0;color:var(--ink);background:#e9eeee}
 
 </script>
 <script data-source="src/seed.js">
-window.ACADELOOP_SEED = {
+window.EDUITQAN_SEED = {
     role:'Head of Department',
     program:{institution:'Example University',college:'College of Applied Health Sciences',department:'Health Information Management',name:'Bachelor of Health Information Management',programType:'Bachelor',academicYear:'2026–2027'},
     academicYears:['2026–2027','2025–2026'],
@@ -1416,78 +1391,16 @@ window.ACADELOOP_SEED = {
       {code:'V1',name:'Demonstrate professional, ethical and responsible practice.',target:70},
       {code:'V2',name:'Collaborate effectively and communicate within multidisciplinary healthcare settings.',target:70}
     ],
-    reports:[
-      {
-        id:'r1', courseCode:'HIM301', courseName:'Health Data Standards', academicYear:'2026–2027', semester:'S1', instructor:'Dr. Sara Ahmed', coordinator:'Dr. Sara Ahmed', sectionMode:'all', autoCombine:true,
-        sections:2, location:'main', status:'Approved', submittedAt:'2026-06-16', approvedAt:'2026-06-18', approvedBy:'Coordinator', reportDate:'2026-06-16', revisionNote:'',
-        clos:[
-          {code:'1.1',domain:'K',text:'Describe major health data standards and classifications.',plo:'K2',method:'Written exam',target:70},
-          {code:'2.1',domain:'S',text:'Apply coding and data standards to structured healthcare cases.',plo:'S1',method:'Case assignment',target:70},
-          {code:'3.1',domain:'V',text:'Demonstrate accuracy and accountability when managing coded information.',plo:'V1',method:'Rubric / observation',target:70}
-        ],
-        sectionData:{
-          male:{studentsStart:20,studentsComplete:19,grades:{'A+':2,'A':3,'B+':4,'B':4,'C+':2,'C':2,'D+':1,'D':0,'F':1,'Denied':0,'In Progress':0,'Incomplete':0,'Pass':0,'Fail':0,'Withdrawn':1},gradeComment:'Male section achieved satisfactory results.',gradeRecommendation:'Add guided classification exercises.',cloRecommendation:'Continue formative CLO checks.',cloResults:{'1.1':{actual:76,comment:'Target achieved.'},'2.1':{actual:73,comment:'Target achieved.'},'3.1':{actual:80,comment:'Strong attainment.'}}},
-          female:{studentsStart:22,studentsComplete:21,grades:{'A+':2,'A':3,'B+':3,'B':4,'C+':4,'C':2,'D+':1,'D':1,'F':1,'Denied':0,'In Progress':0,'Incomplete':0,'Pass':0,'Fail':0,'Withdrawn':1},gradeComment:'Female section achieved satisfactory results.',gradeRecommendation:'Increase low-stakes practice before final assessment.',cloRecommendation:'Maintain direct assessment of mapped CLOs.',cloResults:{'1.1':{actual:80,comment:'Target achieved.'},'2.1':{actual:77,comment:'Target achieved.'},'3.1':{actual:84,comment:'Strong attainment.'}}},
-          combined:{studentsStart:42,studentsComplete:40,grades:{},gradeComment:'Overall performance was satisfactory.',gradeRecommendation:'Increase low-stakes formative practice.',cloRecommendation:'Maintain direct assessment of mapped CLOs.',cloResults:{}}
-        },
-        improvements:[{recommendation:'Increase guided coding practice.',action:'Add two formative case exercises before the midterm.',support:'LMS question bank and lab time'}],
-        activity:[{text:'Submitted for Coordinator approval',date:'2026-06-16'},{text:'Approved by Coordinator; CLO results released to PLO engine and HOD dashboard',date:'2026-06-18'}]
-      },
-      {
-        id:'r2', courseCode:'HIM352', courseName:'Healthcare Data Analytics', academicYear:'2026–2027', semester:'S2', instructor:'Dr. Omar Khalid', coordinator:'Dr. Omar Khalid', sectionMode:'combined', autoCombine:false,
-        sections:2, location:'main', status:'Approved', submittedAt:'2026-08-18', approvedAt:'2026-08-20', approvedBy:'Coordinator', reportDate:'2026-08-18', revisionNote:'',
-        clos:[
-          {code:'1.1',domain:'K',text:'Explain core concepts of healthcare data analytics.',plo:'K1',method:'Quiz / written exam',target:70},
-          {code:'2.1',domain:'S',text:'Analyze healthcare datasets using appropriate methods.',plo:'S2',method:'Practical project',target:70},
-          {code:'2.2',domain:'S',text:'Interpret analytical results for healthcare decision making.',plo:'S2',method:'Project presentation',target:70}
-        ],
-        sectionData:{combined:{studentsStart:38,studentsComplete:38,grades:{'A+':8,'A':7,'B+':5,'B':7,'C+':5,'C':3,'D+':1,'D':1,'F':1,'Denied':0,'In Progress':0,'Incomplete':0,'Pass':0,'Fail':0,'Withdrawn':0},gradeComment:'Strong applied analytics performance.',gradeRecommendation:'Add interpretation exercises using healthcare dashboards.',cloRecommendation:'Reinforce interpretation and communication.',cloResults:{'1.1':{actual:81,comment:'Target achieved.'},'2.1':{actual:74,comment:'Target achieved.'},'2.2':{actual:68,comment:'Below target; needs reinforcement.'}}}},
-        improvements:[{recommendation:'Improve interpretation of analytical results.',action:'Add structured interpretation checkpoints.',support:'Project rubric revision'}],
-        activity:[{text:'Approved by Coordinator',date:'2026-08-20'}]
-      },
-      {
-        id:'r3', courseCode:'HIM403', courseName:'Health Information Systems', academicYear:'2026–2027', semester:'S2', instructor:'Test Instructor', instructorEmail:'testi@acadeloop.test', coordinator:'Test Quality', sectionMode:'all', autoCombine:true,
-        sections:2, location:'main', status:'Awaiting Quality Approval', submittedAt:'2026-09-05', approvedAt:'', approvedBy:'', reportDate:'2026-09-05', revisionNote:'',
-        clos:[
-          {code:'1.1',domain:'K',text:'Explain components and functions of health information systems.',plo:'K1',method:'Written exam',target:70},
-          {code:'2.1',domain:'S',text:'Analyze healthcare workflows and system requirements.',plo:'S1',method:'System analysis project',target:70},
-          {code:'3.1',domain:'V',text:'Work responsibly in a team when proposing a health information solution.',plo:'V2',method:'Teamwork rubric',target:70}
-        ],
-        sectionData:{
-          male:{studentsStart:15,studentsComplete:15,grades:{'A+':1,'A':2,'B+':4,'B':3,'C+':2,'C':1,'D+':1,'D':0,'F':1,'Denied':0,'In Progress':0,'Incomplete':0,'Pass':0,'Fail':0,'Withdrawn':0},gradeComment:'Practical analysis stronger than theoretical justification.',gradeRecommendation:'Add theory-practice revision guide.',cloRecommendation:'Verify S1 evidence before approval.',cloResults:{'1.1':{actual:74,comment:'Target achieved.'},'2.1':{actual:70,comment:'At target.'},'3.1':{actual:77,comment:'Target achieved.'}}},
-          female:{studentsStart:16,studentsComplete:15,grades:{'A+':2,'A':3,'B+':3,'B':4,'C+':2,'C':1,'D+':0,'D':0,'F':0,'Denied':0,'In Progress':0,'Incomplete':0,'Pass':0,'Fail':0,'Withdrawn':1},gradeComment:'Good practical analysis and team performance.',gradeRecommendation:'Retain guided project checkpoints.',cloRecommendation:'Review S1 evidence consistency.',cloResults:{'1.1':{actual:78,comment:'Target achieved.'},'2.1':{actual:74,comment:'Target achieved.'},'3.1':{actual:81,comment:'Target achieved.'}}},
-          combined:{studentsStart:31,studentsComplete:30,grades:{},gradeComment:'',gradeRecommendation:'',cloRecommendation:'',cloResults:{}}
-        },
-        improvements:[{recommendation:'Strengthen theory-practice linkage.',action:'Add annotated exemplars to project briefing.',support:'Course coordinator review'}],
-        activity:[{text:'Submitted for Coordinator approval',date:'2026-09-05'}]
-      },
-      {
-        id:'r4', courseCode:'HIM474', courseName:'Applied Health Informatics Project', academicYear:'2026–2027', semester:'Summer', instructor:'Test Instructor', instructorEmail:'testi@acadeloop.test', coordinator:'Test Quality', sectionMode:'all', autoCombine:true,
-        sections:2, location:'main', status:'Draft', submittedAt:'', approvedAt:'', approvedBy:'', reportDate:'2026-09-07', revisionNote:'',
-        clos:[
-          {code:'2.1',domain:'S',text:'Design a health informatics solution to address a defined healthcare problem.',plo:'S2',method:'Capstone project',target:70},
-          {code:'3.1',domain:'V',text:'Demonstrate professional responsibility and communication in project delivery.',plo:'V1',method:'Project rubric',target:70}
-        ],
-        sectionData:{male:{studentsStart:12,studentsComplete:12,grades:{},gradeComment:'',gradeRecommendation:'',cloRecommendation:'',cloResults:{'2.1':{actual:'',comment:''},'3.1':{actual:'',comment:''}}},female:{studentsStart:14,studentsComplete:13,grades:{},gradeComment:'',gradeRecommendation:'',cloRecommendation:'',cloResults:{'2.1':{actual:'',comment:''},'3.1':{actual:'',comment:''}}},combined:{studentsStart:26,studentsComplete:25,grades:{},gradeComment:'',gradeRecommendation:'',cloRecommendation:'',cloResults:{}}},
-        improvements:[],activity:[{text:'Draft created',date:'2026-09-07'}]
-      }
-    ],
-    operational:[
-      {id:'o1',objective:'Improve program learning outcome attainment',kpi:'PLOs meeting target',target:85,actual:83,unit:'%',owner:'Coordinator',due:'2027-06-30',status:'On Track',evidence:'PLO attainment dashboard'},
-      {id:'o2',objective:'Complete course quality cycle on time',kpi:'Quality-approved course reports',target:100,actual:75,unit:'%',owner:'Coordinator',due:'2027-07-15',status:'Needs Attention',evidence:'Course report approval workflow'},
-      {id:'o3',objective:'Close approved course improvement actions',kpi:'Actions completed',target:90,actual:67,unit:'%',owner:'Course Coordinators',due:'2027-05-31',status:'On Track',evidence:'Improvement action tracker'}
-    ],
+    reports:[],
+    operational:[],
     automations:[
       {id:'a1',icon:'→',name:'Instructor submission → Quality approval queue',description:'Submitting a Course Report locks instructor editing and places the exact report in the Coordinator review queue.',on:true},
       {id:'a2',icon:'✓',name:'Quality approval → official CLO results',description:'Only Coordinator-approved CLO results are released to PLO calculations and the HOD dashboard.',on:true},
       {id:'a3',icon:'◎',name:'Approved CLO → semester PLO',description:'For All-section reports, Combined is recalculated and verified first; approved CLOs are then aggregated separately for S1, S2, and Summer, weighted by completed students.',on:true},
       {id:'a4',icon:'◫',name:'Semester PLOs → Annual Program Report',description:'The APR combines approved S1, S2, and Summer results for the selected academic year with drill-down traceability.',on:true},
-      {id:'a5',icon:'▣',name:'Structured report data → Course Portfolio',description:'Course Portfolio files are generated on demand from Acadeloop data plus session-only document selections. Selected files are never stored by Acadeloop.',on:true}
+      {id:'a5',icon:'▣',name:'Structured report data → Course Portfolio',description:'Course Portfolio files are generated on demand from EduItqan data plus session-only document selections. Selected files are never stored by EduItqan.',on:true}
     ],
-    audit:[
-      {icon:'✓',title:'HIM352 approved',detail:'S2 2026–2027 results released to PLO K1 and S2.',time:'Recent'},
-      {icon:'→',title:'HIM403 submitted',detail:'Awaiting Coordinator approval; not yet visible in HOD official results.',time:'Recent'}
-    ]
+    audit:[]
   };
 
 </script>
@@ -1497,17 +1410,14 @@ window.ACADELOOP_SEED = {
 
   const SUPABASE_URL = 'https://bzqtgcopnnscvacynybl.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_C34DQ7afa0EjU6eJstFWJw_RizL3YzU';
-  const SESSION_KEY = 'acadeloop_supabase_session_v2';
-  const LEGACY_SESSION_KEYS = ['acadeloop_supabase_session_v1'];
+  const SESSION_KEY = 'eduitqan_supabase_session_v2';
+  const LEGACY_SESSION_KEYS = ['eduitqan_supabase_session_v1'];
   const SESSION_MAX_AGE_MS = 12 * 60 * 60 * 1000;
-  const TEST_HOSTS = new Set(['localhost', '127.0.0.1']);
-  // TEMPORARY: set false and rebuild to remove hosted role login and restore OTP.
-  const TEMPORARY_ROLE_LOGIN = true;
-  const localTestMode = location.protocol === 'file:' || location.protocol === 'about:' || TEST_HOSTS.has(location.hostname) || window.__ACADELOOP_TEST_MODE__ === true;
+  // Always use authenticated production identities.
   const adminEmail = 'rafedmoha@gmail.com';
-  const adminLogin = new URLSearchParams(location.search || '').get('login') === 'admin';
-  const adminOnly = TEMPORARY_ROLE_LOGIN && adminLogin;
-  const testMode = !adminLogin && (TEMPORARY_ROLE_LOGIN || localTestMode);
+  const adminOnly = false;
+  const localTestMode = false;
+  const testMode = false;
   const normalizeEmail = value => String(value || '').trim().toLowerCase();
   const validEmail = value => {
     const email = normalizeEmail(value);
@@ -1712,11 +1622,11 @@ window.ACADELOOP_SEED = {
     return response.json();
   }
 
-  window.AcadeloopBackend = {
+  window.EduItqanBackend = {
     enabled: !testMode,
     testMode,
     localTestMode,
-    temporaryRoleLogin: TEMPORARY_ROLE_LOGIN,
+
     adminEmail, adminOnly,
     url: SUPABASE_URL,
     requestOtp, verifyOtp, signOut, discardSession, currentAuthUser, profile,
@@ -1729,14 +1639,14 @@ window.ACADELOOP_SEED = {
 </script>
 <script data-source="src/i18n-ar.js">
 /*
-  Arabic interface text for Acadeloop.
+  Arabic interface text for EduItqan.
   Keys are the exact English text the app renders; values are the Arabic shown instead.
   Codes such as S1/S2 (semesters, and also PLO codes) stay as written.
   Terminology follows NCAAA usage: نواتج التعلم، تقرير المقرر، ملف المقرر، التقرير السنوي للبرنامج.
   Data (course names, people, codes) is intentionally not listed here.
 */
-window.ACADELOOP_AR = {
-  title: 'أكاديلوب — جودة البرامج الأكاديمية',
+window.EDUITQAN_AR = {
+  title: 'EduItqan — جودة البرامج الأكاديمية',
   phrases: {
     'Academic Quality Management': 'إدارة الجودة الأكاديمية',
     'All departments': 'جميع الأقسام',
@@ -1754,7 +1664,7 @@ window.ACADELOOP_AR = {
     'KPI access remains restricted to your department.': 'يبقى الوصول إلى مؤشرات الأداء مقصوراً على قسمك.',
 
     // Shell, navigation, brand
-    'Acadeloop': 'أكاديلوب',
+    'EduItqan': 'EduItqan',
     'Program Quality': 'جودة البرامج',
     'Academic Program Quality': 'جودة البرامج الأكاديمية',
     'Overview': 'نظرة عامة',
@@ -1772,7 +1682,7 @@ window.ACADELOOP_AR = {
     'Program workspace': 'مساحة عمل البرنامج',
     'Workspace': 'مساحة العمل',
     'Loading': 'جارٍ التحميل',
-    'Loading Acadeloop…': 'جارٍ تحميل أكاديلوب…',
+    'Loading EduItqan…': 'جارٍ تحميل EduItqan…',
     'The application is starting in your browser.': 'يجري تشغيل التطبيق في متصفحك.',
     'Open navigation menu': 'فتح قائمة التنقل',
     'Sign out': 'تسجيل الخروج',
@@ -1792,10 +1702,10 @@ window.ACADELOOP_AR = {
 
     // Auth
     'Secure access': 'دخول آمن',
-    'Sign in to Acadeloop': 'تسجيل الدخول إلى أكاديلوب',
-    'Use the email address authorized by your Head of Department. Acadeloop will send a one-time sign-in code. There is no public registration.': 'استخدم البريد الإلكتروني المعتمد من رئيس القسم، وسيرسل لك أكاديلوب رمز دخول لمرة واحدة. لا يوجد تسجيل عام.',
+    'Sign in to EduItqan': 'تسجيل الدخول إلى EduItqan',
+    'Use the email address authorized by your Head of Department. EduItqan will send a one-time sign-in code. There is no public registration.': 'استخدم البريد الإلكتروني المعتمد من رئيس القسم، وسيرسل لك EduItqan رمز دخول لمرة واحدة. لا يوجد تسجيل عام.',
     'Temporary testing access': 'دخول تجريبي مؤقت',
-    'Choose a role to explore Acadeloop': 'اختر دورًا لاستكشاف أكاديلوب',
+    'Choose a role to explore EduItqan': 'اختر دورًا لاستكشاف EduItqan',
     'Select a role and enter its testing password. System Administrator requires verified email login.': 'اختر الدور وأدخل كلمة المرور التجريبية. دخول مدير النظام يتطلب التحقق عبر البريد الإلكتروني.',
     'Account role': 'دور الحساب',
     'Select a role to sign in…': 'اختر دورًا لتسجيل الدخول…',
@@ -1814,7 +1724,7 @@ window.ACADELOOP_AR = {
     'Use a different email': 'استخدم بريدًا آخر',
     'Back to role selection': 'العودة لاختيار الدور',
     'Authorized users only.': 'للمستخدمين المعتمدين فقط.',
-    'Accounts are created by the HOD. Course Report documents are generated on demand; Acadeloop stores the structured data, not DOCX files.': 'ينشئ رئيس القسم الحسابات. تُولَّد مستندات تقارير المقررات عند الطلب، ويحفظ أكاديلوب البيانات المنظمة لا ملفات Word.',
+    'Accounts are created by the HOD. Course Report documents are generated on demand; EduItqan stores the structured data, not DOCX files.': 'ينشئ رئيس القسم الحسابات. تُولَّد مستندات تقارير المقررات عند الطلب، ويحفظ EduItqan البيانات المنظمة لا ملفات Word.',
     'Local test mode: these preset accounts appear only when the project is opened on this computer or by the automated tests.': 'وضع الاختبار المحلي: تظهر هذه الحسابات الجاهزة فقط عند فتح المشروع على هذا الجهاز أو في الاختبارات الآلية.',
     'Test changes stay in this browser. Live university data is not accessed.': 'تبقى تغييرات التجربة في هذا المتصفح، ولا يتم الوصول إلى بيانات الكلية الفعلية.',
     'Every course report, one approval away from the program record.': 'كل تقرير مقرر على بُعد اعتماد واحد من سجل البرنامج.',
@@ -1823,25 +1733,23 @@ window.ACADELOOP_AR = {
     'Coordinator approval': 'اعتماد المنسق',
     'PLO attainment': 'تحقق نواتج التعلم',
     'Annual program report': 'التقرير السنوي للبرنامج',
-    'Enter a test username such as TestHOD, TestI, or TestQ.': 'أدخل اسم مستخدم تجريبي مثل TestHOD أو TestI أو TestQ.',
     'Incorrect password. Please try again.': 'كلمة المرور غير صحيحة. حاول مرة أخرى.',
-    'Unknown test user. Use TestHOD, TestI, TestQ, TestI2, or an email added by the HOD.': 'مستخدم تجريبي غير معروف. استخدم TestHOD أو TestI أو TestQ أو TestI2 أو بريدًا أضافه رئيس القسم.',
     'Unable to sign in.': 'تعذّر تسجيل الدخول.',
     'System Administrator sign in': 'دخول مدير النظام',
-    'Verified System Administrator access. This workspace uses live Acadeloop data.': 'دخول مدير نظام موثّق. تستخدم مساحة العمل هذه بيانات أكاديلوب الفعلية.',
+    'Verified System Administrator access. This workspace uses live EduItqan data.': 'دخول مدير نظام موثّق. تستخدم مساحة العمل هذه بيانات EduItqan الفعلية.',
     'Checking session…': 'جارٍ التحقق من الجلسة…',
-    'Enter your complete authorized Acadeloop email address.': 'أدخل بريدك الإلكتروني المعتمد في أكاديلوب كاملًا.',
+    'Enter your complete authorized EduItqan email address.': 'أدخل بريدك الإلكتروني المعتمد في EduItqan كاملًا.',
     'Enter your complete authorized email address.': 'أدخل بريدك الإلكتروني المعتمد كاملًا.',
     'Sending code…': 'جارٍ إرسال الرمز…',
-    'If this is an authorized Acadeloop account, a six-digit sign-in code has been sent.': 'إذا كان هذا حسابًا معتمدًا في أكاديلوب فقد أُرسل رمز دخول من ست خانات.',
+    'If this is an authorized EduItqan account, a six-digit sign-in code has been sent.': 'إذا كان هذا حسابًا معتمدًا في EduItqan فقد أُرسل رمز دخول من ست خانات.',
     'Unable to send a sign-in code. Check the email and try again.': 'تعذّر إرسال رمز الدخول. تحقق من البريد وحاول مرة أخرى.',
     'Start a new sign-in with your full authorized email address.': 'ابدأ تسجيل دخول جديد ببريدك المعتمد كاملًا.',
     'Enter the six-digit code from your email.': 'أدخل الرمز المكوّن من ست خانات من بريدك.',
     'Verifying…': 'جارٍ التحقق…',
     'Verified identity mismatch.': 'الهوية الموثّقة غير مطابقة.',
-    'This account is not authorized for Acadeloop.': 'هذا الحساب غير مصرّح له باستخدام أكاديلوب.',
+    'This account is not authorized for EduItqan.': 'هذا الحساب غير مصرّح له باستخدام EduItqan.',
     'This account is not the System Administrator.': 'هذا الحساب ليس حساب مدير النظام.',
-    'Your Acadeloop account has an unsupported role. Contact the System Administrator.': 'دور حسابك في أكاديلوب غير مدعوم. تواصل مع مدير النظام.',
+    'Your EduItqan account has an unsupported role. Contact the System Administrator.': 'دور حسابك في EduItqan غير مدعوم. تواصل مع مدير النظام.',
     'Your account is not assigned to an academic program. Contact the System Administrator or HOD.': 'حسابك غير مرتبط ببرنامج أكاديمي. تواصل مع مدير النظام أو رئيس القسم.',
     'No academic programs are available for supervision.': 'لا توجد برامج أكاديمية متاحة للإشراف.',
 
@@ -1860,7 +1768,7 @@ window.ACADELOOP_AR = {
     'Executive oversight': 'الإشراف التنفيذي',
     'Institution supervision': 'إشراف المؤسسة',
     'Institution-wide supervision': 'إشراف على مستوى المؤسسة',
-    'Acadeloop Administration': 'إدارة أكاديلوب',
+    'EduItqan Administration': 'إدارة EduItqan',
     'My Course Quality': 'جودة مقرراتي',
     'Quality Approval Center': 'مركز اعتماد الجودة',
     'Department Quality Overview': 'نظرة عامة على جودة القسم',
@@ -1872,10 +1780,7 @@ window.ACADELOOP_AR = {
     'Test Instructor 2': 'عضو هيئة تدريس تجريبي 2',
     'Test Quality': 'منسق جودة تجريبي',
     'Test APU': 'APU تجريبي',
-    'TestHOD · HOD': 'TestHOD · رئيس القسم',
     'TestI · Instructor': 'TestI · عضو هيئة التدريس',
-    'TestI2 · Instructor': 'TestI2 · عضو هيئة التدريس',
-    'TestQ · Coordinator': 'TestQ · المنسق',
 
     // Page kickers / titles
     'My reporting': 'تقاريري',
@@ -1954,7 +1859,7 @@ window.ACADELOOP_AR = {
     'Submitted reports appear here exactly as the instructor entered them. Only your approval releases CLO data to PLO calculations and the HOD dashboard.': 'تظهر التقارير المرسلة هنا كما أدخلها عضو هيئة التدريس تمامًا، ولا تصل بيانات نواتج المقرر إلى حسابات نواتج البرنامج ولوحة رئيس القسم إلا باعتمادك.',
     'Awaiting approval': 'بانتظار الاعتماد',
     'Action needed': 'يلزم إجراء',
-    'Read-only oversight across every Acadeloop academic program. Filter by program, academic year, and semester; no data can be edited or deleted from this role.': 'اطلاع فقط على جميع البرامج الأكاديمية في أكاديلوب. صفِّ حسب البرنامج والعام والفصل، ولا يمكن تعديل أو حذف أي بيانات من هذا الدور.',
+    'Read-only oversight across every EduItqan academic program. Filter by program, academic year, and semester; no data can be edited or deleted from this role.': 'اطلاع فقط على جميع البرامج الأكاديمية في EduItqan. صفِّ حسب البرنامج والعام والفصل، ولا يمكن تعديل أو حذف أي بيانات من هذا الدور.',
     'Program': 'البرنامج',
     'Official program data': 'بيانات البرنامج الرسمية',
     'Official results': 'النتائج الرسمية',
@@ -2029,7 +1934,7 @@ window.ACADELOOP_AR = {
     'Calculated automatically from Male + Female': 'تُحسب تلقائيًا من الطلاب والطالبات',
     'Combined is calculated automatically and cannot be edited': 'تُحسب النتيجة المجمّعة تلقائيًا ولا يمكن تعديلها',
     'Calculation locked': 'الحساب مقفل',
-    'Student counts and every grade/status count are added Male + Female. CLO actuals are weighted by completed students. Acadeloop verifies the arithmetic again before save, submission, approval, PLO calculation, and export.': 'تُجمع أعداد الطلاب وكل تقدير وحالة من شعبتي الطلاب والطالبات، وتُوزن نتائج نواتج المقرر بعدد المكملين. يعيد أكاديلوب التحقق من الحساب قبل الحفظ والإرسال والاعتماد وحساب النواتج والتصدير.',
+    'Student counts and every grade/status count are added Male + Female. CLO actuals are weighted by completed students. EduItqan verifies the arithmetic again before save, submission, approval, PLO calculation, and export.': 'تُجمع أعداد الطلاب وكل تقدير وحالة من شعبتي الطلاب والطالبات، وتُوزن نتائج نواتج المقرر بعدد المكملين. يعيد EduItqan التحقق من الحساب قبل الحفظ والإرسال والاعتماد وحساب النواتج والتصدير.',
     'Verified sum: Combined counts = Male + Female. Example: 20 A+ + 15 A+ = 35 A+.': 'جمع موثّق: أعداد المجمّع = الطلاب + الطالبات. مثال: 20 +A و15 +A = ‏35 +A.',
     'Teaching sections': 'الشعب التدريسية',
     'Students starting': 'الطلاب في بداية الفصل',
@@ -2110,7 +2015,7 @@ window.ACADELOOP_AR = {
     'Informal feedback': 'تغذية راجعة غير رسمية',
 
     // Portfolios
-    'Open a course, add the portfolio documents into the sections provided, then download the generated portfolio ZIP. Files selected here are temporary and are never saved by Acadeloop.': 'افتح مقررًا، وأضف مستندات الملف في أقسامها، ثم نزّل الملف المضغوط المولّد. الملفات المختارة هنا مؤقتة ولا يحفظها أكاديلوب.',
+    'Open a course, add the portfolio documents into the sections provided, then download the generated portfolio ZIP. Files selected here are temporary and are never saved by EduItqan.': 'افتح مقررًا، وأضف مستندات الملف في أقسامها، ثم نزّل الملف المضغوط المولّد. الملفات المختارة هنا مؤقتة ولا يحفظها EduItqan.',
     'Course portfolios': 'ملفات المقررات',
     'course + academic year': 'مقرر + عام أكاديمي',
     'With approved reports': 'مع تقارير معتمدة',
@@ -2126,7 +2031,7 @@ window.ACADELOOP_AR = {
     'Build portfolio →': 'إنشاء الملف ←',
     '← Course Portfolios': '→ ملفات المقررات',
     'Course portfolio builder': 'منشئ ملف المقرر',
-    'Add documents to the sections below, then download the portfolio. Acadeloop uses the files only to build the ZIP; it does not save or upload them anywhere.': 'أضف المستندات إلى الأقسام أدناه ثم نزّل الملف. يستخدم أكاديلوب الملفات لإنشاء الملف المضغوط فقط، ولا يحفظها أو يرفعها.',
+    'Add documents to the sections below, then download the portfolio. EduItqan uses the files only to build the ZIP; it does not save or upload them anywhere.': 'أضف المستندات إلى الأقسام أدناه ثم نزّل الملف. يستخدم EduItqan الملفات لإنشاء الملف المضغوط فقط، ولا يحفظها أو يرفعها.',
     'Course documents': 'مستندات المقرر',
     'Add the course-level documents that will be placed into the generated portfolio.': 'أضف مستندات المقرر التي ستوضع في الملف المولّد.',
     'Course Specification (CS)': 'توصيف المقرر',
@@ -2143,7 +2048,7 @@ window.ACADELOOP_AR = {
     'Any assessment material that does not fit the categories above': 'أي مواد تقييم لا تندرج تحت الفئات السابقة',
     'Reports and surveys': 'التقارير والاستبانات',
     'Semester-specific supporting documents': 'مستندات داعمة خاصة بالفصل',
-    'Upload assessment evidence and survey files for this semester. Acadeloop puts each file in its correct portfolio folder when you download.': 'ارفع شواهد التقييم وملفات الاستبانات لهذا الفصل، وسيضع أكاديلوب كل ملف في مجلده الصحيح عند التنزيل.',
+    'Upload assessment evidence and survey files for this semester. EduItqan puts each file in its correct portfolio folder when you download.': 'ارفع شواهد التقييم وملفات الاستبانات لهذا الفصل، وسيضع EduItqan كل ملف في مجلده الصحيح عند التنزيل.',
     'Semester 1 uploads': 'ملفات الفصل الأول',
     'Semester 2 uploads': 'ملفات الفصل الثاني',
     'Add files': 'إضافة ملفات',
@@ -2163,10 +2068,10 @@ window.ACADELOOP_AR = {
     'Waiting for approval': 'بانتظار الاعتماد',
     'Waiting for Coordinator approval; the folder will still be created.': 'بانتظار اعتماد المنسق، وسيُنشأ المجلد على أي حال.',
     'Download portfolio ZIP': 'تنزيل الملف المضغوط',
-    'Course Portfolio files are generated on demand from Acadeloop data plus session-only document selections. Selected files are never stored by Acadeloop.': 'تُولَّد ملفات ملف المقرر عند الطلب من بيانات أكاديلوب ومستندات الجلسة المختارة، ولا يحفظ أكاديلوب الملفات المختارة.',
+    'Course Portfolio files are generated on demand from EduItqan data plus session-only document selections. Selected files are never stored by EduItqan.': 'تُولَّد ملفات ملف المقرر عند الطلب من بيانات EduItqan ومستندات الجلسة المختارة، ولا يحفظ EduItqan الملفات المختارة.',
     'Selected files cleared from this portfolio section.': 'أُزيلت الملفات المختارة من هذا القسم.',
-    'Course Portfolio downloaded. Selected files were placed into their required sections and were not saved by Acadeloop.': 'نُزّل ملف المقرر، ووُضعت الملفات المختارة في أقسامها دون أن يحفظها أكاديلوب.',
-    'Export component is missing. Upload vendor/jszip.min.js beside index.html, then refresh Acadeloop.': 'مكوّن التصدير مفقود. ارفع vendor/jszip.min.js بجانب index.html ثم حدّث الصفحة.',
+    'Course Portfolio downloaded. Selected files were placed into their required sections and were not saved by EduItqan.': 'نُزّل ملف المقرر، ووُضعت الملفات المختارة في أقسامها دون أن يحفظها EduItqan.',
+    'Export component is missing. Upload vendor/jszip.min.js beside index.html, then refresh EduItqan.': 'مكوّن التصدير مفقود. ارفع vendor/jszip.min.js بجانب index.html ثم حدّث الصفحة.',
     'Could not parse Word template XML.': 'تعذّرت قراءة قالب Word.',
 
     // PLO / APR
@@ -2329,8 +2234,8 @@ window.ACADELOOP_AR = {
     'Dr. Omar Khalid': 'د. عمر خالد',
 
     // Admin, KPI forms, errors and empty states
-    "A lightweight scheduled database heartbeat records one row approximately every five days. This table is isolated from Acadeloop business data and visible only to System Administrators.": "نبض مجدول خفيف لقاعدة البيانات يسجل صفًا واحدًا كل خمسة أيام تقريبًا. هذا الجدول معزول عن بيانات أكاديلوب ويظهر لمديري النظام فقط.",
-    "Acadeloop core failed to load.": "تعذّر تحميل نواة أكاديلوب.",
+    "A lightweight scheduled database heartbeat records one row approximately every five days. This table is isolated from EduItqan business data and visible only to System Administrators.": "نبض مجدول خفيف لقاعدة البيانات يسجل صفًا واحدًا كل خمسة أيام تقريبًا. هذا الجدول معزول عن بيانات EduItqan ويظهر لمديري النظام فقط.",
+    "EduItqan core failed to load.": "تعذّر تحميل نواة EduItqan.",
     "Academic": "أكاديمي",
     "Academic program *": "البرنامج الأكاديمي *",
     "Academic quality administration": "إدارة الجودة الأكاديمية",
@@ -2410,7 +2315,7 @@ window.ACADELOOP_AR = {
     "Internal benchmark automatically uses the previous year’s actual.": "تستخدم المقارنة الداخلية القيمة الفعلية للعام السابق تلقائيًا.",
     "Internal benchmark is linked to last year’s actual and cannot be overridden.": "المقارنة الداخلية مرتبطة بالقيمة الفعلية للعام الماضي ولا يمكن تغييرها.",
     "Last heartbeat": "آخر نبض",
-    "Manage academic programs, appoint HODs, control users, and back up the complete Acadeloop system.": "أدر البرامج الأكاديمية، وعيّن رؤساء الأقسام، وتحكم بالمستخدمين، وانسخ نظام أكاديلوب احتياطيًا.",
+    "Manage academic programs, appoint HODs, control users, and back up the complete EduItqan system.": "أدر البرامج الأكاديمية، وعيّن رؤساء الأقسام، وتحكم بالمستخدمين، وانسخ نظام EduItqan احتياطيًا.",
     "Manage programs": "إدارة البرامج",
     "Measurement": "القياس",
     "Measurement is fixed once benchmarks exist, so historical results stay comparable.": "يثبت نوع القياس بعد إدخال المستهدفات لتبقى النتائج التاريخية قابلة للمقارنة.",
@@ -2484,7 +2389,7 @@ window.ACADELOOP_AR = {
     "The HOD must configure an academic year such as 2026–2027 in Program Setup.": "يجب على رئيس القسم ضبط عام أكاديمي مثل 2026–2027 في إعداد البرنامج.",
     "The code is invalid or expired.": "الرمز غير صحيح أو منتهي الصلاحية.",
     "Theory": "نظري",
-    "This account does not have a supported Acadeloop role.": "لا يملك هذا الحساب دورًا مدعومًا في أكاديلوب.",
+    "This account does not have a supported EduItqan role.": "لا يملك هذا الحساب دورًا مدعومًا في EduItqan.",
     "This program belongs to another department. Select a program in your department to view its KPIs.": "هذا البرنامج تابع لقسم آخر. اختر برنامجًا من قسمك لعرض مؤشراته.",
     "Type": "النوع",
     "Unavailable": "غير متاح",
@@ -2494,7 +2399,7 @@ window.ACADELOOP_AR = {
     "User deactivated.": "عُطّل المستخدم.",
     "User not linked yet": "لم يُربط المستخدم بعد",
     "User reactivated.": "أُعيد تفعيل المستخدم.",
-    "View approved quality results and control who is allowed to access Acadeloop.": "اطلع على نتائج الجودة المعتمدة وتحكم بمن يُسمح له بالدخول إلى أكاديلوب.",
+    "View approved quality results and control who is allowed to access EduItqan.": "اطلع على نتائج الجودة المعتمدة وتحكم بمن يُسمح له بالدخول إلى EduItqan.",
     "Waiting for first heartbeat": "بانتظار أول نبض",
     "Weaknesses": "نقاط الضعف",
     "e.g. 5, 10 or 1": "مثال: 5 أو 10 أو 1",
@@ -2557,7 +2462,7 @@ window.ACADELOOP_AR = {
 </script>
 <script data-source="src/i18n.js">
 /*
-  Acadeloop interface language (English / Arabic).
+  EduItqan interface language (English / Arabic).
 
   The application renders English markup. This layer translates what is on screen
   without touching business data or calculations:
@@ -2575,10 +2480,10 @@ window.ACADELOOP_AR = {
   'use strict';
   if(document.documentElement.classList.contains('public-home'))return;
 
-  const STORAGE_KEY = 'acadeloop_lang';
+  const STORAGE_KEY = 'eduitqan_lang';
   const ATTRS = ['placeholder', 'title', 'aria-label'];
   const SKIP = new Set(['SCRIPT', 'STYLE', 'TEXTAREA', 'CODE', 'PRE', 'NOSCRIPT']);
-  const AR = window.ACADELOOP_AR || { phrases: {}, patterns: [] };
+  const AR = window.EDUITQAN_AR || { phrases: {}, patterns: [] };
 
   const phrases = new Map(Object.entries(AR.phrases || {}));
   // Lowercase index for headings/labels that only differ in letter case.
@@ -2735,19 +2640,19 @@ window.ACADELOOP_AR = {
     apply();
   }
 
-  window.AcadeloopI18n = { t: (text) => translatePhrase(String(text ?? '')), setLang, get lang() { return lang; } };
+  window.EduItqanI18n = { t: (text) => translatePhrase(String(text ?? '')), setLang, get lang() { return lang; } };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
 
 </script>
 <script data-source="src/visuals.js">
-/* Acadeloop decorative loops and optional reduced-motion-aware transitions. */
+/* EduItqan decorative loops and optional reduced-motion-aware transitions. */
 (() => {
   'use strict';
   if(document.documentElement.classList.contains('public-home'))return;
 
   const reduceMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-  // Abstract overlapping loops for Acadeloop, unrelated to institutional emblems.
+  // Abstract overlapping loops for EduItqan, unrelated to institutional emblems.
   function ornament() {
     return '<svg class="ornament" viewBox="0 0 200 200" aria-hidden="true" focusable="false"><ellipse class="orn-ring orn-ring-0" cx="80" cy="100" rx="50" ry="75" transform="rotate(-30 80 100)" pathLength="1"/><ellipse class="orn-ring orn-ring-1" cx="120" cy="100" rx="50" ry="75" transform="rotate(30 120 100)" pathLength="1"/></svg>';
   }
@@ -2876,7 +2781,7 @@ window.ACADELOOP_AR = {
     }
   }
 
-  window.AcadeloopVisuals = { ornament, decorate };
+  window.EduItqanVisuals = { ornament, decorate };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
 
@@ -2891,9 +2796,9 @@ window.ACADELOOP_AR = {
   const uid = () => globalThis.crypto?.randomUUID?.() || Math.random().toString(36).slice(2,8) + Date.now().toString(36).slice(-5);
   const nowDate = () => { const d=new Date(), pad=n=>String(n).padStart(2,'0'); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; };
   const clamp = (n,min=0,max=100) => Math.max(min,Math.min(max,Number(n)||0));
-  const Core = window.AcadeloopCore;
-  const Backend = window.AcadeloopBackend;
-  if(!Core) throw new Error('Acadeloop core failed to load.');
+  const Core = window.EduItqanCore;
+  const Backend = window.EduItqanBackend;
+  if(!Core) throw new Error('EduItqan core failed to load.');
   const {
     TERMS, LETTER_GRADE_LABELS, GRADE_DEFS: gradeDefs,
     sectionLabel, blankSectionFor, ensureSectionModel, effectiveSectionKey, activeSectionKeys,
@@ -2902,7 +2807,7 @@ window.ACADELOOP_AR = {
     reportAverageAttainment, reportCompleteness, calculatePloRollups,
     validateReport
   } = Core;
-  const STORAGE_KEY = 'acadeloop_program_quality_v100';
+  const STORAGE_KEY = 'eduitqan_program_quality_v100';
   const TITLE_PREFIXES = ['Mr.','Ms.','Dr.'];
   const PROGRAM_TYPES = ['Diploma','Bachelor'];
   const normalizeTitlePrefix = value => TITLE_PREFIXES.includes(String(value||'').trim()) ? String(value).trim() : '';
@@ -2921,7 +2826,7 @@ window.ACADELOOP_AR = {
   const ROLE_CONFIG = {
     'System Administrator': {
       views:['dashboard','users','setup'], label:'System administration', avatar:'SA',
-      dashboard:'Acadeloop Administration', description:'Manage academic programs, appoint HODs, control users, and back up the complete Acadeloop system.'
+      dashboard:'EduItqan Administration', description:'Manage academic programs, appoint HODs, control users, and back up the complete EduItqan system.'
     },
     'Instructor': {
       views:['dashboard','course-reports','course-portfolios','kpis'], label:'Instructor workspace', avatar:'IN',
@@ -2933,7 +2838,7 @@ window.ACADELOOP_AR = {
     },
     'Head of Department': {
       views:['dashboard','course-reports','course-portfolios','plo','apr','kpis','operational','users','setup'], label:'Executive oversight', avatar:'HD',
-      dashboard:'Department Quality Overview', description:'View approved quality results and control who is allowed to access Acadeloop.'
+      dashboard:'Department Quality Overview', description:'View approved quality results and control who is allowed to access EduItqan.'
     },
     'APU': {
       views:['dashboard','course-reports','plo','apr','kpis','operational'], label:'Institution supervision', avatar:'AP',
@@ -2945,7 +2850,7 @@ window.ACADELOOP_AR = {
     }
   };
 
-  const seed = window.ACADELOOP_SEED;
+  const seed = window.EDUITQAN_SEED;
 
   const backendEnabled = !!Backend?.enabled;
   const normalizeLoginEmail = value => String(value||'').trim().toLowerCase();
@@ -2973,8 +2878,8 @@ window.ACADELOOP_AR = {
   let currentUser = null;
   let userDirectory = [];
   let keepaliveStatus = null;
-  const SESSION_KEY = 'acadeloop_session_v100';
-  const USERS_KEY = 'acadeloop_authorized_users_v100';
+  const SESSION_KEY = 'eduitqan_session_v100';
+  const USERS_KEY = 'eduitqan_authorized_users_v100';
   const memoryStorage = new Map();
   function storageGet(key){try{const value=localStorage.getItem(key);if(value!==null)return value}catch{}return memoryStorage.has(key)?memoryStorage.get(key):null}
   function storageSet(key,value){const text=String(value);memoryStorage.set(key,text);try{localStorage.setItem(key,text)}catch{}}
@@ -2990,37 +2895,9 @@ window.ACADELOOP_AR = {
   }
   function authToken(){return storageGet(SESSION_KEY)||''}
   function setAuthToken(v){if(v)storageSet(SESSION_KEY,v);else storageRemove(SESSION_KEY)}
-  function defaultTestUsers(){
-    const department=state?.program?.department||seed.program.department;
-    return [
-      // Preset identities are used only with the isolated test backend.
-      {id:'test-hod',username:'TestHOD',firstName:'Test',lastName:'HOD',department,role:'Head of Department',email:'testhod@acadeloop.test',active:true,createdAt:nowDate(),preset:true},
-      {id:'test-i',username:'TestI',firstName:'Test',lastName:'Instructor',department,role:'Instructor',email:'testi@acadeloop.test',active:true,createdAt:nowDate(),preset:true},
-      {id:'test-q',username:'TestQ',firstName:'Test',lastName:'Quality',department,role:'Coordinator',email:'testq@acadeloop.test',active:true,createdAt:nowDate(),preset:true},
-      {id:'test-i2',username:'TestI2',firstName:'Test',lastName:'Instructor 2',department,role:'Instructor',email:'testi2@acadeloop.test',active:true,createdAt:nowDate(),preset:true},
-      {id:'test-apu',username:'TestAPU',firstName:'Test',lastName:'APU',department,role:'APU',email:'apu@acadeloop.test',active:true,createdAt:nowDate(),preset:true,testOnly:true},
-      {id:'test-vdaa',username:'TestVDAA',firstName:'Test',lastName:'VDAA',department,role:'VDAA',email:'vdaa@acadeloop.test',active:true,createdAt:nowDate(),preset:true,testOnly:true}
-    ];
-  }
-  function loadLocalUsers(){
-    let users=[];
-    try{const raw=storageGet(USERS_KEY);if(raw)users=JSON.parse(raw)}catch(e){}
-    if(!Array.isArray(users))users=[];
-    for(const preset of defaultTestUsers()){
-      const i=users.findIndex(u=>String(u.username||'').toLowerCase()===preset.username.toLowerCase()||String(u.email||'').toLowerCase()===preset.email.toLowerCase());
-      if(i<0)users.push(preset); else users[i]={...users[i],...preset,active:true};
-    }
-    users.sort((a,b)=>(a.preset===b.preset?String(a.username||a.email).localeCompare(String(b.username||b.email)):(a.preset?-1:1)));
-    storageSet(USERS_KEY,JSON.stringify(users))
-    return users;
-  }
-  function saveLocalUsers(users){
-    storageSet(USERS_KEY,JSON.stringify(users))
-  }
-  function localUserByLogin(login){
-    const key=String(login||'').trim().toLowerCase();
-    return loadLocalUsers().find(u=>canonicalUiRole(u.role)!=='System Administrator'&&u.active!==false&&(String(u.username||'').toLowerCase()===key||String(u.email||'').toLowerCase()===key))||null;
-  }
+  // All user identities are persisted and authorized by the backend.
+  function loadLocalUsers(){ return []; }
+  function saveLocalUsers(){ throw new Error('Browser-local user management is disabled.'); }
 
   let state = normalizeState(loadState());
   let currentView = 'dashboard';
@@ -3117,7 +2994,7 @@ window.ACADELOOP_AR = {
     return s;
   }
 
-  const UNKNOWN_ROLE_CONFIG = {views:['dashboard'],label:'Account access',avatar:'?',dashboard:'Account access unavailable',description:'This account does not have a supported Acadeloop role.'};
+  const UNKNOWN_ROLE_CONFIG = {views:['dashboard'],label:'Account access',avatar:'?',dashboard:'Account access unavailable',description:'This account does not have a supported EduItqan role.'};
   function roleConfig(){return ROLE_CONFIG[canonicalUiRole(state.role)] || UNKNOWN_ROLE_CONFIG}
   function roleCanView(view){return roleConfig().views.includes(view)}
   function canCreateReport(){return state.role==='Instructor'}
@@ -3410,7 +3287,7 @@ window.ACADELOOP_AR = {
       portfolioAssessmentRow(g,`${assessment}/Final Exam/Practical`,'Final · Practical'),
       portfolioAssessmentRow(g,`${assessment}/Final Exam/Clinical`,'Final · Clinical')
     ].join('');
-    return `<section class="portfolio-panel"><div class="portfolio-panel-head"><div><h2>${semesterFolderName(term)} uploads</h2><p>Upload assessment evidence and survey files for this semester. Acadeloop puts each file in its correct portfolio folder when you download.</p></div><span class="portfolio-file-count">${portfolioSelectedCount(g,base)} selected</span></div>
+    return `<section class="portfolio-panel"><div class="portfolio-panel-head"><div><h2>${semesterFolderName(term)} uploads</h2><p>Upload assessment evidence and survey files for this semester. EduItqan puts each file in its correct portfolio folder when you download.</p></div><span class="portfolio-file-count">${portfolioSelectedCount(g,base)} selected</span></div>
       <div class="portfolio-assessment-wrap"><div class="portfolio-subhead"><strong>Assessments</strong><span>Questions/answer keys and student samples</span></div><div class="portfolio-matrix"><div class="portfolio-matrix-header"><span>Assessment</span><span>Questions + key</span><span>Excellent</span><span>Average</span><span>Poor</span></div>${rows}</div>${portfolioUploadRow(g,'Other assessment files',`${assessment}/Others`,'Any assessment material that does not fit the categories above')}</div>
       <div class="portfolio-survey-wrap"><div class="portfolio-subhead"><strong>Reports and surveys</strong><span>Semester-specific supporting documents</span></div><div class="portfolio-two-col">${portfolioUploadRow(g,'Course Evaluation Survey',`${base}/Reports and Surveys/Course Evaluation Survey`)}${portfolioUploadRow(g,'Informal feedback',`${base}/Reports and Surveys/Informal feedback`)}</div></div>
       <div class="portfolio-generated-strip"><div><span class="portfolio-generated-icon">DOCX</span><p><strong>Course Report</strong><small>${approved.length?'Automatically generated from Coordinator-approved report data.':'Waiting for Coordinator approval; the folder will still be created.'}</small></p><b class="${approved.length?'ready':'waiting'}">${approved.length?'Generated':'Waiting'}</b></div><div><span class="portfolio-generated-icon">CSV</span><p><strong>CLOs Assessment Report</strong><small>${approved.length?'Automatically generated from approved CLO results.':'Waiting for Coordinator approval; the folder will still be created.'}</small></p><b class="${approved.length?'ready':'waiting'}">${approved.length?'Generated':'Waiting'}</b></div></div>
@@ -3420,7 +3297,7 @@ window.ACADELOOP_AR = {
     const groups=portfolioGroupsForRole();
     if(currentPortfolioId){const g=groups.find(x=>x.key===currentPortfolioId);if(g)return renderCoursePortfolioDetail(g);currentPortfolioId=null;}
     const approvedGroups=groups.filter(g=>portfolioApprovedReports(g).length>0).length;
-    return roleHero()+pageHead('Generate on demand','Course Portfolios','Open a course, add the portfolio documents into the sections provided, then download the generated portfolio ZIP. Files selected here are temporary and are never saved by Acadeloop.',``)+`
+    return roleHero()+pageHead('Generate on demand','Course Portfolios','Open a course, add the portfolio documents into the sections provided, then download the generated portfolio ZIP. Files selected here are temporary and are never saved by EduItqan.',``)+`
       <div class="portfolio-summary-strip"><div><span>Course portfolios</span><strong>${groups.length}</strong><small>course + academic year</small></div><div><span>With approved reports</span><strong>${approvedGroups}</strong><small>Course Report and CLO files auto-generate</small></div><div><span>Reporting periods</span><strong>S1 · S2 · Summer</strong><small>upload sections kept separate</small></div><div><span>Uploaded files</span><strong>Temporary</strong><small>used only for the current download session</small></div></div>
       <div class="table-card section portfolio-board"><table class="data-table"><thead><tr><th>Course</th><th>Academic year</th><th>S1</th><th>S2</th><th>Summer</th><th>Approval</th><th></th></tr></thead><tbody>${groups.map(g=>`<tr><td><strong>${esc(g.courseCode)}</strong><div class="tiny">${esc(g.courseName)}</div></td><td><strong>${esc(g.academicYear)}</strong></td><td>${periodStatusHtml(g,'S1')}</td><td>${periodStatusHtml(g,'S2')}</td><td>${periodStatusHtml(g,'Summer')}</td><td>${progressHtml(portfolioOfficialPercent(g))}<div class="tiny" style="margin-top:4px">${esc(portfolioStatusText(g))}</div></td><td><button class="btn btn-ghost" data-open-portfolio="${esc(g.key)}">Build portfolio →</button></td></tr>`).join('')}</tbody></table></div>`;
   }
@@ -3429,7 +3306,7 @@ window.ACADELOOP_AR = {
     const term=portfolioActiveTerms.get(g.key)||g.reports.find(r=>r.semester)?.semester||'S1';portfolioActiveTerms.set(g.key,term);
     const selected=portfolioSelectedCount(g);
     return `<button class="btn btn-ghost" id="portfolioBack">← Course Portfolios</button>
-      <div class="portfolio-detail-hero"><div class="portfolio-title-line"><div><span class="eyebrow">Course portfolio builder</span><h1>${esc(g.courseCode)} <span>— ${esc(g.courseName)}</span></h1><p>Add documents to the sections below, then download the portfolio. Acadeloop uses the files only to build the ZIP; it does not save or upload them anywhere.</p></div><div class="page-actions"><button class="btn btn-primary" id="downloadPortfolioZip">Download portfolio ZIP</button></div></div>
+      <div class="portfolio-detail-hero"><div class="portfolio-title-line"><div><span class="eyebrow">Course portfolio builder</span><h1>${esc(g.courseCode)} <span>— ${esc(g.courseName)}</span></h1><p>Add documents to the sections below, then download the portfolio. EduItqan uses the files only to build the ZIP; it does not save or upload them anywhere.</p></div><div class="page-actions"><button class="btn btn-primary" id="downloadPortfolioZip">Download portfolio ZIP</button></div></div>
       <div class="portfolio-meta-row"><div><span>Academic year</span><strong>${esc(g.academicYear)}</strong></div><div><span>Instructors</span><strong>${esc(instructors.join(', ')||'—')}</strong></div><div><span>Files selected</span><strong>${selected}</strong></div><div><span>Approved reports</span><strong>${approved.length}</strong></div></div></div>
       <div class="portfolio-session-notice"><div><strong>Files are temporary</strong><span>Selected documents remain only in this open browser session. Refreshing or closing the page clears them.</span></div><span class="portfolio-session-pill">Not stored</span></div>
       ${portfolioCourseDocumentsHtml(g)}
@@ -3557,8 +3434,8 @@ window.ACADELOOP_AR = {
     const heartbeatHealthy=!!pingedAt&&ageDays<6;
     const heartbeatState=keepaliveStatus?.error?'Unavailable':heartbeatHealthy?'Healthy':pingedAt?'Overdue':'Waiting for first heartbeat';
     const heartbeatClass=heartbeatHealthy?'text-good':keepaliveStatus?.error||pingedAt?'text-warn':'';
-    const heartbeatPanel=`<div class="section"><div class="section-title"><div><h2>Supabase project heartbeat</h2><p>A lightweight scheduled database heartbeat records one row approximately every five days. This table is isolated from Acadeloop business data and visible only to System Administrators.</p></div><span class="tag blue">Scheduled</span></div><div class="grid grid-3"><div class="card"><span class="eyebrow">Status</span><div class="big ${heartbeatClass}" style="margin:10px 0 4px">${esc(heartbeatState)}</div><div class="tiny">Cron checks daily and inserts only after five days have elapsed.</div></div><div class="card"><span class="eyebrow">Last heartbeat</span><div style="font-weight:760;margin:12px 0 5px">${pingedAt?esc(pingedAt.toLocaleString()):'—'}</div><div class="tiny">Source: ${esc(keepaliveStatus?.source||'—')}</div></div><div class="card"><span class="eyebrow">Next expected</span><div style="font-weight:760;margin:12px 0 5px">${nextAt?esc(nextAt.toLocaleString()):'—'}</div><div class="tiny">Approximately five days after the latest successful heartbeat.</div></div></div></div>`;
-    return dashboardHead('Platform control','Acadeloop Administration','System-wide control for academic programs and authorized users.',backendEnabled?'<button class="btn btn-ghost" id="backupAllData">Backup Entire System (.xlsx)</button>':'')+`
+    const heartbeatPanel=`<div class="section"><div class="section-title"><div><h2>Supabase project heartbeat</h2><p>A lightweight scheduled database heartbeat records one row approximately every five days. This table is isolated from EduItqan business data and visible only to System Administrators.</p></div><span class="tag blue">Scheduled</span></div><div class="grid grid-3"><div class="card"><span class="eyebrow">Status</span><div class="big ${heartbeatClass}" style="margin:10px 0 4px">${esc(heartbeatState)}</div><div class="tiny">Cron checks daily and inserts only after five days have elapsed.</div></div><div class="card"><span class="eyebrow">Last heartbeat</span><div style="font-weight:760;margin:12px 0 5px">${pingedAt?esc(pingedAt.toLocaleString()):'—'}</div><div class="tiny">Source: ${esc(keepaliveStatus?.source||'—')}</div></div><div class="card"><span class="eyebrow">Next expected</span><div style="font-weight:760;margin:12px 0 5px">${nextAt?esc(nextAt.toLocaleString()):'—'}</div><div class="tiny">Approximately five days after the latest successful heartbeat.</div></div></div></div>`;
+    return dashboardHead('Platform control','EduItqan Administration','System-wide control for academic programs and authorized users.',backendEnabled?'<button class="btn btn-ghost" id="backupAllData">Backup Entire System (.xlsx)</button>':'')+`
       <div class="grid grid-4"><div class="card metric"><div class="label">Academic programs</div><div class="value">${programDirectory.length}</div><div class="sub">${open} currently open</div></div><div class="card metric"><div class="label">Authorized users</div><div class="value">${activeUsers}</div><div class="sub">Across all programs</div></div><div class="card metric"><div class="label">Heads of Department</div><div class="value">${hods}</div><div class="sub">Program leadership assignments</div></div><div class="card metric"><div class="label">System backup</div><div class="value">XLSX</div><div class="sub">All structured data; no generated DOCX stored</div></div></div>${heartbeatPanel}
       <div class="section"><div class="section-title"><div><h2>Academic programs</h2><p>Open and closed program workspaces managed by the System Administrator.</p></div><button class="btn btn-primary" data-go="setup">Manage programs</button></div>${programTableHtml()}</div>`;
   }
@@ -3626,7 +3503,7 @@ window.ACADELOOP_AR = {
       ${review?'<div class="approval-gate-note"><strong>Quality approval gate</strong><span>You are reviewing the exact instructor-entered data. Fields are read-only. Approve to release CLOs to PLO/APR/HOD, or return with a revision reason.</span></div>':''}
       ${r.status==='Returned for Revision'&&r.revisionNote?`<div class="revision-note"><strong>Coordinator revision request</strong><span>${esc(r.revisionNote)}</span></div>`:''}
       <div class="form-grid"><div class="field f3"><label>Course code</label><input id="rfCode" value="${esc(r.courseCode)}" ${dis}></div><div class="field f9"><label>Course title</label><input id="rfName" value="${esc(r.courseName)}" ${dis}></div><div class="field f4"><label>Academic year</label><select id="rfYear" ${dis}>${state.academicYears.map(y=>`<option ${y===r.academicYear?'selected':''}>${esc(y)}</option>`).join('')}</select></div><div class="field f4"><label>Semester</label><select id="rfSemester" ${dis}>${TERMS.map(t=>`<option ${t===r.semester?'selected':''}>${t}</option>`).join('')}</select></div><div class="field f4"><label>Report date</label><input type="date" id="rfDate" value="${esc(r.reportDate||nowDate())}" ${dis}></div><div class="field f6"><label>Instructor</label><input id="rfInstructor" value="${esc(r.instructor)}" disabled></div><div class="field f6"><label>Coordinator</label><input id="rfCoordinator" value="${esc(r.coordinator||r.instructor)}" ${dis}></div></div>
-      <div class="drawer-section"><div class="drawer-section-head"><h3>Section reporting scope</h3><span>${sectionPill(r.sectionMode)}</span></div>${editable?`<div class="scope-selector">${[['male','Male','Male section only'],['female','Female','Female section only'],['combined','Combined','Combined result only'],['all','All','Enter Male + Female together; Combined auto-calculates']].map(([k,l,d])=>`<div class="scope-option"><input type="radio" name="reportScope" id="scope_${k}" value="${k}" ${r.sectionMode===k?'checked':''}><label for="scope_${k}"><strong>${l}</strong><span>${d}</span></label></div>`).join('')}</div>`:`<p class="tiny">${esc(sectionLabel(r.sectionMode))} section reporting scope</p>`}${r.sectionMode==='all'?`<div class="auto-combine-banner"><div><strong>Combined is calculated automatically and cannot be edited</strong><span>Student counts and every grade/status count are added Male + Female. CLO actuals are weighted by completed students. Acadeloop verifies the arithmetic again before save, submission, approval, PLO calculation, and export.</span></div><span class="tag blue">Calculation locked</span></div>`:''}</div>
+      <div class="drawer-section"><div class="drawer-section-head"><h3>Section reporting scope</h3><span>${sectionPill(r.sectionMode)}</span></div>${editable?`<div class="scope-selector">${[['male','Male','Male section only'],['female','Female','Female section only'],['combined','Combined','Combined result only'],['all','All','Enter Male + Female together; Combined auto-calculates']].map(([k,l,d])=>`<div class="scope-option"><input type="radio" name="reportScope" id="scope_${k}" value="${k}" ${r.sectionMode===k?'checked':''}><label for="scope_${k}"><strong>${l}</strong><span>${d}</span></label></div>`).join('')}</div>`:`<p class="tiny">${esc(sectionLabel(r.sectionMode))} section reporting scope</p>`}${r.sectionMode==='all'?`<div class="auto-combine-banner"><div><strong>Combined is calculated automatically and cannot be edited</strong><span>Student counts and every grade/status count are added Male + Female. CLO actuals are weighted by completed students. EduItqan verifies the arithmetic again before save, submission, approval, PLO calculation, and export.</span></div><span class="tag blue">Calculation locked</span></div>`:''}</div>
       <div class="drawer-section"><div class="drawer-section-head"><h3>Course Learning Outcomes</h3><span class="tiny">Mapping and assessment definition</span></div><div class="clo-master">${(r.clos||[]).map((c,i)=>`<div class="clo-master-row"><span class="cm-code">${esc(c.code)}</span><input data-clo-text="${i}" value="${esc(c.text)}" ${dis}><select data-clo-domain="${i}" ${dis}>${['K','S','V'].map(d=>`<option ${d===c.domain?'selected':''}>${d}</option>`).join('')}</select><input data-clo-method="${i}" value="${esc(c.method||'')}" placeholder="Assessment method" ${dis}><select data-clo-plo="${i}" ${dis}>${state.plos.map(p=>`<option value="${esc(p.code)}" ${p.code===c.plo?'selected':''}>${esc(p.code)}</option>`).join('')}</select><input data-clo-target="${i}" type="number" min="0" max="100" value="${esc(c.target)}" ${dis}></div>`).join('')}</div>${editable?'<button class="btn btn-ghost" id="addClo" style="margin-top:8px">＋ Add CLO</button>':''}</div>
       <div class="drawer-section"><div class="drawer-section-head"><h3>Section results</h3><span class="tiny">All sections can be entered on the same screen</span></div><div class="report-section-stack">${activeSectionKeys(r).map(k=>sectionEditorHtml(r,k,editable)).join('')}</div></div>
       <div class="drawer-section"><div class="drawer-section-head"><h3>Course Improvement Plan</h3><span class="tiny">Generated into report and portfolio</span></div><div id="improvementList">${(r.improvements||[]).map((x,i)=>improvementRowHtml(x,i,editable)).join('')}</div>${editable?'<button class="btn btn-ghost" id="addImprovement">＋ Add improvement action</button>':''}</div>
@@ -3809,7 +3686,7 @@ window.ACADELOOP_AR = {
   async function backupAllData(){
     if(!backendEnabled)return;
     const btn=$('backupAllData');if(btn){btn.disabled=true;btn.textContent='Preparing backup…'}
-    try{const body=state.role==='System Administrator'?{}:{program_id:activeProgramId};const blob=await Backend.invoke('export-backup-xlsx',body,'blob');const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`Acadeloop_Backup_${nowDate()}.xlsx`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('Excel backup downloaded.');}
+    try{const body=state.role==='System Administrator'?{}:{program_id:activeProgramId};const blob=await Backend.invoke('export-backup-xlsx',body,'blob');const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`EduItqan_Backup_${nowDate()}.xlsx`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('Excel backup downloaded.');}
     catch(e){toast(e?.message||'Could not export backup.');}
     finally{if(btn){btn.disabled=false;btn.textContent=state.role==='System Administrator'?'Backup Entire System (.xlsx)':'Backup Program (.xlsx)'}}
   }
@@ -3845,7 +3722,7 @@ window.ACADELOOP_AR = {
     document.querySelectorAll('[data-portfolio-term]').forEach(b=>b.addEventListener('click',()=>{const g=portfolioGroupsForRole().find(x=>x.key===currentPortfolioId);if(!g)return;portfolioActiveTerms.set(g.key,b.dataset.portfolioTerm);render();}));
     document.querySelectorAll('input[data-portfolio-upload]').forEach(input=>input.addEventListener('change',()=>{const g=portfolioGroupsForRole().find(x=>x.key===currentPortfolioId);if(!g||!input.files?.length)return;addPortfolioFiles(g,input.dataset.portfolioUpload,Array.from(input.files));render();toast(`${input.files.length} file${input.files.length===1?'':'s'} added to this portfolio session.`);}));
     document.querySelectorAll('[data-portfolio-clear]').forEach(b=>b.addEventListener('click',()=>{const g=portfolioGroupsForRole().find(x=>x.key===currentPortfolioId);if(!g)return;clearPortfolioFiles(g,b.dataset.portfolioClear);render();toast('Selected files cleared from this portfolio section.');}));
-    const runPortfolioDownload=async(btn)=>{const g=portfolioGroupsForRole().find(x=>x.key===currentPortfolioId);if(!g)return;const buttons=[$('downloadPortfolioZip'),$('downloadPortfolioZipBottom')].filter(Boolean);buttons.forEach(x=>{x.disabled=true;x.textContent='Generating…'});try{await downloadCoursePortfolioZip(g);toast('Course Portfolio downloaded. Selected files were placed into their required sections and were not saved by Acadeloop.');}catch(e){console.error(e);toast(e?.message||'Could not generate Course Portfolio.');}finally{buttons.forEach(x=>{x.disabled=false;x.textContent='Download portfolio ZIP'});}};
+    const runPortfolioDownload=async(btn)=>{const g=portfolioGroupsForRole().find(x=>x.key===currentPortfolioId);if(!g)return;const buttons=[$('downloadPortfolioZip'),$('downloadPortfolioZipBottom')].filter(Boolean);buttons.forEach(x=>{x.disabled=true;x.textContent='Generating…'});try{await downloadCoursePortfolioZip(g);toast('Course Portfolio downloaded. Selected files were placed into their required sections and were not saved by EduItqan.');}catch(e){console.error(e);toast(e?.message||'Could not generate Course Portfolio.');}finally{buttons.forEach(x=>{x.disabled=false;x.textContent='Download portfolio ZIP'});}};
     if($('downloadPortfolioZip'))$('downloadPortfolioZip').addEventListener('click',()=>runPortfolioDownload($('downloadPortfolioZip')));
     if($('downloadPortfolioZipBottom'))$('downloadPortfolioZipBottom').addEventListener('click',()=>runPortfolioDownload($('downloadPortfolioZipBottom')));
     if($('exportAprCsv'))$('exportAprCsv').addEventListener('click',exportAprCsv);
@@ -3915,7 +3792,7 @@ window.ACADELOOP_AR = {
     }
   }
   function zipApi(){
-    if(!window.JSZip)throw new Error('Export component is missing. Upload vendor/jszip.min.js beside index.html, then refresh Acadeloop.');
+    if(!window.JSZip)throw new Error('Export component is missing. Upload vendor/jszip.min.js beside index.html, then refresh EduItqan.');
     return window.JSZip;
   }
 
@@ -3956,7 +3833,7 @@ window.ACADELOOP_AR = {
         .catch((error) => {
           templateBufferPromise = null;
           const hint = location.protocol === 'file:'
-            ? ' Open Acadeloop through a web host (for example Acadeloop.com); browsers block this binary template when the page is opened with file://.'
+            ? ' Open EduItqan through a web host (for example EduItqan.com); browsers block this binary template when the page is opened with file://.'
             : '';
           throw new Error(`Could not load ${COURSE_REPORT_TEMPLATE_URL}.${hint}`, { cause: error });
         });
@@ -4046,7 +3923,7 @@ window.ACADELOOP_AR = {
 
   async function onAuthenticated(user){
     const role=canonicalUiRole(user?.role);
-    if(!role) throw new Error('Your Acadeloop account has an unsupported role. Contact the System Administrator.');
+    if(!role) throw new Error('Your EduItqan account has an unsupported role. Contact the System Administrator.');
     if(role==='System Administrator'&&(!backendEnabled||normalizeLoginEmail(user.email)!==Backend.adminEmail))throw new Error('System Administrator requires verified login as '+Backend.adminEmail+'.');
     if(Backend?.adminOnly&&role!=='System Administrator')throw new Error('This account is not the System Administrator.');
     currentUser={...user,role};state.role=role;
@@ -4059,7 +3936,7 @@ window.ACADELOOP_AR = {
     await loadSupervisorData();
     currentView='dashboard';currentPortfolioId=null;activePlo=null;
     $('authScreen')?.classList.add('hidden');$('appShell')?.classList.remove('hidden');
-    syncChrome();render();window.__ACADELOOP_READY__=true;
+    syncChrome();render();window.__EDUITQAN_READY__=true;
   }
   async function sendOtp(){
     const email=normalizeLoginEmail($('loginUser')?.value);
@@ -4067,15 +3944,15 @@ window.ACADELOOP_AR = {
     const btn=$('signInBtn');btn.disabled=true;btn.textContent='Sending code…';setAuthStatus('');
     try{
       await Backend.requestOtp(email);
-      sessionStorage.setItem('acadeloop_pending_email',email);
+      sessionStorage.setItem('eduitqan_pending_email',email);
       showCodeStep(email);
-      setAuthStatus('If this is an authorized Acadeloop account, a six-digit sign-in code has been sent.','ok');
+      setAuthStatus('If this is an authorized EduItqan account, a six-digit sign-in code has been sent.','ok');
     }
     catch(e){setAuthStatus('Unable to send a sign-in code. Check the email and try again.','error');}
     finally{btn.disabled=false;btn.textContent='Send one-time code';}
   }
   async function verifyLoginCode(){
-    const requestedEmail=normalizeLoginEmail(sessionStorage.getItem('acadeloop_pending_email'));
+    const requestedEmail=normalizeLoginEmail(sessionStorage.getItem('eduitqan_pending_email'));
     const code=String($('loginCode')?.value||'').trim();
     if(!validLoginEmail(requestedEmail)){await Backend.signOut();showLoginStep();setAuthStatus('Start a new sign-in with your full authorized email address.','error');return;}
     if(!/^\d{6}$/.test(code)){setAuthStatus('Enter the six-digit code from your email.','error');return;}
@@ -4085,34 +3962,21 @@ window.ACADELOOP_AR = {
       const authUser=await Backend.currentAuthUser();
       if(!authUser?.id||normalizeLoginEmail(authUser.email)!==requestedEmail||verified?.user?.id!==authUser.id)throw new Error('Verified identity mismatch.');
       const p=await Backend.profile();
-      if(!p||p.active===false||p.id!==authUser.id||normalizeLoginEmail(p.email)!==requestedEmail)throw new Error('This account is not authorized for Acadeloop.');
-      sessionStorage.removeItem('acadeloop_pending_email');
+      if(!p||p.active===false||p.id!==authUser.id||normalizeLoginEmail(p.email)!==requestedEmail)throw new Error('This account is not authorized for EduItqan.');
+      sessionStorage.removeItem('eduitqan_pending_email');
       await onAuthenticated({id:p.id,email:p.email,titlePrefix:normalizeTitlePrefix(p.title_prefix),firstName:p.first_name,lastName:p.last_name,department:p.department,role:dbRoleToUi(p.role),active:p.active,defaultProgramId:p.default_program_id||null,limitProgramAccess:!!p.limit_program_access});
     }
-    catch(e){await Backend.signOut();sessionStorage.removeItem('acadeloop_pending_email');showLoginStep();setAuthStatus(e?.message||'The code is invalid or expired.','error');}
+    catch(e){await Backend.signOut();sessionStorage.removeItem('eduitqan_pending_email');showLoginStep();setAuthStatus(e?.message||'The code is invalid or expired.','error');}
     finally{btn.disabled=false;btn.textContent='Verify & sign in';}
-  }
-  async function signIn(){
-    if(backendEnabled)return;
-    const login=$('loginUser')?.value.trim();if(!login){setAuthStatus('Enter a test username such as TestHOD, TestI, or TestQ.','error');return;}
-    if($('testRolePassword')?.value!=='1313'){setAuthStatus('Incorrect password. Please try again.','error');$('testRolePassword')?.focus();return;}
-    const btn=$('signInBtn');btn.disabled=true;btn.textContent='Signing in…';$('testSignInBtn').disabled=true;setAuthStatus('');
-    try{const user=localUserByLogin(login);if(!user)throw new Error('Unknown test user. Use TestHOD, TestI, TestQ, TestI2, or an email added by the HOD.');setAuthToken('');$('testRolePassword').value='';await onAuthenticated(user);}
-    catch(e){setAuthStatus(e.message||'Unable to sign in.','error');}
-    finally{btn.disabled=false;btn.textContent='Sign in';$('testSignInBtn').disabled=false;}
   }
   async function signOut(){
     supervisorData=null;supervisorError='';
     portfolioUploadFiles.clear();portfolioActiveTerms.clear();hideDrawer();hideModal();
-    if(Backend?.adminOnly){await Backend.signOut();setAuthToken('');location.assign(location.pathname);return;}
-    if($('testRoleSelect'))$('testRoleSelect').value='';
-    if($('testRolePassword'))$('testRolePassword').value='';
-    $('testPasswordPanel')?.classList.toggle('hidden',!Backend?.localTestMode);
-    if(backendEnabled)await Backend.signOut();else setAuthToken('');currentUser=null;userDirectory=[];$('appShell')?.classList.add('hidden');$('authScreen')?.classList.remove('hidden');showLoginStep();if($('loginUser'))$('loginUser').value='';
+    await Backend.signOut();currentUser=null;userDirectory=[];$('appShell')?.classList.add('hidden');$('authScreen')?.classList.remove('hidden');showLoginStep();if($('loginUser'))$('loginUser').value='';
   }
   async function initAuth(){
     $('signOutBtn')?.addEventListener('click',signOut);
-    $('backToRoles')?.addEventListener('click',()=>{Backend.discardSession?.();setAuthToken('');sessionStorage.removeItem('acadeloop_pending_email');location.assign(location.pathname);});
+    $('backToRoles')?.addEventListener('click',()=>{Backend.discardSession?.();setAuthToken('');sessionStorage.removeItem('eduitqan_pending_email');location.assign(location.pathname);});
     $('workspaceProgramSelect')?.addEventListener('change',e=>switchActiveProgram(e.target.value));
     if(backendEnabled){
       $('authTestPanel')?.classList.add('hidden');$('authProductionNote')?.classList.remove('hidden');
@@ -4121,45 +3985,22 @@ window.ACADELOOP_AR = {
         $('authTitle').textContent='System Administrator sign in';
         $('authMessage').textContent='Sign in as '+Backend.adminEmail+' using the one-time code sent to your email.';
         emailInput.value=Backend.adminEmail;emailInput.readOnly=true;
-        $('authProductionNote').textContent='Verified System Administrator access. This workspace uses live Acadeloop data.';
+        $('authProductionNote').textContent='Verified System Administrator access. This workspace uses live EduItqan data.';
         $('backToRoles')?.classList.remove('hidden');
       }
       if(emailInput)emailInput.disabled=true;if(sendBtn){sendBtn.disabled=true;sendBtn.textContent='Checking session…';}if(verifyBtn)verifyBtn.disabled=true;
-      $('signInBtn')?.addEventListener('click',sendOtp);$('verifyOtpBtn')?.addEventListener('click',verifyLoginCode);$('backToEmail')?.addEventListener('click',()=>{sessionStorage.removeItem('acadeloop_pending_email');Backend.discardSession?.();showLoginStep();});
+      $('signInBtn')?.addEventListener('click',sendOtp);$('verifyOtpBtn')?.addEventListener('click',verifyLoginCode);$('backToEmail')?.addEventListener('click',()=>{sessionStorage.removeItem('eduitqan_pending_email');Backend.discardSession?.();showLoginStep();});
       $('loginUser')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.currentTarget.disabled)sendOtp()});$('loginCode')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.currentTarget.disabled)verifyLoginCode()});
       try{
         const p=await Backend.profile();
         if(p?.active){await onAuthenticated({id:p.id,email:p.email,titlePrefix:normalizeTitlePrefix(p.title_prefix),firstName:p.first_name,lastName:p.last_name,department:p.department,role:dbRoleToUi(p.role),active:p.active,defaultProgramId:p.default_program_id||null,limitProgramAccess:!!p.limit_program_access});return;}
         Backend.discardSession?.();
       }catch(e){console.warn('Session restore failed',e);Backend.discardSession?.();}
-      sessionStorage.removeItem('acadeloop_pending_email');
+      sessionStorage.removeItem('eduitqan_pending_email');
       showLoginStep();if(emailInput)emailInput.disabled=false;if(sendBtn){sendBtn.disabled=false;sendBtn.textContent='Send one-time code';}if(verifyBtn)verifyBtn.disabled=false;
-      setAuthStatus('Enter your complete authorized Acadeloop email address.','');return;
+      setAuthStatus('Enter your complete authorized EduItqan email address.','');return;
     }
-    loadLocalUsers();$('authTestPanel')?.classList.remove('hidden');$('authProductionNote')?.classList.add('hidden');
-    $('authEyebrow').textContent='Temporary testing access';
-    $('authTitle').textContent='Choose a role to explore Acadeloop';
-    $('authMessage').textContent='Select a role and enter its testing password. System Administrator requires verified email login.';
-    $('testModeBadge')?.classList.remove('hidden');
-    $('localTestControls')?.classList.toggle('hidden',!Backend?.localTestMode);
-    $('loginUser').disabled=false;$('loginUser').type='text';$('signInBtn').disabled=false;$('signInBtn').textContent='Sign in';
-    $('authEmailStep')?.classList.toggle('hidden',!Backend?.localTestMode);
-    $('testPasswordPanel')?.classList.toggle('hidden',!Backend?.localTestMode);
-    $('testRoleSelect')?.addEventListener('change',e=>{
-      const select=e.currentTarget;
-      $('testRolePassword').value='';setAuthStatus('');
-      $('loginUser').value=select.value==='admin'?'':select.value;
-      $('testPasswordPanel').classList.toggle('hidden',!select.value||select.value==='admin');
-      if(select.value==='admin'){setAuthToken('');location.assign(location.pathname+'?login=admin');return;}
-      if(select.value)$('testRolePassword').focus();
-    });
-    $('testSignInBtn')?.addEventListener('click',signIn);
-    $('testRolePassword')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&!$('testSignInBtn').disabled){e.preventDefault();signIn();}});
-    $('signInBtn')?.addEventListener('click',signIn);$('loginUser')?.addEventListener('keydown',e=>{if(e.key==='Enter')signIn()});
-    document.querySelectorAll('[data-test-login]').forEach(btn=>btn.addEventListener('click',()=>{if($('loginUser'))$('loginUser').value=btn.dataset.testLogin||'';signIn();}));
-    // Existing passwordless test sessions must not bypass the new entry gate.
-    setAuthToken('');
-    showLoginStep();setAuthStatus('Test changes stay in this browser. Live university data is not accessed.','ok');
+
   }
 
   function setSidebarOpen(open){$('sidebar')?.classList.toggle('open',open);$('sidebarScrim')?.classList.toggle('show',open);$('menuBtn')?.setAttribute('aria-expanded',String(open));}

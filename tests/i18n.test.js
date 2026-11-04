@@ -8,7 +8,7 @@ const vm = require('node:vm');
 
 const context = { window: {} };
 vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../src/i18n-ar.js'), 'utf8'), context);
-const AR = context.window.ACADELOOP_AR;
+const AR = context.window.EDUITQAN_AR;
 
 test('Arabic dictionary loads with translated values', () => {
   assert.ok(Object.keys(AR.phrases).length > 500);

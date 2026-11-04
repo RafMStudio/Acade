@@ -1,10 +1,10 @@
-/* Acadeloop decorative loops and optional reduced-motion-aware transitions. */
+/* EduItqan decorative loops and optional reduced-motion-aware transitions. */
 (() => {
   'use strict';
   if(document.documentElement.classList.contains('public-home'))return;
 
   const reduceMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-  // Abstract overlapping loops for Acadeloop, unrelated to institutional emblems.
+  // Abstract overlapping loops for EduItqan, unrelated to institutional emblems.
   function ornament() {
     return '<svg class="ornament" viewBox="0 0 200 200" aria-hidden="true" focusable="false"><ellipse class="orn-ring orn-ring-0" cx="80" cy="100" rx="50" ry="75" transform="rotate(-30 80 100)" pathLength="1"/><ellipse class="orn-ring orn-ring-1" cx="120" cy="100" rx="50" ry="75" transform="rotate(30 120 100)" pathLength="1"/></svg>';
   }
@@ -133,6 +133,6 @@
     }
   }
 
-  window.AcadeloopVisuals = { ornament, decorate };
+  window.EduItqanVisuals = { ornament, decorate };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();

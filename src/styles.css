@@ -255,8 +255,8 @@ nav{display:grid;gap:4px}.nav-item{border:0;background:transparent;border-radius
 @media(max-width:480px){.dashboard-context{font-size:12.5px;gap:8px}.dashboard-hero h1{font-size:24px}.dashboard-program{gap:8px}.dashboard-kpis{padding:16px}.dashboard-kpi-summary{padding:16px;gap:12px}.dashboard-kpi-total>strong{font-size:38px}.dashboard-kpi-row{grid-template-columns:minmax(0,1fr) 88px 12px;padding:16px 0}.dashboard-kpi-spark{display:none}.dashboard-kpi-number>strong{font-size:16px}.dashboard-page .metric .value{font-size:28px}.dashboard-page .quality-signal-grid{grid-template-columns:1fr}.dashboard-page .grade-average-head{flex-direction:column}}
 
 /* ==========================================================================
-   Acadeloop identity 2.0
-   One bold move: the deep-teal sidebar with the Acadeloop mark and a green rule on the active page.
+   EduItqan identity 2.0
+   One bold move: the deep-teal sidebar with the EduItqan mark and a green rule on the active page.
    Everything else stays quiet: paper background, white surfaces, hairlines.
    ========================================================================== */
 body{background:var(--paper);font-size:14px;line-height:1.5;font-feature-settings:"tnum" 1}
@@ -438,16 +438,16 @@ td.empty .empty-mark{display:none}
 .content.view-enter>*:nth-child(4){animation-delay:.15s}.content.view-enter>*:nth-child(n+5){animation-delay:.2s}
 @keyframes view-rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
-/* Entrance: the Acadeloop mark appears, then the workspace opens */
+/* Entrance: the EduItqan mark appears, then the workspace opens */
 .entrance-splash{position:fixed;inset:0;z-index:200;display:grid;place-items:center;align-content:center;gap:18px;background:var(--brand-deep);color:#fff;pointer-events:none}
 .splash-mark{position:relative;width:190px;height:190px;display:grid;place-items:center}
 .splash-mark .ornament{position:absolute;inset:0;color:rgba(255,255,255,.55)}
-.splash-mark .acadeloop-monogram{width:96px;height:96px;opacity:0;transform:scale(.85)}
+.splash-mark .eduitqan-monogram{width:96px;height:96px;opacity:0;transform:scale(.85)}
 .splash-word{font-size:20px;font-weight:600;opacity:0}
 .entrance-splash.play .orn-ring{stroke-dasharray:1;stroke-dashoffset:1;animation:draw-ring .9s cubic-bezier(.5,0,.2,1) forwards}
 .entrance-splash.play .orn-ring-1{animation-delay:.1s}.entrance-splash.play .orn-ring-2{animation-delay:.2s}
 .entrance-splash.play .orn-dot,.entrance-splash.play .orn-laurel,.entrance-splash.play .orn-crescent{opacity:0;animation:fade-in .5s .45s forwards}
-.entrance-splash.play .acadeloop-monogram{animation:mark-in .6s .3s cubic-bezier(.2,.7,.2,1) forwards}
+.entrance-splash.play .eduitqan-monogram{animation:mark-in .6s .3s cubic-bezier(.2,.7,.2,1) forwards}
 .entrance-splash.play .splash-word{animation:fade-in .5s .55s forwards}
 .entrance-splash.leave{animation:splash-out .5s cubic-bezier(.6,0,.4,1) forwards}
 @keyframes draw-ring{to{stroke-dashoffset:0}}
@@ -475,7 +475,7 @@ td.empty .empty-mark{display:none}
 @media (prefers-reduced-motion:reduce){.entrance-splash{display:none!important}}
 
 /* ==========================================================================
-   Acadeloop 3.0 — Liquid glass on the Ministry of Defense palette
+   EduItqan 3.0 — Liquid glass on the neutral interface palette
    - Chrome (rail, top bar, hero, dialogs) is glass floating over a tinted field.
    - Type does the hierarchy: Light for large numbers and titles, Regular for
      reading, Bold only for small labels. Explanatory paragraphs are removed
@@ -698,5 +698,5 @@ body{font-weight:400;letter-spacing:0;color:var(--ink);background:#e9eeee}
 @media(max-width:900px){.supervisor-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.supervisor-filters{grid-template-columns:minmax(0,1fr)}}
 
-.acadeloop-monogram{display:grid;place-items:center;width:100%;height:100%;font-size:40px;font-weight:700;line-height:1;color:currentColor;font-family:inherit}
-.splash-mark .acadeloop-monogram{font-size:64px}
+.eduitqan-monogram{display:grid;place-items:center;width:100%;height:100%;font-size:40px;font-weight:700;line-height:1;color:currentColor;font-family:inherit}
+.splash-mark .eduitqan-monogram{font-size:64px}

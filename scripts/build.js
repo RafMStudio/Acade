@@ -10,11 +10,11 @@ const escapeScript = (text) => text.replace(/<\/script/gi, '<\\/script');
 
 function buildHtml() {
   let html = read('index.source.html');
-  html = html.replace('<!-- ACADELOOP_HOME -->', () => read('src/home.html'));
-  html = html.replace('<link href="src/home.css" rel="stylesheet"/>', () => `<style id="acadeloop-home-styles">${read('src/home.css')}</style>`);
+  html = html.replace('<!-- EDUITQAN_HOME -->', () => read('src/home.html'));
+  html = html.replace('<link href="src/home.css" rel="stylesheet"/>', () => `<style id="eduitqan-home-styles">${read('src/home.css')}</style>`);
   html = html.replace(
     '<link href="src/styles.css" rel="stylesheet"/>',
-    () => `<style id="acadeloop-styles">\n${read('src/styles.css')}\n</style>`
+    () => `<style id="eduitqan-styles">\n${read('src/styles.css')}\n</style>`
   );
   html = html.replace(
     '<script src="src/vendor/jszip.min.js"></script>',
@@ -27,7 +27,7 @@ function buildHtml() {
       () => `<script data-source="${file}">\n${escapeScript(read(file))}\n</script>`
     );
   }
-  const banner = `<!--\n  Acadeloop deployment bundle.\n  Editable source: index.source.html + src/*.js + src/styles.css\n  The DOCX template remains a normal binary file under templates/.\n  No Base64 Word template is embedded here.\n-->\n`;
+  const banner = `<!--\n  EduItqan deployment bundle.\n  Editable source: index.source.html + src/*.js + src/styles.css\n  The DOCX template remains a normal binary file under templates/.\n  No Base64 Word template is embedded here.\n-->\n`;
   return html.replace('<!DOCTYPE html>\n', `<!DOCTYPE html>\n${banner}`);
 }
 
@@ -49,4 +49,4 @@ copy('vendor/jszip.min.js');
 copy('templates/Course_Report_Placeholder.docx');
 for (const file of fs.readdirSync(path.join(root, 'assets/fonts'))) copy(`assets/fonts/${file}`);
 
-console.log('Built resilient deployment: dist/index.html has inline Acadeloop CSS/app code; vendor + DOCX stay separate.');
+console.log('Built resilient deployment: dist/index.html has inline EduItqan CSS/app code; vendor + DOCX stay separate.');

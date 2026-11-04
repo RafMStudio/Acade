@@ -3,17 +3,14 @@
 
   const SUPABASE_URL = 'https://bzqtgcopnnscvacynybl.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_C34DQ7afa0EjU6eJstFWJw_RizL3YzU';
-  const SESSION_KEY = 'acadeloop_supabase_session_v2';
-  const LEGACY_SESSION_KEYS = ['acadeloop_supabase_session_v1'];
+  const SESSION_KEY = 'eduitqan_supabase_session_v2';
+  const LEGACY_SESSION_KEYS = ['eduitqan_supabase_session_v1'];
   const SESSION_MAX_AGE_MS = 12 * 60 * 60 * 1000;
-  const TEST_HOSTS = new Set(['localhost', '127.0.0.1']);
-  // TEMPORARY: set false and rebuild to remove hosted role login and restore OTP.
-  const TEMPORARY_ROLE_LOGIN = true;
-  const localTestMode = location.protocol === 'file:' || location.protocol === 'about:' || TEST_HOSTS.has(location.hostname) || window.__ACADELOOP_TEST_MODE__ === true;
+  // Always use authenticated production identities.
   const adminEmail = 'rafedmoha@gmail.com';
-  const adminLogin = new URLSearchParams(location.search || '').get('login') === 'admin';
-  const adminOnly = TEMPORARY_ROLE_LOGIN && adminLogin;
-  const testMode = !adminLogin && (TEMPORARY_ROLE_LOGIN || localTestMode);
+  const adminOnly = false;
+  const localTestMode = false;
+  const testMode = false;
   const normalizeEmail = value => String(value || '').trim().toLowerCase();
   const validEmail = value => {
     const email = normalizeEmail(value);
@@ -218,11 +215,11 @@
     return response.json();
   }
 
-  window.AcadeloopBackend = {
+  window.EduItqanBackend = {
     enabled: !testMode,
     testMode,
     localTestMode,
-    temporaryRoleLogin: TEMPORARY_ROLE_LOGIN,
+
     adminEmail, adminOnly,
     url: SUPABASE_URL,
     requestOtp, verifyOtp, signOut, discardSession, currentAuthUser, profile,

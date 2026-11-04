@@ -1,5 +1,5 @@
 /*
-  Acadeloop interface language (English / Arabic).
+  EduItqan interface language (English / Arabic).
 
   The application renders English markup. This layer translates what is on screen
   without touching business data or calculations:
@@ -17,10 +17,10 @@
   'use strict';
   if(document.documentElement.classList.contains('public-home'))return;
 
-  const STORAGE_KEY = 'acadeloop_lang';
+  const STORAGE_KEY = 'eduitqan_lang';
   const ATTRS = ['placeholder', 'title', 'aria-label'];
   const SKIP = new Set(['SCRIPT', 'STYLE', 'TEXTAREA', 'CODE', 'PRE', 'NOSCRIPT']);
-  const AR = window.ACADELOOP_AR || { phrases: {}, patterns: [] };
+  const AR = window.EDUITQAN_AR || { phrases: {}, patterns: [] };
 
   const phrases = new Map(Object.entries(AR.phrases || {}));
   // Lowercase index for headings/labels that only differ in letter case.
@@ -177,6 +177,6 @@
     apply();
   }
 
-  window.AcadeloopI18n = { t: (text) => translatePhrase(String(text ?? '')), setLang, get lang() { return lang; } };
+  window.EduItqanI18n = { t: (text) => translatePhrase(String(text ?? '')), setLang, get lang() { return lang; } };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();

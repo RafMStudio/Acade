@@ -35,12 +35,12 @@ for (const button of sourceIndex.matchAll(/<button\b[^>]*>/g)) {
 for (const marker of ['src/styles.css', 'src/vendor/jszip.min.js', 'src/core.js', 'src/seed.js', 'src/backend.js', 'src/i18n-ar.js', 'src/i18n.js', 'src/visuals.js', 'src/app.js']) {
   assert.ok(sourceIndex.includes(marker), `index.source.html is missing ${marker}`);
 }
-assert.ok(index.includes('id="acadeloop-styles"'), 'Deployment index must inline Acadeloop CSS');
+assert.ok(index.includes('id="eduitqan-styles"'), 'Deployment index must inline EduItqan CSS');
 for (const file of ['src/core.js', 'src/seed.js', 'src/backend.js', 'src/i18n-ar.js', 'src/i18n.js', 'src/visuals.js', 'src/app.js']) {
   assert.ok(index.includes(`data-source="${file}"`), `Deployment index must inline ${file}`);
   assert.ok(!index.includes(`<script src="${file}"></script>`), `Deployment index must not depend on ${file} at runtime`);
 }
-assert.ok(!index.includes('<link href="src/styles.css"'), 'Deployment index must not depend on external Acadeloop CSS');
+assert.ok(!index.includes('<link href="src/styles.css"'), 'Deployment index must not depend on external EduItqan CSS');
 assert.ok(index.includes('<script src="vendor/jszip.min.js"></script>'), 'Deployment index must keep JSZip as a separate vendor file');
 assert.ok(!index.includes('template-data.js'), 'index.html must not load an embedded template-data blob');
 assert.ok(!fs.existsSync(path.join(root, 'src/template-data.js')), 'Embedded template-data.js must not exist');
@@ -58,12 +58,12 @@ assert.ok(app.includes("fetch(COURSE_REPORT_TEMPLATE_URL"), 'Course Report templ
 assert.ok(app.includes("templates/Course_Report_Placeholder.docx"), 'Template URL is missing from app.js');
 assert.ok(!app.includes('COURSE_REPORT_TEMPLATE_BASE64'), 'Base64 Word template must not be embedded in app.js');
 assert.ok(!app.includes('eval('), 'app.js must not use eval()');
-assert.ok(app.includes('acadeloop_program_quality_v100'), 'Acadeloop storage key is missing');
+assert.ok(app.includes('eduitqan_program_quality_v100'), 'EduItqan storage key is missing');
 assert.ok(!app.includes('qualiflow_'), 'Old QualiFlow storage keys remain');
 assert.ok(app.includes('safePathComponent'), 'Path component sanitizer is missing');
-assert.ok(index.includes('Acadeloop') && !index.includes('QualiFlow'), 'Branding is not fully updated in index.html');
-assert.ok(core.includes('AcadeloopCore') && !core.includes('QualiFlowCore'), 'Core namespace is not fully rebranded');
-assert.ok(seedSource.includes('ACADELOOP_SEED') && !seedSource.includes('QUALIFLOW_SEED'), 'Seed namespace is not fully rebranded');
+assert.ok(index.includes('EduItqan') && !index.includes('QualiFlow'), 'Branding is not fully updated in index.html');
+assert.ok(core.includes('EduItqanCore') && !core.includes('QualiFlowCore'), 'Core namespace is not fully rebranded');
+assert.ok(seedSource.includes('EDUITQAN_SEED') && !seedSource.includes('QUALIFLOW_SEED'), 'Seed namespace is not fully rebranded');
 
 // Source readability guard: binary/base64 payloads belong in binary files, never JS/HTML source.
 for (const file of ['index.html', 'index.source.html', 'src/app.js', 'src/core.js', 'src/seed.js', 'src/backend.js']) {
@@ -97,7 +97,7 @@ assert.ok(!app.includes('COURSE_REPORT_TEMPLATE_BASE64'), 'Generated DOCX must n
 
 const seedContext = { window: {} };
 vm.runInNewContext(seedSource, seedContext, { filename: 'src/seed.js' });
-const seed = seedContext.window.ACADELOOP_SEED;
+const seed = seedContext.window.EDUITQAN_SEED;
 assert.ok(seed && Array.isArray(seed.reports), 'Seed data did not load');
 assert.equal(new Set(seed.reports.map((r) => r.id)).size, seed.reports.length, 'Seed report IDs must be unique');
 assert.equal(new Set(seed.plos.map((p) => p.code)).size, seed.plos.length, 'PLO codes must be unique');
@@ -118,4 +118,8 @@ for (const file of [
 
 console.log('Static, branding, readability, build, and seed integrity checks passed.');
 
-assert.doesNotMatch(read("dist/index.html"), /Prince Sultan|PSMCHS|سلطان|العسكرية|assets\/brand\/(?:seal|campus)/i, "Institutional branding must not appear in the UI");
+
+// Security regression: no sample-role route, shared PIN, or trusted browser-local identity.
+assert.doesNotMatch(read('src/backend.js'), /TEMPORARY_ROLE_LOGIN|__EDUITQAN_TEST_MODE__/);
+assert.doesNotMatch(read('src/app.js'), /testRolePassword|defaultTestUsers/);
+assert.doesNotMatch(read('dist/index.html'), /1(?:3)1(?:3)|testRolePassword|TestHOD/);
